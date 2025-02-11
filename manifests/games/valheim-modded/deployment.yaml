@@ -1,25 +1,25 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: valheim
+  name: valheim-modded
   labels:
-    app: valheim
+    app: valheim-modded
 spec:
   revisionHistoryLimit: 1
   replicas: 0
   selector:
     matchLabels:
-      app: valheim
+      app: valheim-modded
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: valheim
+        app: valheim-modded
     spec:
       containers:
       - image: lloesche/valheim-server
-        name: valheim
+        name: valheim-modded
         volumeMounts:
         - name: config
           mountPath: /config
@@ -52,17 +52,17 @@ spec:
       volumes:
       - name: config
         persistentVolumeClaim:
-          claimName: valheim-assets
+          claimName: valheim-modded-assets
           readOnly: false
       - name: data
         persistentVolumeClaim:
-          claimName: valheim-data
+          claimName: valheim-modded-data
           readOnly: false
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: valheim-data
+  name: valheim-modded-data
 spec:
   accessModes:
     - ReadWriteMany
@@ -75,7 +75,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: valheim-assets
+  name: valheim-modded-assets
 spec:
   accessModes:
     - ReadWriteMany
