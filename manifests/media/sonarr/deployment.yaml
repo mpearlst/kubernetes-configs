@@ -1,0 +1,75 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: sonarr
+  labels:
+    app: sonarr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+      - image: lscr.io/linuxserver/sonarr:latest
+        name: sonarr
+        env:
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+        - name: TZ
+          value: "America/Chicago"
+        volumeMounts:
+        - name: media
+          mountPath: /media
+        - name: config
+          mountPath: /config
+        - name: data
+          mountPath: /data
+        ports:
+        - containerPort: 8989
+        resources:
+          limits:
+            cpu: 4
+            memory: 2048Mi
+            ephemeral-storage: 2Gi
+          requests:
+            cpu: 0.1 
+            memory: 512Mi
+            ephemeral-storage: 32Mi
+      nodeSelector:
+        kubernetes.io/hostname: k8sw4
+      volumes:
+      - name: media
+        persistentVolumeClaim:
+          claimName: media
+          readOnly: false
+      - name: config
+        persistentVolumeClaim:
+          claimName: sonarr-config
+          readOnly: false
+      - name: data
+        hostPath:
+          path: /kubernetes/media/data
+          type: DirectoryOrCreate
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sonarr-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 4Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem

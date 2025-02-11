@@ -1,0 +1,79 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8sw4
+      containers:
+      - image: jellyfin/jellyfin:latest
+        name: jellyfin
+        volumeMounts:
+        - name: media
+          mountPath: /media
+        - name: config
+          mountPath: /config
+        - name: cache
+          mountPath: /cache
+        ports:
+        - containerPort: 8096
+        resources:
+          limits:
+            cpu: 4
+            memory: 4096Mi
+            ephemeral-storage: 8Gi
+          requests:
+            cpu: 1
+            memory: 2048Mi
+      volumes:
+      - name: cache
+        emptyDir:
+          sizeLimit: 128Gi
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyfin-config
+          readOnly: false
+      - name: media
+        persistentVolumeClaim:
+          claimName: media
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jellyfin-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 32Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 6Ti
+  storageClassName: rook-cephfs-hdd
+  volumeMode: Filesystem
