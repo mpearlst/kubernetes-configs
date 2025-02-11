@@ -1,0 +1,132 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: filerun
+  labels:
+    app: filerun
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filerun
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: filerun
+    spec:
+      containers:
+      - image: mariadb:10.1
+        name: mariadb
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "twv7TNY8HMRWVY78N3CFR78y"
+        - name: MYSQL_USER
+          value: "filerun"
+        - name: MYSQL_PASSWORD
+          value: "686766fy3f948yh95iuhkjht394uht49guhn"
+        - name: MYSQL_DATABASE
+          value: "filerun"
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+        ports:
+        - containerPort: 3306
+        resources:
+          limits:
+            cpu: 1
+            memory: 256Mi
+            ephemeral-storage: 4Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      - image: registry.senk0.com/filerun
+        name: filerun
+        env:
+        - name: FR_DB_HOST
+          value: "localhost"
+        - name: FR_DB_PORT
+          value: "3306"
+        - name: FR_DB_NAME
+          value: "filerun"
+        - name: FR_DB_USER
+          value: "filerun"
+        - name: FR_DB_PASS
+          value: "686766fy3f948yh95iuhkjht394uht49guhn"
+        - name: APACHE_RUN_USER
+          value: "www-data"
+        - name: APACHE_RUN_USER_ID
+          value: "33"
+        - name: APACHE_RUN_GROUP
+          value: "www-data"
+        - name: APACHE_RUN_GROUP_ID
+          value: "33"
+        volumeMounts:
+        - name: html
+          mountPath: /var/www/html
+        - name: user-files
+          mountPath: /user-files
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 1
+            memory: 256Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      volumes:
+      - name: html
+        persistentVolumeClaim:
+          claimName: filerun-html
+          readOnly: false
+      - name: user-files
+        persistentVolumeClaim:
+          claimName: filerun-user-files
+          readOnly: false
+      - name: mysql
+        persistentVolumeClaim:
+          claimName: filerun-db
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: filerun-html
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: filerun-user-files
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Ti
+  storageClassName: rook-cephfs-hdd
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: filerun-db
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
