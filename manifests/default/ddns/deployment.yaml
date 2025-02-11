@@ -1,0 +1,38 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: ddns
+  labels:
+    app: ddns
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ddns
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ddns
+    spec:
+      containers:
+      - image: mattolenik/cloudflare-ddns-client
+        name: ddns
+        env:
+          - name: DOMAIN
+            value: "senk0.com"
+          - name: RECORD
+            value: "dyn.senk0.com"
+          - name: TOKEN
+            value: "Qakhd7O1vIxb4Ow_6YK80ZXY0C8O9ckbqV1IObBn"
+        resources:
+          limits:
+            cpu: 1
+            memory: 64Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi
+

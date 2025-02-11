@@ -1,0 +1,65 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: duplicati
+  labels:
+    app: duplicati
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: duplicati
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: duplicati
+    spec:
+      containers:
+      - image: duplicati/duplicati:latest
+        name: duplicati
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: backups1
+          mountPath: /backup/ssd-storage
+        - name: backups2
+          mountPath: /backup/kubernetes-yaml
+        ports:
+        - containerPort: 8200
+        resources:
+          limits:
+            cpu: 4
+            memory: 4Gi
+            ephemeral-storage: 4Gi
+          requests:
+            cpu: 2
+            memory: 2Gi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: duplicati-data
+          readOnly: false
+      - name: backups1
+        nfs:
+          server: 10.0.0.20
+          path: /mnt/Pool1/ssd-storage
+      - name: backups2
+        nfs:
+          server: 10.0.0.99
+          path: /home/senk0/kubernetes
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: duplicati-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
