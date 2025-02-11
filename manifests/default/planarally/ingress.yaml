@@ -1,0 +1,21 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: planarally
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`dungeon.senk0.com`)
+    priority: 10
+    middlewares:
+    services:
+    - kind: Service
+      name: planarally
+      namespace: default
+      passHostHeader: true
+      port: 8000
+  tls:
+    secretName: senk0

@@ -1,0 +1,53 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: registry
+  labels:
+    app: registry
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - image: registry
+        name: registry
+        volumeMounts:
+        - name: images
+          mountPath: /var/lib/registry
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: 1
+            memory: 256Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi
+      volumes:
+      - name: images
+        persistentVolumeClaim:
+          claimName: registry-pvc
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: registry-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem

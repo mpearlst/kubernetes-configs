@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-warden
+spec:
+  secretName: vault-warden-tls
+  dnsNames:
+  - vault.senk0.com
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: vault.senk0.com
