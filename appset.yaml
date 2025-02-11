@@ -10,7 +10,7 @@ spec:
         repoURL: https://github.com/senk02/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: manifests/default/*
+          - path: manifests/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
@@ -22,5 +22,5 @@ spec:
         targetRevision: HEAD
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: default
+        namespace: '{{index .path.segments 1}}'
       syncPolicy: {}
