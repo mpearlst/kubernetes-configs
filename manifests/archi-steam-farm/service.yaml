@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: archi 
+spec:
+  selector:
+    app: archi 
+  ports:
+  - protocol: TCP
+    port: 1242
+    targetPort: 1242
+    nodePort: 30002
+  type: NodePort
