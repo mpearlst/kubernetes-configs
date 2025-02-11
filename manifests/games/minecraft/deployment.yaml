@@ -1,0 +1,63 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: minecraft2
+  labels:
+    app: minecraft2
+spec:
+  revisionHistoryLimit: 1
+  replicas: 0
+  selector:
+    matchLabels:
+      app: minecraft2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minecraft2
+    spec:
+      containers:
+      - image: itzg/minecraft-server:java8
+        name: minecraft
+        env:
+        - name: EULA
+          value: "TRUE"
+        - name: TYPE
+          value: "FORGE"
+        - name: VERSION
+          value: "1.12.2"
+        - name: MEMORY
+          value: "8G"    
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        ports:
+        - containerPort: 25565
+        resources:
+          limits:
+            cpu: 2
+            memory: 8192Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 100m
+            memory: 2048Mi
+            ephemeral-storage: 64Mi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: minecraft-data
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: minecraft-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 24Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem

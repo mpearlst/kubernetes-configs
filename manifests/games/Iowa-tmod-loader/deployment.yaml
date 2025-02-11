@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tml
+  labels:
+    app: tml
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tml
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tml
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8sw4
+      containers:
+      - name: tml
+        image: hexlo/terraria-tmodloader-server:latest
+        command: ["/bin/bash", "-c"]
+        args: ["/home/tml/manage-tModLoaderServer.sh start -port 7777 -world /home/tml/Worlds/Ames_Iowa.wld -players 4"]
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 7777
+          name: game-port
+        volumeMounts:
+        - name: tmodloader-data
+          mountPath: /home/tml/.local/share/Terraria/tModLoader
+        - name: tmodloader-mods
+          mountPath: /home/tml/Mods
+        - name: tmodloader-worlds
+          mountPath: /home/tml/Worlds
+        env:
+        - name: AUTOCREATE
+          value: "1"
+        - name: WORLDNAME
+          value: "Ames_Iowa.wld"
+        - name: DIFFICULTY
+          value: "2"
+        - name: MOTD
+          value: "The wonderful server for all tellurians <3"
+        resources:
+          limits:
+            cpu: "2"  # Adjust as needed
+            memory: "4Gi" # Adjust based on your server needs and testing
+          requests:
+            cpu: "500m" # Adjust as needed
+            memory: "1Gi" # Adjust as needed
+      volumes:
+      - name: tmodloader-data
+        persistentVolumeClaim:
+          claimName: tml-pvc
+      - name: tmodloader-worlds
+        persistentVolumeClaim:
+          claimName: tml-worlds
+      - name: tmodloader-mods
+        persistentVolumeClaim:
+          claimName: tml-mods
+      securityContext:
+        fsGroup: 0
+        runAsUser: 0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tml-pvc
+spec:
+  accessModes:
+    - ReadWriteMany # Or ReadWriteOnce if your storage class only supports it
+  resources:
+    requests:
+      storage: 10Gi  # Adjust as needed for your tModLoader data
+  storageClassName: rook-cephfs # Or your preferred storage class
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tml-worlds
+spec:
+  accessModes:
+    - ReadWriteMany # Or ReadWriteOnce if your storage class only supports it
+  resources:
+    requests:
+      storage: 10Gi  # Adjust as needed for your tModLoader data
+  storageClassName: rook-cephfs # Or your preferred storage class
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tml-mods
+spec:
+  accessModes:
+    - ReadWriteMany # Or ReadWriteOnce if your storage class only supports it
+  resources:
+    requests:
+      storage: 10Gi  # Adjust as needed for your tModLoader data
+  storageClassName: rook-cephfs # Or your preferred storage class
+  volumeMode: Filesystem
