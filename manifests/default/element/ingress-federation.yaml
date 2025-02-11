@@ -1,0 +1,20 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synapse-federation
+spec:
+  entryPoints:
+    - websecure  # Use websecure (HTTPS)
+  routes:
+    - kind: Rule
+      match: Host(`element.senk0.com`) && PathPrefix(`/_matrix/federation`) # Only match federation paths
+      priority: 10
+      middlewares: []  # You may need middlewares here, but start with none
+      services:
+        - kind: Service
+          name: synapse
+          namespace: default
+          passHostHeader: true
+          port: 30071  # Target the correct port for federation
+  tls:
+    secretName: senk0 # Use the same TLS secret

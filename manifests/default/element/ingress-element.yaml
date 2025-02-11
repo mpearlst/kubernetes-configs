@@ -1,0 +1,21 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synapse
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`element.senk0.com`)
+    priority: 10
+    middlewares:
+    services:
+    - kind: Service
+      name: synapse
+      namespace: default
+      passHostHeader: true
+      port: 8008
+  tls:
+    secretName: senk0
