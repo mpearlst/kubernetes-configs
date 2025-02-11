@@ -9,5 +9,5 @@ spec:
   - protocol: TCP
     port: 25565
     targetPort: 25565
-    nodePort: 31222
+    nodePort: 31227
   type: NodePort
