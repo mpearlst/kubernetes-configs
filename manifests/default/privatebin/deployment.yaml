@@ -39,10 +39,36 @@ spec:
             ephemeral-storage: 16Mi
       volumes:
       - name: config
-        nfs:
-          server: shiro.lan
-          path: /mnt/Pool1/ssd-storage/privatebin/config
+        persistentVolumeClaim:
+          claimName: privatebin-config
+          readOnly: false
       - name: data
-        nfs:
-          server: shiro.lan
-          path: /mnt/Pool1/ssd-storage/privatebin/data
+        persistentVolumeClaim:
+          claimName: privatebin-data
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: privatebin-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: privatebin-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 64Gi
+  storageClassName: rook-cephfs-hdd
+  volumeMode: Filesystem
