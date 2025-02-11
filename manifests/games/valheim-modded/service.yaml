@@ -9,11 +9,11 @@ spec:
   - protocol: UDP
     port: 2456
     targetPort: 2456
-    nodePort: 32601
+    nodePort: 32603
     name: "2456udp"
   - protocol: UDP
     port: 2457
     targetPort: 2457
-    nodePort: 32602
+    nodePort: 32604
     name: "2457udp"
   type: NodePort
