@@ -46,8 +46,8 @@ spec:
           readOnly: false
       - name: media
         persistentVolumeClaim:
-          claimName: media
-          readOnly: true
+          claimName: kavita-media
+          readOnly: false
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -60,4 +60,17 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: rook-cephfs
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: kavita-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: rook-cephfs-hdd
   volumeMode: Filesystem
