@@ -1,0 +1,27 @@
+# Wildcard certificate
+apiVersion: v1
+kind: Secret
+metadata:
+  name: senk0-pkcs12-secret
+type: Opaque
+stringData:
+  password: R8f9LdTqX2PxM
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: senk0
+spec:
+  secretName: senk0
+  keystores:
+    pkcs12:
+      create: true
+      passwordSecretRef:
+        key: password
+        name: senk0-pkcs12-secret
+  issuerRef:
+    name: letsencrypt-dns
+    kind: ClusterIssuer
+  commonName: '*.senk0.com'
+  dnsNames:
+  - '*.senk0.com'

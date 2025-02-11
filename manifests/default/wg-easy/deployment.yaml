@@ -1,0 +1,80 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: wg-easy
+  labels:
+    app: wg-easy
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wg-easy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wg-easy
+    spec:
+      securityContext:
+        sysctls:
+        - name: "net.ipv4.conf.all.src_valid_mark"
+          value: "1"
+        - name: "net.ipv4.ip_forward"
+          value: "1"
+      nodeSelector:
+        kubernetes.io/hostname: k8sw1
+      containers:
+      - image: ghcr.io/wg-easy/wg-easy
+        name: wg-easy
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN","SYS_MODULE"] 
+        env:
+        - name: WG_HOST
+          value: "dyn.senk0.com"
+        - name: WG_DEFAULT_DNS
+          value: "10.0.1.53"
+        - name: PASSWORD_HASH
+          value: "$2a$12$rQZ4dgbT7v.XSKBuvYbR9OcRrZcrnsSSc7GL0GuWDQlvlUmDyqNBK"
+        - name: UI_TRAFFIC_STATS
+          value: "true"
+        - name: UI_CHART_TYPE
+          value: "2"
+        - name: ENABLE_PROMETHEUS_METRICS
+          value: "true"
+        volumeMounts:
+        - name: assets
+          mountPath: /etc/wireguard
+        ports:
+        - containerPort: 51820
+          protocol: UDP
+        - containerPort: 51821
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 64Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi
+      volumes:
+      - name: assets
+        persistentVolumeClaim:
+          claimName: wg-easy-pvc
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: wg-easy-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
