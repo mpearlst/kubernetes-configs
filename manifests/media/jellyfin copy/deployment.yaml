@@ -6,7 +6,7 @@ metadata:
     app: jellyfin
 spec:
   revisionHistoryLimit: 1
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: jellyfin
@@ -45,36 +45,35 @@ spec:
           sizeLimit: 128Gi
       - name: config
         persistentVolumeClaim:
-          claimName: jellyfin-config
+          claimName: jellyfin-config-test
           readOnly: false
       - name: media
         persistentVolumeClaim:
-          claimName: jellyfin-data
+          claimName: jellyfin-data-test
           readOnly: false
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: jellyfin-config
+  name: jellyfin-config-test
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 32Gi
+      storage: 10Gi
   storageClassName: rook-cephfs
   volumeMode: Filesystem
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: jellyfin-data
+  name: jellyfin-data-test
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 6Ti
-  storageClassName: rook-cephfs-hdd
+      storage: 10Gi
+  storageClassName: rook-cephfs
   volumeMode: Filesystem
-  volumeName: pvc-abbed1a1-89ee-4f4d-85e8-be7da54c3b08
