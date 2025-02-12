@@ -14,7 +14,7 @@ spec:
     services:
     - kind: Service
       name: kavita
-      namespace: default
+      namespace: media
       passHostHeader: true
       port: 5000
   tls:
