@@ -14,7 +14,7 @@ spec:
     services:
     - kind: Service
       name: jellyseer
-      namespace: default
+      namespace: media
       passHostHeader: true
       port: 5055
   tls:
