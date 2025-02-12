@@ -13,7 +13,7 @@ spec:
     services:
     - kind: Service
       name: jellyfin
-      namespace: default
+      namespace: media
       passHostHeader: true
       port: 8096
   tls:
@@ -34,6 +34,6 @@ spec:
     services:
     - kind: Service
       name: jellyfin
-      namespace: default
+      namespace: media
       passHostHeader: true
       port: 8096
