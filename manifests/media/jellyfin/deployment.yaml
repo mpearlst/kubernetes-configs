@@ -17,10 +17,8 @@ spec:
       labels:
         app: jellyfin
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: k8sw4
       containers:
-      - image: jellyfin/jellyfin:latest
+      - image: jellyfin/jellyfin:10.10.3
         name: jellyfin
         volumeMounts:
         - name: media
