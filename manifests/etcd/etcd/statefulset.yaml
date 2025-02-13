@@ -1,13 +1,16 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: etcd
   name: etcd
 spec:
   ##
   ## The service name is being set to leverage the service headlessly.
   ## https://kubernetes.io/docs/concepts/services-networking/service/#headless-services
   serviceName: etcd
+  ##
+  ## If you are increasing the replica count of an existing cluster, you should
+  ## also update the --initial-cluster-state flag as noted further down in the
+  ## container configuration.
   replicas: 3
   ##
   ## For initialization, the etcd pods must be available to eachother before
@@ -19,11 +22,25 @@ spec:
   ## online at any given time.
   updateStrategy:
     type: RollingUpdate
+  ##
+  ## This is label query over pods that should match the replica count.
+  ## It must match the pod template's labels. For more information, see the
+  ## following documentation:
+  ##   https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
   selector:
     matchLabels:
       app: etcd
+  ##
+  ## Pod configuration template.
   template:
     metadata:
+      ##
+      ## The labeling here is tied to the "matchLabels" of this StatefulSet and
+      ## "affinity" configuration of the pod that will be created.
+      ##
+      ## This example's labeling scheme is fine for one etcd cluster per
+      ## namespace, but should you desire multiple clusters per namespace, you
+      ## will need to update the labeling schema to be unique per etcd cluster.
       labels:
         app: etcd
       annotations:
@@ -67,7 +84,7 @@ spec:
       containers:
       ## This example only has this etcd container.
       - name: etcd
-        image: quay.io/coreos/etcd:v3.6.0-alpha.0
+        image: quay.io/coreos/etcd:v3.5.18
         imagePullPolicy: IfNotPresent
         ports:
         - name: etcd-client
