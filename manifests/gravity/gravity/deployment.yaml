@@ -6,6 +6,11 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: gravity
+  replicas: 1 # Important: Add replicas!  StatefulSets require this.
+  template: # This is where the pod template goes
+    metadata:
+      labels:
+        app.kubernetes.io/name: gravity
     spec:
       containers:
         - name: gravity
