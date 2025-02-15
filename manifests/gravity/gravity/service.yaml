@@ -30,3 +30,4 @@ spec:
       name: http
       protocol: TCP
   type: LoadBalancer
+  loadBalancerIP: 10.0.1.52
