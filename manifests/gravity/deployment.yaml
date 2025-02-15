@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gravity
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gravity
+    spec:
+      containers:
+        - name: gravity
+          image: ghcr.io/beryju/gravity:stable
+          env:
+            - name: BOOTSTRAP_ROLES
+              value: dns;dhcp;api;discovery;backup;monitoring;tsdb;tftp
+            - name: INSTANCE_IP
+              value: 10.0.1.52
+            - name: INSTANCE_LISTEN
+              value: 0.0.0.0
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: http-metrics
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: http-metrics
+          ports:
+            - containerPort: 53
+              name: dns-tcp
+            - containerPort: 53
+              protocol: UDP
+              name: dns-udp
+            - containerPort: 67
+              protocol: UDP
+              name: dhcp
+            - containerPort: 68
+              protocol: UDP
+              name: dhcp-alt
+            - containerPort: 69
+              protocol: UDP
+              name: tftp
+            - containerPort: 8008
+              name: http
+            - containerPort: 8009
+              name: http-metrics
