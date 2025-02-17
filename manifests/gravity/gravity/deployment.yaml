@@ -25,14 +25,6 @@ spec:
               value: 10.0.1.52
             - name: INSTANCE_LISTEN
               value: 0.0.0.0
-          livenessProbe:
-            httpGet:
-              path: /healthz/live
-              port: http-metrics
-          readinessProbe:
-            httpGet:
-              path: /healthz/ready
-              port: http-metrics
           ports:
             - containerPort: 53
               name: dns-tcp
