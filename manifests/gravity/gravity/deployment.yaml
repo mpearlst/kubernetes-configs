@@ -2,11 +2,14 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: gravity
+  labels:
+    app: homer
 spec:
+  replicas: 1 # Important: Add replicas!  StatefulSets require this.
+  serviceName: gravity
   selector:
     matchLabels:
       app.kubernetes.io/name: gravity
-  replicas: 1 # Important: Add replicas!  StatefulSets require this.
   template: # This is where the pod template goes
     metadata:
       labels:
