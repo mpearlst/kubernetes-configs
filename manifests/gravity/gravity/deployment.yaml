@@ -6,7 +6,7 @@ metadata:
     app: homer
 spec:
   replicas: 1 # Important: Add replicas!  StatefulSets require this.
-  serviceName: gravity
+  serviceName: "gravity"
   selector:
     matchLabels:
       app.kubernetes.io/name: gravity
@@ -44,3 +44,15 @@ spec:
               name: http
             - containerPort: 8009
               name: http-metrics
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: rook-cephfs
+        resources:
+          requests:
+            storage: 1Gi
