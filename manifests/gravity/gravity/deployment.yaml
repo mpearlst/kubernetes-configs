@@ -29,10 +29,6 @@ spec:
             httpGet:
               path: /healthz/live
               port: http-metrics
-          readinessProbe:
-            httpGet:
-              path: /healthz/ready
-              port: http-metrics
           ports:
             - containerPort: 53
               name: dns-tcp
