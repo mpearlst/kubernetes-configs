@@ -46,11 +46,11 @@ spec:
         resources:
           limits:
             cpu: 1
-            memory: 256Mi
+            memory: 384Mi
             ephemeral-storage: 64Mi
           requests:
             cpu: 10m
-            memory: 128Mi
+            memory: 384Mi
       - name: mariadb
         image: mariadb:10
         env:
