@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: szurubooru/client:latest
+        env:
+        - name: BACKEND_HOST
+          value: server
+        - name: BASE_URL
+          value: "https://img.senk0.com" # Adjust as needed
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          readOnly: true
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: szurubooru-data-pvc

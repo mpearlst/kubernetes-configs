@@ -1,7 +1,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: jellyfin
+  name: szurubooru
 spec:
   entryPoints:
     - websecure
@@ -12,7 +12,7 @@ spec:
     middlewares:
     services:
     - kind: Service
-      name: szurubooru-client
+      name: client
       passHostHeader: true
       port: 443
   tls:
@@ -21,7 +21,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: jellyfin-http
+  name: szurubooru-http
 spec:
   entryPoints:
     - web
@@ -32,6 +32,6 @@ spec:
     middlewares:
     services:
     - kind: Service
-      name: szuru-booru-client
+      name: client
       passHostHeader: true
       port: 80
