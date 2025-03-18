@@ -12,7 +12,7 @@ spec:
     middlewares:
     services:
     - kind: Service
-      name: szurubooru
+      name: szurubooru-client
       passHostHeader: true
       port: 443
   tls:
@@ -32,6 +32,6 @@ spec:
     middlewares:
     services:
     - kind: Service
-      name: szuru-booru
+      name: szuru-booru-client
       passHostHeader: true
       port: 80
