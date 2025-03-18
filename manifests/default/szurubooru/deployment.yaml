@@ -55,6 +55,8 @@ spec:
           value: "1234"
         - name: POSTGRES_DB
           value: "senk0"
+        - name: POSTGRES_PORT
+          value: "5853"
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data
