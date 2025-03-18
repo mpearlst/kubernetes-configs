@@ -22,6 +22,8 @@ spec:
           value: server
         - name: BASE_URL
           value: "https://img.senk0.com" # Adjust as needed
+        - name: POSTGRES_PORT
+          value: "5853"
         volumeMounts:
         - name: data
           mountPath: /data

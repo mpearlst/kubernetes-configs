@@ -1,4 +1,3 @@
-# szurubooru-deployments.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,33 +28,17 @@ spec:
           value: "2"
         - name: POSTGRES_DB
           value: "senk0"
+        - name: POSTGRES_PORT
+          value: "5853"
         - name: LOG_SQL
           value: "0"
         volumeMounts:
         - name: data
           mountPath: /data
-        - name: config
-          mountPath: /opt/app/config.yaml
-          subPath: config.yaml
       volumes:
       - name: data
         persistentVolumeClaim:
           claimName: szurubooru-data-pvc
-      - name: config
-        configMap:
-          name: szurubooru-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: szurubooru-config
-data:
-  config.yaml: |
-    database:
-      host: postgres
-      port: 5432
-      user: senk0
-      password: 1234
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
