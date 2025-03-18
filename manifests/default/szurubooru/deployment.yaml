@@ -58,6 +58,8 @@ spec:
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data
+        ports:
+        - containerPort: 5853
       volumes:
       - name: data
         persistentVolumeClaim:
