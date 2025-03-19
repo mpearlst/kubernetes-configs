@@ -20,8 +20,6 @@ spec:
         env:
         - name: BACKEND_HOST
           value: localhost
-        - name: BASE_URL
-          value: "https://img.senk0.com" # Adjust as needed
         volumeMounts:
         - name: data
           mountPath: /data
