@@ -7,7 +7,7 @@ spec:
     - websecure
   routes:
   - kind: Rule
-    match: Host(`img.senk0.com`)
+    match: Host(`lumyx.senk0.com`)
     priority: 10
     middlewares:
     services:
@@ -27,7 +27,7 @@ spec:
     - web
   routes:
   - kind: Rule
-    match: Host(`img.senk0.com`)
+    match: Host(`lumyx.senk0.com`)
     priority: 10
     middlewares:
     services:
