@@ -8,5 +8,5 @@ spec:
   ports:
   - protocol: TCP
     port: 8087
-    targetPort: 80
+    targetPort: 8087
   type: ClusterIP
