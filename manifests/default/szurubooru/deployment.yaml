@@ -44,6 +44,9 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+        - name: config
+          mountPath: /opt/app/config.yaml
+          subPath: config.yaml
       - name: postgres
         image: postgres:11-alpine
         env:
@@ -65,6 +68,9 @@ spec:
       - name: postgres-data
         persistentVolumeClaim:
           claimName: szurubooru-postgres-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: szurubooru-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -89,5 +95,18 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: szurubooru-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
   storageClassName: rook-cephfs
   volumeMode: Filesystem
