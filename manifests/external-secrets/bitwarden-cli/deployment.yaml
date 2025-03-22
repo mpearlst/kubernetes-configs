@@ -20,6 +20,22 @@ spec:
       containers:
       - image: ghcr.io/charlesthomas/bitwarden-cli:2025.2.0
         name: bitwarden-cli
+        env:
+          - name: BW_HOST
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_HOST
+          - name: BW_USER
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_USERNAME
+          - name: BW_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_PASSWORD
         ports:
         - containerPort: 8087
         resources:
