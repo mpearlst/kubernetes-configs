@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
   labels:
     app: kayro-server
   name: kayro-server
@@ -36,7 +35,10 @@ spec:
             memory: 256Mi
       - env:
         - name: DISCORD_TOKEN
-          value: ""
+          valueFrom:
+            secretKeyRef:
+              name: kayro
+              key: password
         - name: DISCORD_CHANNEL1
           value: "1348806785594556416"
         - name: DISCORD_CHANNEL2
