@@ -6,7 +6,7 @@ metadata:
     app: duplicati
 spec:
   revisionHistoryLimit: 1
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: duplicati
@@ -19,14 +19,17 @@ spec:
     spec:
       containers:
       - image: duplicati/duplicati:latest
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            /usr/bin/duplicati --webservice-interface=any --webservice-port=8200 & 
+            apt-get install ceph-common ceph-fuse -y
         name: duplicati
         volumeMounts:
         - name: data
           mountPath: /data
         - name: backups1
           mountPath: /backup/ssd-storage
-        - name: backups2
-          mountPath: /backup/kubernetes-yaml
         ports:
         - containerPort: 8200
         resources:
@@ -46,10 +49,6 @@ spec:
         nfs:
           server: 10.0.0.20
           path: /mnt/Pool1/ssd-storage
-      - name: backups2
-        nfs:
-          server: 10.0.0.99
-          path: /home/senk0/kubernetes
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
