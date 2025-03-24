@@ -1,4 +1,4 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: duplicati
@@ -22,8 +22,9 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
           - |
-            /usr/bin/duplicati --webservice-interface=any --webservice-port=8200 & 
+            apt-get update
             apt-get install ceph-common ceph-fuse -y
+            /usr/bin/duplicati --webservice-interface=any --webservice-port=8200
         name: duplicati
         volumeMounts:
         - name: data
