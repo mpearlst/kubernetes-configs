@@ -9,7 +9,6 @@ spec:
   - kind: Rule
     match: Host(`todo.senk0.com`)
     priority: 10
-    middlewares:
     services:
     - kind: Service
       name: vikunja
@@ -30,7 +29,6 @@ spec:
   - kind: Rule
     match: Host(`todo.senk0.com`)
     priority: 10
-    middlewares:
     services:
     - kind: Service
       name: vikunja
