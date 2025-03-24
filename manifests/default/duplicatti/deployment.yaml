@@ -28,8 +28,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
-        - name: backups1
-          mountPath: /backup/ssd-storage
         ports:
         - containerPort: 8200
         resources:
@@ -45,10 +43,6 @@ spec:
         persistentVolumeClaim:
           claimName: duplicati-data
           readOnly: false
-      - name: backups1
-        nfs:
-          server: 10.0.0.20
-          path: /mnt/Pool1/ssd-storage
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
