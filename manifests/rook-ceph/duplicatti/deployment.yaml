@@ -37,8 +37,12 @@ spec:
                 name: ceph-access-configmap
                 key: CEPHFS_MON_ADDR
         volumeMounts:
-        - name: data
-          mountPath: /data
+          - name: ceph-auth-key
+            mountPath: "/secret"
+            subPath: secret
+            readOnly: true
+          - name: data
+            mountPath: /data
         ports:
         - containerPort: 8200
         resources:
