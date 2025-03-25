@@ -43,6 +43,12 @@ spec:
             readOnly: true
           - name: data
             mountPath: /data
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
+              - MKNOD
         ports:
         - containerPort: 8200
         resources:
