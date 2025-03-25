@@ -1,0 +1,75 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: duplicati
+  labels:
+    app: duplicati
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: duplicati
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: duplicati
+    spec:
+      containers:
+      - image: registry.senk0.com/duplicatti-rook:latest
+        name: duplicati
+        env:
+          - name: CEPHFS_USER
+            valueFrom:
+              configMapKeyRef:
+                name: ceph-access-configmap
+                key: CEPHFS_USER
+          - name: CEPHFS_FS
+            valueFrom:
+              configMapKeyRef:
+                name: ceph-access-configmap
+                key: CEPHFS_FS
+          - name: CEPHFS_MON_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: ceph-access-configmap
+                key: CEPHFS_MON_ADDR
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        ports:
+        - containerPort: 8200
+        resources:
+          limits:
+            cpu: 4
+            memory: 4Gi
+            ephemeral-storage: 4Gi
+          requests:
+            cpu: 2
+            memory: 2Gi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: duplicati-data
+          readOnly: false
+      - name: ceph-auth-key
+        secret:
+          secretName: ceph-auth-key
+          items:
+          - key: secretfile
+            path: secret
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: duplicati-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: rook-cephfs
+  volumeMode: Filesystem
