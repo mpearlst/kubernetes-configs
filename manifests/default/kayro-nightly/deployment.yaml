@@ -27,13 +27,13 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: "2"
+            cpu: "1"
             ephemeral-storage: 4Gi
             memory: 4Gi
           requests:
             cpu: 10m
             memory: 256Mi
-      - env:
+        env:
         - name: DISCORD_TOKEN
           valueFrom:
             secretKeyRef:
@@ -41,16 +41,5 @@ spec:
               key: password
         - name: TARGET_CHANNEL_ID
           value: "1323036066537537546"
-        image: registry.senk0.com/kayro:latest
-        imagePullPolicy: Always
-        name: kayro
-        resources:
-          limits:
-            cpu: "1"
-            ephemeral-storage: 1Gi
-            memory: 64Mi
-          requests:
-            cpu: 10m
-            memory: 16Mi
       restartPolicy: Always
       terminationGracePeriodSeconds: 2
