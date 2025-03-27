@@ -39,9 +39,17 @@ spec:
             secretKeyRef:
               name: kayro-nightly
               key: password
+        - name: SZURUBOORU_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: szurubooru-api
+              key: password
         - name: TARGET_CHANNEL_ID
           value: "1323036066537537546"
         - name: TARGET_ROLE_ID
           value: "1321581879924883558"
+        - name: DISCORD_CHANNEL_B_ID
+          value: "1350126427550388254"
+        - name: SZURUBOORU_API_URL
+          value: "https://lumyx.senk0.com"
       restartPolicy: Always
-      terminationGracePeriodSeconds: 2
