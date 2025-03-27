@@ -48,8 +48,4 @@ spec:
           value: "1323036066537537546"
         - name: TARGET_ROLE_ID
           value: "1321581879924883558"
-        - name: CHANNEL_B_ID
-          value: "1350126427550388254"
-        - name: SZURUBOORU_API_URL
-          value: "https://lumyx.senk0.com/api/posts?query=safety:safe&order=created&limit=1"
       restartPolicy: Always
