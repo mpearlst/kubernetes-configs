@@ -41,7 +41,7 @@ spec:
             secretKeyRef:
               name: szurubooru-api
               key: password
-        - name: CHANNEL_B_ID
+        - name: TARGET_CHANNEL_ID
           value: "1350126427550388254"
         - name: SZURUBOORU_API_URL
           value: "https://lumyx.senk0.com/api/posts?query=safety:safe&order=created&limit=1"
