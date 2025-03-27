@@ -51,5 +51,5 @@ spec:
         - name: DISCORD_CHANNEL_B_ID
           value: "1350126427550388254"
         - name: SZURUBOORU_API_URL
-          value: "https://lumyx.senk0.com"
+          value: "https://lumyx.senk0.com/api/posts"
       restartPolicy: Always
