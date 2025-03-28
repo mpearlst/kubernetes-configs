@@ -34,7 +34,7 @@ spec:
         - name: DISCORD_TOKEN
           valueFrom:
             secretKeyRef:
-              name: kayro-nightly
+              name: lumyx
               key: password
         - name: SZURUBOORU_TOKEN
           valueFrom:
