@@ -41,12 +41,16 @@ spec:
               key: password
         - name: DISCORD_CHANNEL1
           value: "1348806785594556416"
-        - name: DISCORD_CHANNEL2
-          value: "1349211808568967332"
         - name: DISCORD_GUILD1
           value: "1126157503877623869"
+        - name: DISCORD_CHANNEL2
+          value: "1349211808568967332"
         - name: DISCORD_GUILD2
           value: "596350022191415318"
+        - name: DISCORD_GUILD3
+          value: "1015026251481755648"
+        - name: DISCORD_CHANNEL3
+          value: "1354969926355390574"
         image: registry.senk0.com/kayro:latest
         imagePullPolicy: Always
         name: kayro
