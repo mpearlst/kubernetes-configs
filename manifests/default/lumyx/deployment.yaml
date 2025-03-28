@@ -45,4 +45,6 @@ spec:
           value: "1354200614506201293"
         - name: SZURUBOORU_API_URL
           value: "https://lumyx.senk0.com/api/posts?query=safety:safe&order=created&limit=1"
+        - name: INTERVAL_SECONDS
+          value: "20"
       restartPolicy: Always
