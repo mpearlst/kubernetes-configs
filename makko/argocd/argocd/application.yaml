@@ -31,7 +31,7 @@ spec:
         # 1. Uncomment and adjust the replicaCount.
         # 2. Configure the connection to an external HA Redis cluster under the 'database' section.
         # 3. Ensure 'redis.enabled' is set to 'false'.
-        server:
+        # server:
           # replicaCount: 3
           # database:
           #   host: argocd-redis-ha.argocd-redis-ha.svc
