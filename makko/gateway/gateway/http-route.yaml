@@ -8,6 +8,9 @@ spec:
     - name: internal
       namespace: gateway
       sectionName: http
+    - name: external
+      namespace: gateway
+      sectionName: http
   rules:
     - filters:
         - requestRedirect:
