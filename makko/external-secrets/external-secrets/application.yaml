@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     chart: external-secrets
-    repoURL: https://github.com/external-secrets/external-secrets
+    repoURL: https://charts.external-secrets.io
     targetRevision: 0.15.1
     helm:
       valuesObject: {}
