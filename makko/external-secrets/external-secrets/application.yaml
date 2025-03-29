@@ -11,7 +11,7 @@ spec:
   source:
     chart: external-secrets
     repoURL: https://github.com/external-secrets/external-secrets
-    targetRevision: "v0.15.1"
+    targetRevision: 0.15.1
     helm:
       valuesObject: {}
   syncPolicy:
