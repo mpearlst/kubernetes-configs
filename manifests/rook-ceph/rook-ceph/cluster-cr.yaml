@@ -30,16 +30,23 @@ spec:
       - name: "/dev/disk/by-id/ata-TEAM_T2531TB_TPBF2309110030301839" # both device name and explicit udev links are supported
       - name: "/dev/disk/by-id/ata-TEAM_T2531TB_TPBF2309110030302351"
       - name: "/dev/disk/by-id/scsi-0ATA_WDC_WD140EDGZ-11_9MJ2X7MU"
+      labels:
+          topology.kubernetes.io/zone: c
     - name: "k8sw3"
       devices:
       - name: "/dev/disk/by-id/ata-TEAM_T2531TB_TPBF2312040090101521"
       - name: "/dev/disk/by-id/ata-TEAM_T2531TB_TPBF2309110030301830"
+      labels:
+          topology.kubernetes.io/zone: b
     - name: "k8sw4"
       devices:
       - name: "/dev/disk/by-id/ata-ST4000NM010A-2HZ111_WJG0PHK0"
+      labels:
+          topology.kubernetes.io/zone: b
     - name: "k8sw2"
       devices:
       - name: "/dev/disk/by-id/ata-OOS14000G_0000CGZ0"
+      
     - name: "k8sw6"
       devices:
       - name: "/dev/disk/by-id/ata-OOS14000G_000F3PGE"
