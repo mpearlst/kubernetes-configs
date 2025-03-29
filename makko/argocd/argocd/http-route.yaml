@@ -12,5 +12,5 @@ spec:
     - "argocd.senk0.com"
   rules:
     - backendRefs:
-        - name: argocd-server
+        - name: argocd-application-server
           port: 80
