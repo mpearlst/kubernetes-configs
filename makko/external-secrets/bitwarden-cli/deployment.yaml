@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitwarden-cli
+  labels:
+    app: bitwarden-cli
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitwarden-cli
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bitwarden-cli
+    spec:
+      containers:
+      - image: ghcr.io/charlesthomas/bitwarden-cli:2025.2.0
+        name: bitwarden-cli
+        env:
+          - name: BW_HOST
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_HOST
+          - name: BW_USER
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_USERNAME
+          - name: BW_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bitwarden-cli
+                key: BW_PASSWORD
+        ports:
+        - containerPort: 8087
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 128m
+            memory: 16Mi
