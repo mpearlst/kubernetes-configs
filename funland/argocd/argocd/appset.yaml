@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: homelab-manifest
+  name: argocd-appset
   namespace: argocd
 spec:
   syncPolicy:
@@ -9,20 +9,24 @@ spec:
   goTemplate: true
   generators:
     - git:
-        repoURL: https://github.com/mpearlst/kubernetes-configs.git
+        repoURL: https://github.com/senk02/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: manifests/*/*
+          - path: makko/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
     spec:
       project: default
       source:
-        repoURL: https://github.com/mpearlst/kubernetes-configs.git
+        repoURL: https://github.com/senk02/kubernetes-configs.git
         path: '{{.path.path}}'
         targetRevision: HEAD
       destination:
         server: "https://kubernetes.default.svc"
         namespace: '{{index .path.segments 1}}'
-      syncPolicy: {}
+      syncPolicy:
+        automated:
+          allowEmpty: true
+          prune: true
+          selfHeal: true

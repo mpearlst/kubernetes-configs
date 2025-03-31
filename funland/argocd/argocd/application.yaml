@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: argo-cd
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 7.8.14
+    helm:
+      valuesObject:
+        configs:
+          params:
+            server.insecure: true
+          rbac:
+            policy.csv: |
+              g, ArgoCD Admin, role:admin
+        repoServer:
+          rbac:
+            - apiGroups: [""]
+              resources: ["secrets"]
+              verbs: ["get", "watch", "list"]
+        deploymentAnnotations:
+          reloader.stakater.com/auto: "true"
+        # To enable High Availability (HA) for the Argo CD server:
+        # 1. Uncomment and adjust the replicaCount.
+        # 2. Configure the connection to an external HA Redis cluster under the 'database' section.
+        # 3. Ensure 'redis.enabled' is set to 'false'.
+        # server:
+          # replicaCount: 3
+          # database:
+          #   host: argocd-redis-ha.argocd-redis-ha.svc
+          #   port: 6379
+          #   # passwordSecretName: argocd-redis-secret
+        # For a non-HA setup, ensure redis.enabled is true (default) or explicitly set it.
+        redis:
+          enabled: true
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
