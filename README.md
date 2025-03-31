@@ -47,28 +47,18 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v
   -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml \
   -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_grpcroutes.yaml
 ```
-Installing Cilium is pretty straight forward, but I have not been able to get it to work on another namespace. Be sure to update the version to whatever you want.
 
+Installing Cilium is pretty straight forward, but I have not been able to get it to work on another namespace.
 ```sh
-helm upgrade \
-    cilium \
-    cilium/cilium \
-    --version 1.17.2 \
-    --namespace kube-system \
-    --set ipam.mode=kubernetes \
-    --set kubeProxyReplacement=true \
-    --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
-    --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
-    --set cgroup.autoMount.enabled=false \
-    --set cgroup.hostRoot=/sys/fs/cgroup \
-    --set k8sServiceHost=localhost \
-    --set k8sServicePort=7445 \
-    --set l2announcements.enabled=true \
-    --set gatewayAPI.enabled=true \
-    --set gatewayAPI.externalTrafficPolicy=Local \
-    --set gatewayAPI.secretsNamespace.create=false \
-    --set gatewayAPI.secretsNamespace.name=certificate \
-    --install
+export cilium_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/Senk02/kubernetes-configs/refs/heads/main/makko/kube-system/cilium/application.yaml" | yq eval-all '. | select(.metadata.name == "cilium-application" and .kind == "Application")' -)
+export cilium_name=$(echo "$cilium_applicationyaml" | yq eval '.metadata.name' -)
+export cilium_chart=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.chart' -)
+export cilium_repo=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.repoURL' -)
+export cilium_namespace=$(echo "$cilium_applicationyaml" | yq eval '.spec.destination.namespace' -)
+export cilium_version=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.targetRevision' -)
+export cilium_values=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.helm.valuesObject' -)
+
+echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --namespace $cilium_namespace --filename -
 ```
 
 ## Argocd Setup
