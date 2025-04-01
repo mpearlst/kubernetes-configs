@@ -6,7 +6,7 @@ spec:
   gatewayClassName: cilium
   infrastructure:
     annotations:
-      io.cilium/lb-ipam-ips: 10.0.1.111
+      io.cilium/lb-ipam-ips: 192.168.10.30
   listeners:
     - protocol: HTTP
       port: 80
@@ -20,7 +20,7 @@ spec:
       tls:
         certificateRefs:
           - kind: Secret
-            name: senk0
+            name: batlab-cert
             namespace: certificate
       allowedRoutes:
         namespaces:
