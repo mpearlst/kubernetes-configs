@@ -12,7 +12,7 @@ spec:
         repoURL: https://github.com/mpearlst/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: makko/*/*
+          - path: funland/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
