@@ -49,5 +49,5 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: rook-cephfs
+  storageClassName: longhorn
   volumeMode: Filesystem
