@@ -9,7 +9,7 @@ spec:
   goTemplate: true
   generators:
     - git:
-        repoURL: https://github.com/senk02/kubernetes-configs.git
+        repoURL: https://github.com/mpearlst/kubernetes-configs.git
         revision: HEAD
         directories:
           - path: makko/*/*
@@ -19,7 +19,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/senk02/kubernetes-configs.git
+        repoURL: https://github.com/mpearlst/kubernetes-configs.git
         path: '{{.path.path}}'
         targetRevision: HEAD
       destination:
