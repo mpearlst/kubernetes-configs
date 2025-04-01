@@ -9,7 +9,7 @@ spec:
       namespace: gateway
       sectionName: https
   hostnames:
-    - "argocd.senk0.com"
+    - "argocd.batlab.io"
   rules:
     - backendRefs:
         - name: argocd-application-server
