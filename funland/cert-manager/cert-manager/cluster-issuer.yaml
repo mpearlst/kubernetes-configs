@@ -9,14 +9,14 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
     # Email address used for ACME registration
-    email: admin@senk0.com
+    email: dns@batlab.io
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt
     solvers:
     - dns01:
         cloudflare:
-          email: admin@senk0.com
+          email: dns@batlab.io
           apiTokenSecretRef:
             name: cloudflare-api-token-secret
             key: password
