@@ -4,11 +4,11 @@ metadata:
   name: httpbin
 spec:
   parentRefs:
-    - name: external
+    - name: internal
       namespace: gateway
       sectionName: https
   hostnames:
-    - "httpbin.senk0.com"
+    - "httpbin.batlab.io"
   rules:
     - backendRefs:
         - name: httpbin
