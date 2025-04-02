@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: plex-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: plex
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: plex-media-server
+    repoURL: https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages
+    targetRevision: 0.9.1
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
