@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: cnpg-application
   annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true ServerSideApply=true
+    argocd.argoproj.io/sync-options: ServerSideApply=true
   namespace: argocd
 spec:
   project: default
