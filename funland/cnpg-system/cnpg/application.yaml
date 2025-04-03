@@ -11,6 +11,15 @@ spec:
     - chart: cloudnative-pg
       repoURL: https://cloudnative-pg.github.io/charts
       targetRevision: "0.23.2"
+      helm:
+      valuesObject:
+        crds:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cnpg
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
