@@ -53,11 +53,11 @@ metadata:
   name: privatebin-config
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
-  storageClassName: rook-cephfs
+  storageClassName: longhorn
   volumeMode: Filesystem
 ---
 kind: PersistentVolumeClaim
