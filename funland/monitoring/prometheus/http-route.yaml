@@ -11,5 +11,5 @@ spec:
     - "prometheus.batlab.io"
   rules:
     - backendRefs:
-        - name: prometheus-application
+        - name: prometheus-application-server
           port: 80
