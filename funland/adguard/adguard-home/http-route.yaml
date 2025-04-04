@@ -11,5 +11,5 @@ spec:
     - "adguard.batlab.io"
   rules:
     - backendRefs:
-        - name: http-initial
+        - name: adguard-setup
           port: 3000
