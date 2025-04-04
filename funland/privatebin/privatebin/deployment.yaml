@@ -59,10 +59,10 @@ spec:
             memory: 64Mi
             ephemeral-storage: 16Mi
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: privatebin-config
-          readOnly: false
+      # - name: config
+      #   persistentVolumeClaim:
+      #     claimName: privatebin-config
+      #     readOnly: false
       - name: data
         persistentVolumeClaim:
           claimName: privatebin-data
