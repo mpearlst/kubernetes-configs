@@ -18,6 +18,7 @@ metadata:
   name: adguard-service
   namespace: adguard
 spec:
+  loadBalancerIP: 192.168.10.35
   selector:
     app: adguard
   ports:
