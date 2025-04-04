@@ -25,9 +25,9 @@ spec:
       - image: privatebin/nginx-fpm-alpine:stable
         name: privatebin
         volumeMounts:
-        - name: config
-          mountPath: /srv/cfg/conf.php
-          subPath: conf.php
+        # - name: config
+        #   mountPath: /srv/cfg/conf.php
+        #   subPath: conf.php
         - name: data
           mountPath: /srv/data
         ports:
@@ -67,19 +67,19 @@ spec:
         persistentVolumeClaim:
           claimName: privatebin-data
           readOnly: false
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: privatebin-config
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn
-  volumeMode: Filesystem
+# ---
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: privatebin-config
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 2Gi
+#   storageClassName: longhorn
+#   volumeMode: Filesystem
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
