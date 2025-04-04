@@ -52,17 +52,3 @@ spec:
       storage: 1Gi
   storageClassName: "longhorn"
   volumeName: adguard-pv
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: adguard-pv
-  namespace: adguard
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: "/mnt/data/adguard"
