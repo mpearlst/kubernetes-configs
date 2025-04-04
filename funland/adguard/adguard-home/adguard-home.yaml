@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-deployment
+  namespace: adguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard
+  template:
+    metadata:
+      labels:
+        app: adguard
+    spec:
+      containers:
+      - name: adguard-home
+        image: adguard/adguardhome:v0.107.59
+        env:
+        - name: AGH_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              name: adguard-config
+              key: AdGuardHome.yaml
+        ports:
+        - containerPort: 53 #dns
+          name: dns
+          protocol: UDP
+        - containerPort: 3000 #initial setup
+          name: http-initial
+        - containerPort: 80 #web gui
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: adguard-data
+          mountPath: /opt/adguardhome/work
+      volumes:
+      - name: adguard-data
+        persistentVolumeClaim:
+          claimName: adguard-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adguard-pvc
+  namespace: adguard
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: "longhorn"
+  volumeName: adguard-pv
