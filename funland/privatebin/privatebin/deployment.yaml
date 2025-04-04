@@ -17,8 +17,12 @@ spec:
       labels:
         app: privatebin
     spec:
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 82
+        fsGroup: 82
       containers:
-      - image: privatebin/nginx-fpm-alpine:1.7.6
+      - image: privatebin/nginx-fpm-alpine:stable
         name: privatebin
         volumeMounts:
         - name: config
@@ -28,6 +32,23 @@ spec:
           mountPath: /srv/data
         ports:
         - containerPort: 8080
+        env:
+        - name: TZ
+          value: America/New_York
+        - name: PHP_TZ
+          value: America/New_York
+        securityContext:
+          readOnlyRootFilesystem: true
+          privileged: false
+          allowPrivilegeEscalation: false
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
         resources:
           limits:
             cpu: 1
@@ -53,7 +74,7 @@ metadata:
   name: privatebin-config
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
@@ -66,7 +87,7 @@ metadata:
   name: privatebin-data
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
