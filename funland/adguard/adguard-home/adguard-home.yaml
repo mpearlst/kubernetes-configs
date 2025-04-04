@@ -59,7 +59,7 @@ metadata:
   name: adguard-pv
   namespace: adguard
 spec:
-  capacity:s
+  capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
