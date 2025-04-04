@@ -1,53 +1,79 @@
-apiVersion: apps/v1
+apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: adguard-deployment
-  namespace: adguard
+  name: adguard
+  labels:
+    app: adguard
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   selector:
     matchLabels:
       app: adguard
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: adguard
     spec:
       containers:
-      - name: adguard-home
-        image: adguard/adguardhome:v0.107.59
-        env:
-        - name: AGH_CONFIG
-          valueFrom:
-            configMapKeyRef:
-              name: adguard-config
-              key: AdGuardHome.yaml
-        ports:
-        - containerPort: 53 #dns
-          name: dns
-          protocol: UDP
-        - containerPort: 3000 #initial setup
-          name: http-initial
-        - containerPort: 80 #web gui
-          name: http
-          protocol: TCP
+      - image: adguard/adguardhome
+        name: adguard
         volumeMounts:
-        - name: adguard-data
+        - name: config 
+          mountPath: /opt/adguardhome/conf
+        - name: work
           mountPath: /opt/adguardhome/work
+        ports:
+        - containerPort: 80
+        - containerPort: 3000
+        - containerPort: 853
+        - containerPort: 443
+        - containerPort: 784
+        - containerPort: 53
+          protocol: UDP
+        - containerPort: 53
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 512Mi
+            ephemeral-storage: 128Mi
+          requests:
+            cpu: 10m
       volumes:
-      - name: adguard-data
+      - name: work
         persistentVolumeClaim:
-          claimName: adguard-pvc
+          claimName: adguard-workdir
+          readOnly: false
+      - name: config
+        persistentVolumeClaim:
+          claimName: adguard-config
+          readOnly: false
 ---
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: adguard-pvc
-  namespace: adguard
+  name: adguard-config
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: "longhorn"
+      storage: 8Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: adguard-workdir
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 16Gi 
+  storageClassName: longhorn
+  volumeMode: Filesystem
