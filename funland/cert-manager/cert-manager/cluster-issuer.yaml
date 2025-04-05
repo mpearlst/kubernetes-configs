@@ -19,4 +19,4 @@ spec:
           email: dns@batlab.io
           apiTokenSecretRef:
             name: cloudflare-api-token-secret
-            key: password
+            key: cloudflare
