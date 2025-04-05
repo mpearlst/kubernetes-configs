@@ -15,7 +15,7 @@ spec:
   refreshInterval: "5m"
   secretStoreRef:
     kind: ClusterSecretStore
-    name: 1password
+    name: 1passwordconnect
   target:
     creationPolicy: Owner
     template:
