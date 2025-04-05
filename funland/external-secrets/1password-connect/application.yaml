@@ -15,7 +15,7 @@ spec:
   refreshInterval: "5m"
   secretStoreRef:
     kind: ClusterSecretStore
-    name: 1passwordconnect
+    name: 1password
   target:
     creationPolicy: Owner
     template:
@@ -24,7 +24,7 @@ spec:
   data:
     - secretKey: json
       remoteRef:
-        key: 1passwordconnect
+        key: 1password
         property: 1password-credentials.json
 ---
 apiVersion: argoproj.io/v1alpha1
