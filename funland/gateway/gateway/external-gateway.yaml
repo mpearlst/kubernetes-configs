@@ -20,7 +20,7 @@ spec:
       tls:
         certificateRefs:
           - kind: Secret
-            name: batlab-cert
+            name: batlab
             namespace: certificate
       allowedRoutes:
         namespaces:
