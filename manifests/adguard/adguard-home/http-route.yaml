@@ -1,0 +1,31 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: adguard-home-setup
+spec:
+  parentRefs:
+    - name: internal
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - "adguard-setup.batlab.io"
+  rules:
+    - backendRefs:
+        - name: adguard-home-setup
+          port: 3000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: adguard-home
+spec:
+  parentRefs:
+    - name: internal
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - "adguard.batlab.io"
+  rules:
+    - backendRefs:
+        - name: adguard-home-http
+          port: 80
