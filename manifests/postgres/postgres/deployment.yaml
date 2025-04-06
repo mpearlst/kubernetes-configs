@@ -20,8 +20,6 @@ spec:
       defaultUsers: true
       extensions: {}
       schemas:
-        # still uses public schema...
-        # https://github.com/goauthentik/authentik/issues/9212
         public:
           defaultRoles: false
           defaultUsers: false
@@ -29,8 +27,6 @@ spec:
       defaultUsers: true
       extensions: {}
       schemas:
-        # still uses public schema...
-        # https://github.com/zoriya/Kyoo/issues/536
         public:
           defaultRoles: false
           defaultUsers: false
@@ -38,8 +34,6 @@ spec:
       defaultUsers: true
       extensions: {}
       schemas:
-        # still uses public schema...
-        # https://community.vikunja.io/t/postgres-database-has-error-pq-relation-tasks-does-not-exist/1333
         public:
           defaultRoles: false
           defaultUsers: false
