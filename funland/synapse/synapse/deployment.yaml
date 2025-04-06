@@ -40,12 +40,12 @@ spec:
         env:
           - name: "TZ"
             value: "America/New_York"
-          - name: "SYNAPSE_DB_USER"
+          - name: SYNAPSE_DB_USER
             valueFrom:
               secretKeyRef:
                 name: synapse-db-secret
                 key: synapse-db-user
-          - name: "SYNAPSE_DB_PASS"
+          - name: SYNAPSE_DB_PASS
             valueFrom:
               secretKeyRef:
                 name: synapse-db-secret
