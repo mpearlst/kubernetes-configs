@@ -31,12 +31,12 @@ spec:
         - containerPort: 8096
         resources:
           limits:
-            cpu: 4
-            memory: 4096Mi
-            ephemeral-storage: 8Gi
-          requests:
             cpu: 1
-            memory: 2048Mi
+            memory: 512Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
       volumes:
       - name: cache
         emptyDir:
@@ -49,6 +49,7 @@ spec:
         nfs:
           server: "192.168.11.13"
           path: /mnt/tank/media/library
+          readonly: true
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
