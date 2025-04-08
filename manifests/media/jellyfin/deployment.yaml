@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jellyfin
+  namespace: media
   labels:
     app: jellyfin
 spec:
@@ -18,7 +19,7 @@ spec:
         app: jellyfin
     spec:
       containers:
-      - image: jellyfin/jellyfin:latest
+      - image: lscr.io/linuxserver/jellyfin:latest
         name: jellyfin
         volumeMounts:
         - name: media
@@ -31,11 +32,11 @@ spec:
         - containerPort: 8096
         resources:
           limits:
-            cpu: 1
-            memory: 512Mi
+            cpu: 4
+            memory: 1024Mi
             ephemeral-storage: 64Mi
           requests:
-            cpu: 10m
+            cpu: 2
             memory: 128Mi
       volumes:
       - name: cache
@@ -49,12 +50,13 @@ spec:
         nfs:
           server: "192.168.11.13"
           path: /mnt/tank/media/library
-          readonly: true
+          readOnly: true
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jellyfin-config
+  namespace: media
 spec:
   accessModes:
     - ReadWriteMany
