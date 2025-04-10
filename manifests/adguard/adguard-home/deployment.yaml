@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: adguard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-home
+  namespace: adguard
+  labels:
+    app: adguard-home
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-home
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: adguard-home
+    spec:
+      containers:
+      - image: adguard/adguardhome
+        name: adguard-home
+        volumeMounts:
+        - name: config 
+          mountPath: /opt/adguardhome/conf
+        - name: work
+          mountPath: /opt/adguardhome/work
+        ports:
+        - containerPort: 80
+        - containerPort: 3000
+        - containerPort: 853
+        - containerPort: 443
+        - containerPort: 784
+        - containerPort: 53
+          protocol: UDP
+        - containerPort: 53
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 512Mi
+            ephemeral-storage: 64Mi
+          # requests:
+          #   cpu: 10m
+        # securityContext:
+        #   capabilities:
+        #     drop: [ALL]
+        #   readOnlyRootFilesystem: true
+        #   privileged: false
+        #   allowPrivilegeEscalation: false
+        #   runAsNonRoot: true
+        #   seccompProfile:
+        #     type: RuntimeDefault
+      volumes:
+      - name: work
+        persistentVolumeClaim:
+          claimName: adguard-workdir
+          readOnly: false
+      - name: config
+        persistentVolumeClaim:
+          claimName: adguard-config
+          readOnly: false
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: adguard-config
+  namespace: adguard
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: adguard-workdir
+  namespace: adguard
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi 
+  storageClassName: longhorn
+  volumeMode: Filesystem
