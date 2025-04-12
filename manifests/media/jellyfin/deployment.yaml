@@ -37,11 +37,11 @@ spec:
         - containerPort: 8096
         resources:
           limits:
-            cpu: 3
+            cpu: "3"
             memory: 4Gi
             # ephemeral-storage: 4Gi
           requests:
-            cpu: 2
+            cpu: "2"
             memory: 256Mi
         securityContext:
           allowPrivilegeEscalation: false
