@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: matrix
+  name: matrix-client
   namespace: synapse
 spec:
   parentRefs:
@@ -18,7 +18,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: matrix
+  name: matrix-federation
   namespace: synapse
 spec:
   parentRefs:
