@@ -21,18 +21,6 @@ spec:
       labels:
         app: synapse
     spec:
-      # initContainers:
-      # - name: synapse-generate
-      #   image: matrixdotorg/synapse:v1.128.0
-      #   args: ["generate"]
-      #   volumeMounts:
-      #   - mountPath: /data
-      #     name: synapse-data
-      #   - mountPath: /tls
-      #     name: tls-cert
-      #   - mountPath: /data/homeserver.yaml
-      #     name: synapse-config
-      #     subPath: homeserver.yaml
       containers:
       - name: synapse
         image: ghcr.io/element-hq/synapse:v1.128.0
