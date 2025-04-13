@@ -1,22 +1,3 @@
-# apiVersion: cert-manager.io/v1
-# kind: Certificate
-# metadata:
-#   name: batlab
-# spec:
-#   secretName: batlab
-#   keystores:
-#     pkcs12:
-#       create: true
-#       passwordSecretRef:
-#         name: batlab-pkcs12-secret
-#         key: password
-#   issuerRef:
-#     name: letsencrypt-dns
-#     kind: ClusterIssuer
-#   commonName: '*.batlab.io'
-#   dnsNames:
-#   - '*.batlab.io'
----
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -35,3 +16,31 @@ spec:
   commonName: '*.batlab.io'
   dnsNames:
   - '*.batlab.io'
+  - 'batlab.io'
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: batlab-wildcard-cert
+  namespace: certificate
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRefs:
+    - name: 1password
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: certificate-batlab
+  data:
+    - match:
+        secretKey: tls.crt
+        remoteRef:
+          remoteKey: batlab-wildcard-cert
+          property: certificate
+    - match:
+        secretKey: tls.key
+        remoteRef:
+          remoteKey: batlab-wildcard-cert
+          property: privatekey
