@@ -22,6 +22,14 @@ spec:
           - kind: Secret
             name: batlab
             namespace: certificate
+    - protocol: HTTPS
+      port: 8448
+      name: matrix-federation
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: batlab
+            namespace: certificate
       allowedRoutes:
         namespaces:
           from: All

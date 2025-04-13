@@ -41,7 +41,6 @@ spec:
             value: "America/New_York"
         ports:
         - containerPort: 8008
-        - containerPort: 8448
         volumeMounts:
         - mountPath: /data
           name: synapse-data
