@@ -32,8 +32,6 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: synapse-data
-        - mountPath: /tls
-          name: tls-cert
         - mountPath: /data/homeserver.yaml
           name: synapse-config
           subPath: homeserver.yaml
@@ -53,9 +51,6 @@ spec:
         - name: synapse-data
           persistentVolumeClaim:
             claimName: synapse-data
-        - name: tls-cert
-          secret: 
-            secretName: batlab-wildcard-cert
         - name: synapse-config
           secret: 
             secretName: synapse-config
