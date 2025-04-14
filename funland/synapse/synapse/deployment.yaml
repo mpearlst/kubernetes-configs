@@ -71,7 +71,7 @@ metadata:
   namespace: synapse
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 20Gi
