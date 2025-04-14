@@ -38,9 +38,9 @@ spec:
         - mountPath: /data/batlab.io.log.config
           subPath: batlab.io.log.config
           name: synapse-logging
-        - mountPath: /data/batlab.io.signing.key
-          subPath: batlab.io.signing.key
-          name: synapse-signing-key
+        # - mountPath: /data/batlab.io.signing.key
+        #   subPath: batlab.io.signing.key
+        #   name: synapse-signing-key
         resources:
           limits:
             cpu: "1"
@@ -57,9 +57,9 @@ spec:
         - name: synapse-config
           secret: 
             secretName: synapse-config
-        - name: synapse-signing-key
-          secret: 
-            secretName: synapse-signing-key
+        # - name: synapse-signing-key
+        #   secret: 
+        #     secretName: synapse-signing-key
         - name: synapse-logging
           configMap:
             name: synapse-logging
