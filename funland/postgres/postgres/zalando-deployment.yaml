@@ -23,13 +23,13 @@ spec:
         public:
           defaultRoles: false
           defaultUsers: false
-    vikunja:
-      defaultUsers: true
-      extensions: {}
-      schemas:
-        public:
-          defaultRoles: false
-          defaultUsers: false
+    # vikunja:
+    #   defaultUsers: true
+    #   extensions: {}
+    #   schemas:
+    #     public:
+    #       defaultRoles: false
+    #       defaultUsers: false
   postgresql:
     version: "17"
     parameters:
@@ -67,36 +67,36 @@ spec:
         remoteRef:
           remoteKey: postgres.cluster01.synapse.owner
           property: password
----
-apiVersion: external-secrets.io/v1alpha1
-kind: PushSecret
-metadata:
-  name: cluster01.vikunja.owner
-  namespace: postgres
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  refreshInterval: "5m"
-  secretStoreRefs:
-    - name: 1password
-      kind: ClusterSecretStore
-  selector:
-    secret:
-      name: vikunja-owner-user.cluster01.credentials.postgresql.acid.zalan.do
-  template:
-    data:
-      _metadata_origin: "push"
-      # test123: "{{ .username | toString }}"
-      username: "{{ .username | toString }}"
-      password: "{{ .password | toString }}"
-  data:
-    - match:
-        secretKey: username
-        remoteRef:
-          remoteKey: postgres.cluster01.vikunja.owner
-          property: username
-    - match:
-        secretKey: password
-        remoteRef:
-          remoteKey: postgres.cluster01.vikunja.owner
-          property: password
+# ---
+# apiVersion: external-secrets.io/v1alpha1
+# kind: PushSecret
+# metadata:
+#   name: cluster01.vikunja.owner
+#   namespace: postgres
+#   annotations:
+#     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+# spec:
+#   refreshInterval: "5m"
+#   secretStoreRefs:
+#     - name: 1password
+#       kind: ClusterSecretStore
+#   selector:
+#     secret:
+#       name: vikunja-owner-user.cluster01.credentials.postgresql.acid.zalan.do
+#   template:
+#     data:
+#       _metadata_origin: "push"
+#       # test123: "{{ .username | toString }}"
+#       username: "{{ .username | toString }}"
+#       password: "{{ .password | toString }}"
+#   data:
+#     - match:
+#         secretKey: username
+#         remoteRef:
+#           remoteKey: postgres.cluster01.vikunja.owner
+#           property: username
+#     - match:
+#         secretKey: password
+#         remoteRef:
+#           remoteKey: postgres.cluster01.vikunja.owner
+#           property: password
