@@ -73,6 +73,6 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 32Gi
+      storage: 16Gi
   storageClassName: longhorn
   volumeMode: Filesystem
