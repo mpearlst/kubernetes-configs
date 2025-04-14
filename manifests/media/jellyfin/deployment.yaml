@@ -24,7 +24,7 @@ spec:
         app: jellyfin
     spec:
       containers:
-      - image: lscr.io/linuxserver/jellyfin:latest
+      - image: jellyfin/jellyfin:latest
         name: jellyfin
         volumeMounts:
         - name: media
