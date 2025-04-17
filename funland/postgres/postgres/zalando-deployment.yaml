@@ -23,7 +23,7 @@ spec:
         public:
           defaultRoles: false
           defaultUsers: false
-    authentik:
+    vikunja:
       defaultUsers: true
       extensions: {}
       schemas:
