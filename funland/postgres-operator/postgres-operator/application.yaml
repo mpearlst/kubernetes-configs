@@ -12,11 +12,11 @@ spec:
     chart: postgres-operator
     repoURL: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
     targetRevision: 1.14.0
-  syncPolicy:
-    automated:
-      allowEmpty: true
-      prune: true
-      selfHeal: true
+  # syncPolicy:
+  #   automated:
+  #     allowEmpty: true
+  #     prune: true
+  #     selfHeal: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
