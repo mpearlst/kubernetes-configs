@@ -181,6 +181,24 @@ spec:
                   key: jwtsecret
           image: vikunja/vikunja:0.24.6
           name: main
+          resources:
+            limits:
+              cpu: "1"
+              memory: 64Mi
+              ephemeral-storage: 128Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
+              ephemeral-storage: 16Mi
+          securityContext:
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            privileged: false
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
               name: config

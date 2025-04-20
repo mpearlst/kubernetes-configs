@@ -24,6 +24,15 @@ spec:
       containers:
       - name: synapse
         image: ghcr.io/element-hq/synapse:v1.128.0
+        # securityContext:
+        #   capabilities:
+        #     drop: [ALL]
+        #   readOnlyRootFilesystem: true
+        #   privileged: false
+        #   allowPrivilegeEscalation: false
+        #   runAsNonRoot: true
+        #   seccompProfile:
+        #     type: RuntimeDefault
         env:
           - name: "TZ"
             value: "America/New_York"
@@ -38,18 +47,15 @@ spec:
         - mountPath: /data/batlab.io.log.config
           subPath: batlab.io.log.config
           name: synapse-logging
-        # - mountPath: /data/batlab.io.signing.key
-        #   subPath: batlab.io.signing.key
-        #   name: synapse-signing-key
         resources:
           limits:
             cpu: "1"
             memory: 4Gi
             ephemeral-storage: 128Mi
-          # requests:
-          #   cpu: 100m
-          #   memory: 64Mi
-          #   ephemeral-storage: 16Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+            ephemeral-storage: 16Mi
       volumes:
         - name: synapse-data
           persistentVolumeClaim:
@@ -57,9 +63,6 @@ spec:
         - name: synapse-config
           secret: 
             secretName: synapse-config
-        # - name: synapse-signing-key
-        #   secret: 
-        #     secretName: synapse-signing-key
         - name: synapse-logging
           configMap:
             name: synapse-logging
