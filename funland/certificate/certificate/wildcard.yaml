@@ -15,8 +15,8 @@ spec:
     kind: ClusterIssuer
   commonName: '*.batlab.io'
   privateKey:
-    algorithm: ECDSA
-    size: 256
+    # algorithm: ECDSA
+    # size: 256
     rotationPolicy: Always
   dnsNames:
   - '*.batlab.io'
