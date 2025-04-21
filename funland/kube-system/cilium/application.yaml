@@ -11,7 +11,7 @@ spec:
   source:
     chart: cilium
     repoURL: https://helm.cilium.io/
-    targetRevision: 1.17.2 # or the version you want
+    targetRevision: 1.17.3 # or the version you want
     helm:
       valuesObject:
         ipam:
