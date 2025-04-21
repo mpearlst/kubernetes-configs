@@ -6,12 +6,12 @@
   "prHourlyLimit": 3,
   "argocd": {
     "fileMatch": [
-      "funland/[^/]+/application\\.yaml$"
+      "funland/[^/]+/application\\.yaml"
     ]
   },
   "kubernetes": {
     "fileMatch": [
-      "manifests/[^/]+/deployment\\.yaml$"
+      "manifests/[^/]+/deployment\\.yaml"
     ]
   }
 }
