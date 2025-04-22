@@ -29,7 +29,7 @@ spec:
         runAsGroup: 82
         fsGroup: 82
       containers:
-      - image: privatebin/nginx-fpm-alpine:stable
+      - image: ghcr.io/privatebin/nginx-fpm-alpine:1.7.6
         name: privatebin
         volumeMounts:
         # - name: config
