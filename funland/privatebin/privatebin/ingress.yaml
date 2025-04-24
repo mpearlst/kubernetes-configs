@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: synapse-ingress
-  namespace: synapse
+  name: privatebin-ingress
+  namespace: privatebin
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
