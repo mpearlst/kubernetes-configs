@@ -39,18 +39,18 @@ spec:
 #     port: 3000
 #     targetPort: 3000
 #   type: LoadBalancer
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: adguard-home-http
-#   namespace: adguard
-# spec:
-#   selector:
-#     app: adguard-home
-#   ports:
-#   - protocol: TCP
-#     name: "http"
-#     port: 80
-#     targetPort: 80
-#   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-home-http
+  namespace: adguard
+spec:
+  selector:
+    app: adguard-home
+  ports:
+  - protocol: TCP
+    name: "http"
+    port: 80
+    targetPort: 80
+  type: ClusterIP
