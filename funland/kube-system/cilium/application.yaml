@@ -5,13 +5,13 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: kube-system # or the namespace you want cilium to be in
+    namespace: kube-system
     server: https://kubernetes.default.svc
   project: default
   source:
     chart: cilium
     repoURL: https://helm.cilium.io/
-    targetRevision: 1.17.3 # or the version you want
+    targetRevision: 1.17.3
     helm:
       valuesObject:
         ipam:
@@ -59,6 +59,9 @@ spec:
           secretsNamespace:
             create: false
             name: certificate
+    encryption:
+      enabled: true
+      type: wireguard
   syncPolicy:
     automated:
       allowEmpty: true
