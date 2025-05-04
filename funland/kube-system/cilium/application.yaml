@@ -59,9 +59,9 @@ spec:
           secretsNamespace:
             create: false
             name: certificate
-    encryption:
-      enabled: true
-      type: wireguard
+        encryption:
+          enabled: true
+          type: wireguard
   syncPolicy:
     automated:
       allowEmpty: true
