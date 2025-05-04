@@ -21,33 +21,33 @@ spec:
     targetPort: 853
   type: LoadBalancer
   loadBalancerIP: 192.168.10.35
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: adguard-home-setup
-  namespace: adguard
-spec:
-  selector:
-    app: adguard-home
-  ports:
-  - protocol: TCP
-    name: "3000tcp"
-    port: 3000
-    targetPort: 3000
-  type: LoadBalancer
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: adguard-home-http
-  namespace: adguard
-spec:
-  selector:
-    app: adguard-home
-  ports:
-  - protocol: TCP
-    name: "http"
-    port: 80
-    targetPort: 80
-  type: ClusterIP
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: adguard-home-setup
+#   namespace: adguard
+# spec:
+#   selector:
+#     app: adguard-home
+#   ports:
+#   - protocol: TCP
+#     name: "3000tcp"
+#     port: 3000
+#     targetPort: 3000
+#   type: LoadBalancer
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: adguard-home-http
+#   namespace: adguard
+# spec:
+#   selector:
+#     app: adguard-home
+#   ports:
+#   - protocol: TCP
+#     name: "http"
+#     port: 80
+#     targetPort: 80
+#   type: ClusterIP
