@@ -7,6 +7,10 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
   project: default
   sources:
     - chart: longhorn
