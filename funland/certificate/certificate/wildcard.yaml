@@ -21,7 +21,7 @@ spec:
   dnsNames:
   - '*.batlab.io'
 ---
-apiVersion: external-secrets.io/v1
+apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
 metadata:
   name: batlab-wildcard-cert
