@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: cloudflare
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: cloudflare-operator-secret
