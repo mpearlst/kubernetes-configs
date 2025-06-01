@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: authentik
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: authentik-configsecrets
@@ -57,7 +57,7 @@ spec:
   source:
     chart: authentik
     repoURL: https://charts.goauthentik.io
-    targetRevision: 2025.2.4
+    targetRevision: 2025.4.1
     helm:
       valuesObject:
         server:
@@ -109,23 +109,3 @@ spec:
       allowEmpty: true
       prune: true
       selfHeal: true
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: authentik
-  namespace: authentik
-spec:
-  parentRefs:
-    - name: internal
-      namespace: gateway
-      sectionName: https
-    # - name: external
-    #   namespace: gateway
-    #   sectionName: https
-  hostnames:
-    - "authentik.batlab.io"
-  rules:
-    - backendRefs:
-        - name: authentik-server
-          port: 80
