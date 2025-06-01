@@ -4,20 +4,16 @@ metadata:
   name: batlab
 spec:
   secretName: batlab
-  keystores:
-    pkcs12:
-      create: true
-      passwordSecretRef:
-        name: cloudflare
-        key: pkcs12-secret
+  # keystores:
+  #   pkcs12:
+  #     create: true
+  #     passwordSecretRef:
+  #       name: batlab-pkcs12-secret
+  #       key: pkcs12-secret
   issuerRef:
     name: letsencrypt-dns
     kind: ClusterIssuer
   commonName: '*.batlab.io'
-  # privateKey:
-  #   # algorithm: ECDSA
-  #   # size: 256
-  #   rotationPolicy: Always
   dnsNames:
   - '*.batlab.io'
 ---
