@@ -15,5 +15,5 @@ spec:
     - "auth.batlab.io"
   rules:
     - backendRefs:
-        - name: authentik-server
+        - name: authentik-application-server
           port: 80
