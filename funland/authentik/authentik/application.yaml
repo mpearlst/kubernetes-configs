@@ -47,7 +47,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: authentik
+  name: authentik-application
   namespace: argocd
 spec:
   destination:
@@ -57,7 +57,7 @@ spec:
   source:
     chart: authentik
     repoURL: https://charts.goauthentik.io
-    targetRevision: 2025.2.4
+    targetRevision: 2025.4.1
     helm:
       valuesObject:
         server:
