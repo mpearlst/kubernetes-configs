@@ -196,9 +196,10 @@ spec:
             readOnlyRootFilesystem: true
             privileged: false
             allowPrivilegeEscalation: false
-            # runAsNonRoot: true
+            runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
+            fsGroup: 1000
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
               name: config
