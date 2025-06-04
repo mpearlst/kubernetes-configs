@@ -150,6 +150,8 @@ spec:
         app.kubernetes.io/instance: vikunja
         app.kubernetes.io/name: vikunja
     spec:
+      secutityContext:
+        fsGroup: 1000
       containers:
         - env:
             - name: VIKUNJA_AUTH_LOCAL
@@ -200,7 +202,6 @@ spec:
             seccompProfile:
               type: RuntimeDefault
             runAsUser: 1000
-            fsGroup: 1000
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
               name: config
