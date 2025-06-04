@@ -14,7 +14,7 @@ spec:
   volume:
     size: 30Gi
     storageClass: longhorn
-  numberOfInstances: 1
+  numberOfInstances: 2
   preparedDatabases:
     synapse:
       defaultUsers: true
