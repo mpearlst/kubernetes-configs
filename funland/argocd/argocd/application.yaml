@@ -1,3 +1,27 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: argocd-sso
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argocd
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+  data:
+    - secretKey: client_id
+      remoteRef:
+        key: argocd-sso
+        property: argocd_client_id
+    - secretKey: client_secret
+      remoteRef:
+        key: argocd-sso
+        property: argocd_client_secret
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -19,6 +43,25 @@ spec:
         configs:
           params:
             server.insecure: true
+          cm:
+            resource.compareoptions: |
+              ignoreAggregatedRoles: true
+              ignoreResourceStatusField: crd
+            url: "https://argocd.batlab.io"
+            dex.config: |
+              connectors:
+                - type: oidc
+                  name: authentik
+                  id: authentik
+                  config:
+                    issuer: https://auth.batlab.io/application/o/argocd/
+                    clientID: $sso:client_id
+                    clientSecret: $sso:client_secret
+                    insecureEnableGroups: true
+                    scopes:
+                      - openid
+                      - profile
+                      - email
           rbac:
             policy.csv: |
               g, ArgoCD Admin, role:admin
