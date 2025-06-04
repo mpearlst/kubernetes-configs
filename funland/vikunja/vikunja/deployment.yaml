@@ -31,43 +31,43 @@ spec:
       remoteRef:
         key: postgres.cluster01.vikunja.owner
         property: username
-# ---
-# apiVersion: external-secrets.io/v1beta1
-# kind: ExternalSecret
-# metadata:
-#   name: sso
-#   namespace: vikunja
-#   annotations:
-#     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-# spec:
-#   refreshInterval: "5m"
-#   secretStoreRef:
-#     kind: ClusterSecretStore
-#     name: 1password
-#   target:
-#     creationPolicy: Owner
-#     template:
-#       data:
-#         config.yaml: |-
-#           auth:
-#             openid:
-#               enabled: true
-#               redirecturl: https://tasks.bitey.life/auth/openid/
-#               providers:
-#                 - name: authentik
-#                   authurl: https://auth.bitey.life/application/o/vikunja/
-#                   logouturl: https://auth.bitey.life/application/o/vikunja/end-session/
-#                   clientid: "{{ .client_id | toString }}"
-#                   clientsecret: "{{ .client_secret | toString }}"
-#   data:
-#     - secretKey: client_id
-#       remoteRef:
-#         key: sso
-#         property: vikunja_client_id
-#     - secretKey: client_secret
-#       remoteRef:
-#         key: sso
-#         property: vikunja_client_secret
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: vikunja-sso
+  namespace: vikunja
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+    template:
+      data:
+        config.yaml: |-
+          auth:
+            openid:
+              enabled: true
+              redirecturl: https://vikunja.batlab.io/auth/openid/
+              providers:
+                - name: authentik
+                  authurl: https://auth.batlab.io/application/o/vikunja/
+                  logouturl: https://auth.batlab.io/application/o/vikunja/end-session/
+                  clientid: "{{ .client_id | toString }}"
+                  clientsecret: "{{ .client_secret | toString }}"
+  data:
+    - secretKey: client_id
+      remoteRef:
+        key: vikunja-sso
+        property: vikunja_client_id
+    - secretKey: client_secret
+      remoteRef:
+        key: vikunja-sso
+        property: vikunja_client_secret
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -82,24 +82,24 @@ spec:
     - "ReadWriteOnce"
   resources:
     requests:
-      storage: "5Gi"
+      storage: "1Gi"
   storageClassName: "longhorn"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: vikunja-config
-  namespace: vikunja
-  labels:
-    app.kubernetes.io/instance: vikunja
-    app.kubernetes.io/name: vikunja
-spec:
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: "2Gi"
-  storageClassName: "longhorn"
+# ---
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: vikunja-config
+#   namespace: vikunja
+#   labels:
+#     app.kubernetes.io/instance: vikunja
+#     app.kubernetes.io/name: vikunja
+# spec:
+#   accessModes:
+#     - "ReadWriteOnce"
+#   resources:
+#     requests:
+#       storage: "2Gi"
+#   storageClassName: "longhorn"
 ---
 apiVersion: v1
 kind: Service
@@ -152,8 +152,8 @@ spec:
     spec:
       containers:
         - env:
-            # - name: VIKUNJA_AUTH_LOCAL
-            #   value: "true"
+            - name: VIKUNJA_AUTH_LOCAL
+              value: "false"
             - name: VIKUNJA_DATABASE_TYPE
               value: postgres
             - name: VIKUNJA_DATABASE_HOST
@@ -207,8 +207,8 @@ spec:
               name: files
       volumes:
         - name: config
-          persistentVolumeClaim:
-            claimName: vikunja-config
+          secret:
+            secretName: sso
         - name: files
           persistentVolumeClaim:
             claimName: vikunja-files
