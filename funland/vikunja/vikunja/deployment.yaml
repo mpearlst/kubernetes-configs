@@ -208,7 +208,7 @@ spec:
       volumes:
         - name: config
           secret:
-            secretName: sso
+            secretName: vikunja-sso
         - name: files
           persistentVolumeClaim:
             claimName: vikunja-files
