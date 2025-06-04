@@ -199,6 +199,7 @@ spec:
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
+            runAsUser: 1000
             fsGroup: 1000
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
