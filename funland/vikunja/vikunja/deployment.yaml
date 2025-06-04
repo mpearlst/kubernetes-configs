@@ -113,10 +113,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    # - port: 80
-    #   targetPort: 80
-    #   protocol: TCP
-    #   name: http
     - port: 3456
       targetPort: 3456
       protocol: TCP
@@ -152,6 +148,16 @@ spec:
     spec:
       secutityContext:
         fsGroup: 1000
+      initContainers:
+      - name: change-volume-ownership
+        image: busybox:1.37
+        command: ["sh", "-c", "chown -R 1000:1000 /app/vikunja/files"]
+        volumeMounts:
+        - name: vikunja-files
+          mountPath: /app/vikunja/files
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
       containers:
         - env:
             - name: VIKUNJA_AUTH_LOCAL
@@ -192,16 +198,16 @@ spec:
               cpu: 100m
               memory: 32Mi
               ephemeral-storage: 16Mi
-          securityContext:
-            capabilities:
-              drop: [ALL]
-            readOnlyRootFilesystem: true
-            privileged: false
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
-            runAsUser: 1000
+          # securityContext:
+          #   capabilities:
+          #     drop: [ALL]
+          #   readOnlyRootFilesystem: true
+          #   privileged: false
+          #   allowPrivilegeEscalation: false
+          #   runAsNonRoot: true
+          #   seccompProfile:
+          #     type: RuntimeDefault
+          #   runAsUser: 1000
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
               name: config
