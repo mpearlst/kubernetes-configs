@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  parentRefs:
+    - name: external
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - "vaultwarden.batlab.io"
+  rules:
+    - backendRefs:
+        - name: vaultwarden
+          port: 80
