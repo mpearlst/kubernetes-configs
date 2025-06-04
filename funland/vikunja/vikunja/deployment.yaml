@@ -153,7 +153,7 @@ spec:
         image: busybox:1.37
         command: ["sh", "-c", "chown -R 1000:1000 /app/vikunja/files"]
         volumeMounts:
-        - name: vikunja-files
+        - name: files
           mountPath: /app/vikunja/files
         securityContext:
           runAsUser: 0
