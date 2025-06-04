@@ -55,8 +55,8 @@ spec:
                   id: authentik
                   config:
                     issuer: https://auth.batlab.io/application/o/argocd/
-                    clientID: $sso:client_id
-                    clientSecret: $sso:client_secret
+                    clientID: $argocd-sso:client_id
+                    clientSecret: $argocd-sso:client_secret
                     insecureEnableGroups: true
                     scopes:
                       - openid
