@@ -21,6 +21,46 @@ spec:
         ports:
         - containerPort: 80
         env:
+        - name: DOMAIN
+          value: "https://vaultwarden.batlab.io"
+        - name: PUSH_ENABLED
+          value: "true"
+        - name: "PUSH_INSTALLATION_ID"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: push_installation_id
+        - name: "PUSH_INSTALLATION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: push_installation_key
+        - name: "SMTP_HOST"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: smtp_address
+        - name: "SMTP_FROM"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: smtp_user
+        - name: "SMTP_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: smtp_user
+        - name: "SMTP_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secret
+              key: smtp_password
+        - name: "SMTP_SECURITY"
+          value: force_tls
+        - name: "SMTP_PORT"
+          value: "465"
+        - name: SIGNUPS_ALLOWED
+          value: "false"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
@@ -69,11 +109,24 @@ spec:
       data:
         database-url: "postgresql://{{ .vaultwarden_db_user }}:{{ .vaultwarden_db_password }}@{{ .vaultwarden_db_connection_string }}"
         vaultwarden_admin_token: "{{ .vaultwarden_admin_token | toString }}"
+        push_installation_id: "{{ .push_installation_id | toString }}"
+        push_installation_key: "{{ .push_installation_key | toString }}"
+        smtp_address: "{{ .smtp_address | toString }}"
+        smtp_user: "{{ .smtp_user | toString }}"
+        smtp_password: "{{ .smtp_password | toString }}"
   data:
     - secretKey: vaultwarden_admin_token
       remoteRef:
         key: vaultwarden
         property: vaultwarden_admin_token
+    - secretKey: push_installation_id
+      remoteRef:
+        key: vaultwarden
+        property: push_installation_id
+    - secretKey: push_installation_key
+      remoteRef:
+        key: vaultwarden
+        property: push_installation_key
     - secretKey: vaultwarden_db_password
       remoteRef:
         key: postgres.cluster01.vaultwarden.owner
@@ -86,3 +139,15 @@ spec:
       remoteRef:
         key: vaultwarden
         property: vaultwarden_db_connection_string
+    - secretKey: smtp_address
+      remoteRef:
+        key: smtp
+        property: smtp_address
+    - secretKey: smtp_user
+      remoteRef:
+        key: smtp
+        property: smtp_user
+    - secretKey: smtp_password
+      remoteRef:
+        key: smtp
+        property: smtp_password

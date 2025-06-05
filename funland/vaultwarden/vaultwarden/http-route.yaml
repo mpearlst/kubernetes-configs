@@ -5,7 +5,7 @@ metadata:
   namespace: vaultwarden
 spec:
   parentRefs:
-    - name: external
+    - name: internal
       namespace: gateway
       sectionName: https
   hostnames:
