@@ -15,33 +15,10 @@ spec:
     helm:
       valuesObject:
         configLogicalBackup:
-          # logical_backup_cronjob_environment_secret: ''
+          logical_backup_cronjob_environment_secret: postgres-backup
           logical_backup_job_prefix: logical-backup-
           logical_backup_provider: s3
-          logical_backup_s3_access_key_id:
-            valueFrom:
-              secretKeyRef:
-                name: postgres-backup
-                key: s3_access_key_id
-          logical_backup_s3_bucket:
-            valueFrom:
-              secretKeyRef:
-                name: postgres-backup
-                key: s3_bucket_name
           logical_backup_s3_bucket_prefix: spilo
-          logical_backup_s3_endpoint:
-            valueFrom:
-              secretKeyRef:
-                name: postgres-backup
-                key: s3_endpoint
-          # logical_backup_s3_region: ''
-          # logical_backup_s3_retention_time: ''
-          logical_backup_s3_secret_access_key:
-            valueFrom:
-              secretKeyRef:
-                name: postgres-backup
-                key: s3_secret_access_key
-          # logical_backup_s3_sse: AES256
           logical_backup_schedule: 30 00 * * *
   syncPolicy:
     automated:
@@ -87,15 +64,19 @@ spec:
     name: postgres-backup
     creationPolicy: Owner
   data:
-    - secretKey: s3_endpoint
+    - secretKey: AWS_ENDPOINT
       remoteRef:
         key: postgres-backup
         property: s3_endpoint
-    - secretKey: s3_access_key_id
+    - secretKey: AWS_ACCESS_KEY_ID
       remoteRef:
         key: postgres-backup
         property: s3_access_key_id
-    - secretKey: s3_secret_access_key
+    - secretKey: AWS_SECRET_ACCESS_KEY
       remoteRef:
         key: postgres-backup
         property: s3_secret_access_key
+    - secretKey: AWS_S3_BUCKET
+      remoteRef:
+        key: postgres-backup
+        property: s3_bucket_name
