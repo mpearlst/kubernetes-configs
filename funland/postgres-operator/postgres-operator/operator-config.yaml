@@ -37,7 +37,6 @@ apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: postgres-backup
-  namespace: postgres
 spec:
   refreshInterval: "5m"
   secretStoreRef:
