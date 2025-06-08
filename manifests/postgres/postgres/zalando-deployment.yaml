@@ -15,6 +15,22 @@ spec:
     size: 30Gi
     storageClass: longhorn
   numberOfInstances: 2
+  enableLogicalBackup: true
+  s3_endpoint:
+    valueFrom:
+      secretKeyRef:
+        name: postgres-backup
+        key: s3_endpoint
+  s3_access_key_id:
+      valueFrom:
+      secretKeyRef:
+        name: postgres-backup
+        key: s3_access_key_id
+  s3_secret_access_key:
+      valueFrom:
+      secretKeyRef:
+        name: postgres-backup
+        key: s3_secret_access_key
   preparedDatabases:
     synapse:
       defaultUsers: true
@@ -179,3 +195,30 @@ spec:
         remoteRef:
           remoteKey: postgres.cluster01.vaultwarden.owner
           property: password
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: postgres-backup
+  namespace: postgres
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    name: 1password
+    kind: ClusterSecretStore
+  target:
+    name: postgres-backup
+    creationPolicy: Owner
+  data:
+    - secretKey: s3_endpoint
+      remoteRef:
+        key: postgres-backup
+        property: s3_endpoint
+    - secretKey: s3_access_key_id
+      remoteRef:
+        key: postgres-backup
+        property: s3_access_key_id
+    - secretKey: s3_secret_access_key
+      remoteRef:
+        key: postgres-backup
+        property: s3_secret_access_key
