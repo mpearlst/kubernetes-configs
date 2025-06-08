@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atm9skies
+  namespace: minecraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: atm9skies
+  template:
+    metadata:
+      labels:
+        app: atm9skies
+    spec:
+      containers:
+        - name: atm9skies-server
+          image: itzg/minecraft-server
+          ports:
+            - containerPort: 25565
+          env:
+            - name: EULA
+              value: "true"
+            - name: MODPACK_PLATFORM
+              value: "AUTO_CURSEFORGE"
+            - name: CF_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: curseforge-secret
+                  key: CF_API_KEY
+            - name: CF_SLUG
+              value: "all-the-mods-9-to-the-sky"
+            - name: MEMORY
+              value: "10G"
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "1000m"
+            limits:
+              memory: "12Gi"
+              cpu: "2000m"
+          volumeMounts:
+            - name: mc-data
+              mountPath: /data
+      volumes:
+        - name: mc-data
+          persistentVolumeClaim:
+            claimName: mc-data-pvc
