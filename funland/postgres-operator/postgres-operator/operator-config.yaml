@@ -3,35 +3,35 @@ kind: OperatorConfiguration
 metadata:
   name: postgresql-operator-configuration
 configuration:
-logical_backup:
-    # logical_backup_cronjob_environment_secret: ''
-    logical_backup_job_prefix: logical-backup-
-    logical_backup_provider: s3
-    logical_backup_s3_access_key_id:
-      valueFrom:
-        secretKeyRef:
-          name: postgres-backup
-          key: s3_access_key_id
-    logical_backup_s3_bucket:
-      valueFrom:
-        secretKeyRef:
-          name: postgres-backup
-          key: s3_bucket_name
-    logical_backup_s3_bucket_prefix: spilo
-    logical_backup_s3_endpoint:
-      valueFrom:
-        secretKeyRef:
-          name: postgres-backup
-          key: s3_endpoint
-    # logical_backup_s3_region: ''
-    # logical_backup_s3_retention_time: ''
-    logical_backup_s3_secret_access_key:
-      valueFrom:
-        secretKeyRef:
-          name: postgres-backup
-          key: s3_secret_access_key
-    # logical_backup_s3_sse: AES256
-    logical_backup_schedule: 30 00 * * *
+  logical_backup:
+      # logical_backup_cronjob_environment_secret: ''
+      logical_backup_job_prefix: logical-backup-
+      logical_backup_provider: s3
+      logical_backup_s3_access_key_id:
+        valueFrom:
+          secretKeyRef:
+            name: postgres-backup
+            key: s3_access_key_id
+      logical_backup_s3_bucket:
+        valueFrom:
+          secretKeyRef:
+            name: postgres-backup
+            key: s3_bucket_name
+      logical_backup_s3_bucket_prefix: spilo
+      logical_backup_s3_endpoint:
+        valueFrom:
+          secretKeyRef:
+            name: postgres-backup
+            key: s3_endpoint
+      # logical_backup_s3_region: ''
+      # logical_backup_s3_retention_time: ''
+      logical_backup_s3_secret_access_key:
+        valueFrom:
+          secretKeyRef:
+            name: postgres-backup
+            key: s3_secret_access_key
+      # logical_backup_s3_sse: AES256
+      logical_backup_schedule: 30 00 * * *
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
