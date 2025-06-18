@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: adguard-home-dns
   namespace: adguard
-annotations:
+  annotations:
     service.cilium.io/type: LoadBalancer
     service.cilium.io/forwarding-mode: dsr
 spec:
