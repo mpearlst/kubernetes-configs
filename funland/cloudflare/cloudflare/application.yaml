@@ -56,7 +56,7 @@ spec:
             #apiToken: ""
         cloudflared:
           image:
-            tag: 2025.4.0
+            tag: 2025.6.1
   syncPolicy:
     automated:
       allowEmpty: true
