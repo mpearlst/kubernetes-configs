@@ -4,12 +4,6 @@ metadata:
   name: batlab
 spec:
   secretName: batlab
-  # keystores:
-  #   pkcs12:
-  #     create: true
-  #     passwordSecretRef:
-  #       name: batlab-pkcs12-secret
-  #       key: pkcs12-secret
   issuerRef:
     name: letsencrypt-dns
     kind: ClusterIssuer
