@@ -43,11 +43,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: "10m"
+            cpu: "15m"
             memory: "256Mi"
             ephemeral-storage: "64Mi"
           requests:
-            cpu: "1m"
+            cpu: "5m"
             memory: "64Mi"
         # securityContext:
         #   capabilities:
