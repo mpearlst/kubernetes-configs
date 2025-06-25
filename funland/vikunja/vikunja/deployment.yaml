@@ -191,13 +191,13 @@ spec:
           name: main
           resources:
             limits:
-              cpu: "1"
-              memory: 64Mi
-              ephemeral-storage: 128Mi
+              cpu: "100m"
+              memory: "96Mi"
+              ephemeral-storage: "128Mi"
             requests:
-              cpu: 100m
-              memory: 32Mi
-              ephemeral-storage: 16Mi
+              cpu: "20m"
+              memory: "48Mi"
+              ephemeral-storage: "16Mi"
           volumeMounts:
             - mountPath: /etc/vikunja/config.yaml
               name: config
