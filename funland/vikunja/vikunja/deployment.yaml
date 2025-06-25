@@ -146,18 +146,16 @@ spec:
         app.kubernetes.io/instance: vikunja
         app.kubernetes.io/name: vikunja
     spec:
-      secutityContext:
-        fsGroup: 1000
-      initContainers:
-      - name: change-volume-ownership
-        image: busybox:1.37
-        command: ["sh", "-c", "chown -R 1000:1000 /app/vikunja/files"]
-        volumeMounts:
-        - name: files
-          mountPath: /app/vikunja/files
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
+      # initContainers:
+      # - name: change-volume-ownership
+      #   image: busybox:1.37
+      #   command: ["sh", "-c", "chown -R 1000:1000 /app/vikunja/files"]
+      #   volumeMounts:
+      #   - name: files
+      #     mountPath: /app/vikunja/files
+      #   securityContext:
+      #     runAsUser: 0
+      #     runAsGroup: 0
       containers:
         - env:
             - name: VIKUNJA_AUTH_LOCAL
