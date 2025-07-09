@@ -6,13 +6,13 @@
   "prHourlyLimit": 3,
   "argocd": {
     "managerFilePatterns": [
-      "/funland/[^/]+/[^/]+/application\\.yaml/",
-      "/funland/[^/]+/[^/]+/deployment\\.yaml/"
+      "/funland/[^/]+/[^/]+/application\\.yaml/"
     ]
   },
   "kubernetes": {
     "managerFilePatterns": [
-      "/manifests/[^/]+/[^/]+/deployment\\.yaml/"
+      "/manifests/[^/]+/[^/]+/deployment\\.yaml/",
+      "/funland/[^/]+/[^/]+/deployment\\.yaml/"
     ]
   }
 }
