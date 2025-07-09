@@ -6,7 +6,7 @@
   "prHourlyLimit": 3,
   "argocd": {
     "managerFilePatterns": [
-      "/funland/[^/]+/[^/]+/application\\.yaml/"
+      "/funland/[^/]+/[^/]+/application\\.yaml/",
       "/funland/[^/]+/[^/]+/deployment\\.yaml/"
     ]
   },
