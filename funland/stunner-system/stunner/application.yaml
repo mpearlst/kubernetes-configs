@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: stunner-application
-  namespace: stunner-system
+  namespace: argocd
 spec:
   syncPolicy:
     syncOptions:
