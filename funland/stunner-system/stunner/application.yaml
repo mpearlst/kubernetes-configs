@@ -15,7 +15,7 @@ spec:
   sources:
     - chart: stunner
       repoURL: https://l7mp.io/stunner
-      targetRevision: 1.0.0
+      targetRevision: 1.1.0
   destination:
     server: https://kubernetes.default.svc
     namespace: stunner-system
