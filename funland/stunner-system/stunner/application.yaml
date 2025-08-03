@@ -13,9 +13,9 @@ spec:
       selfHeal: true
   project: default
   sources:
-    - chart: stunner
+    - chart: stunner-gateway-operator
       repoURL: https://l7mp.io/stunner
-      targetRevision: 1.0.0
+      targetRevision: 1.1.0
   destination:
     server: https://kubernetes.default.svc
     namespace: stunner-system
