@@ -22,14 +22,14 @@ spec:
         ports:
         - containerPort: 80
           name: http
-        # livenessProbe:
-        #   httpGet:
-        #     path: /v1/health
-        #     port: 80
-          # initialDelaySeconds: 40
-          # timeoutSeconds: 10
-          # periodSeconds: 60
-          # failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: 80
+          initialDelaySeconds: 40
+          timeoutSeconds: 10
+          periodSeconds: 60
+          failureThreshold: 3
         volumeMounts:
         - name: config
           mountPath: "/etc/ntfy"
