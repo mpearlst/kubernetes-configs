@@ -35,7 +35,10 @@ spec:
           mountPath: "/etc/ntfy"
           readOnly: true
         - name: user-db
-          mountPath: "/var/lib/ntfy/"
+          mountPath: "/var/lib/ntfy/auth/"
+          readOnly: false
+        - name: cache
+          mountPath: "/var/cache/ntfy/"
           readOnly: false
       volumes:
         - name: config
@@ -44,11 +47,28 @@ spec:
         - name: user-db
           persistentVolumeClaim:
             claimName: ntfy-user-db
+        - name: cache
+          persistentVolumeClaim:
+            claimName: ntfy-cache
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: ntfy-user-db
+  namespace: ntfy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ntfy-cache
   namespace: ntfy
 spec:
   accessModes:
