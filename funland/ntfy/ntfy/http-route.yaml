@@ -1,16 +1,16 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: vaultwarden
-  namespace: vaultwarden
+  name: ntfy
+  namespace: ntfy
 spec:
   parentRefs:
-    - name: internal
+    - name: external
       namespace: gateway
       sectionName: https
   hostnames:
-    - "vaultwarden.batlab.io"
+    - "ntfy.batlab.io"
   rules:
     - backendRefs:
-        - name: vaultwarden
+        - name: ntfy
           port: 80
