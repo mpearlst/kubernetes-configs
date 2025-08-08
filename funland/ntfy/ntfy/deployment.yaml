@@ -35,7 +35,7 @@ spec:
           mountPath: "/etc/ntfy"
           readOnly: true
         - name: user-db
-          mountPath: "/var/lib/ntfy/auth"
+          mountPath: "/var/lib/ntfy/"
           readOnly: false
       volumes:
         - name: config
