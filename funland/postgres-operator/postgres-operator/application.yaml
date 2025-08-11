@@ -12,71 +12,32 @@ spec:
     chart: postgres-operator
     repoURL: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
     targetRevision: 1.14.0
-    # helm:
-    #   valuesObject:
-    #     configLogicalBackup:
-    #       logical_backup_cronjob_environment_secret: postgres-backup
-    #       logical_backup_job_prefix: logical-backup-
-    #       logical_backup_provider: s3
-    #       logical_backup_s3_bucket_prefix: spilo
-    #       logical_backup_schedule: 30 00 * * *
   syncPolicy:
     automated:
       allowEmpty: true
       prune: true
       selfHeal: true
-# ---
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: postgres-operator-ui
-#   namespace: argocd
-# spec:
-#   destination:
-#     namespace: postgres-operator
-#     server: https://kubernetes.default.svc
-#   project: default
-#   source:
-#     chart: postgres-operator-ui
-#     repoURL: https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
-#     targetRevision: 1.14.0
-#     helm:
-#       valuesObject:
-#         envs:
-#           targetNamespace: "*"
-#   syncPolicy:
-#     automated:
-#       allowEmpty: true
-#       prune: true
-#       selfHeal: true
-# ---
-# apiVersion: external-secrets.io/v1
-# kind: ExternalSecret
-# metadata:
-#   name: postgres-backup
-#   namespace: postgres-operator
-# spec:
-#   refreshInterval: "5m"
-#   secretStoreRef:
-#     name: 1password
-#     kind: ClusterSecretStore
-#   target:
-#     name: postgres-backup
-#     creationPolicy: Owner
-#   data:
-#     - secretKey: AWS_ENDPOINT
-#       remoteRef:
-#         key: postgres-backup
-#         property: s3_endpoint
-#     - secretKey: AWS_ACCESS_KEY_ID
-#       remoteRef:
-#         key: postgres-backup
-#         property: s3_access_key_id
-#     - secretKey: AWS_SECRET_ACCESS_KEY
-#       remoteRef:
-#         key: postgres-backup
-#         property: s3_secret_access_key
-#     - secretKey: AWS_S3_BUCKET
-#       remoteRef:
-#         key: postgres-backup
-#         property: s3_bucket_name
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgres-operator-ui
+  namespace: argocd
+spec:
+  destination:
+    namespace: postgres-operator
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: postgres-operator-ui
+    repoURL: https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
+    targetRevision: 1.14.0
+    helm:
+      valuesObject:
+        envs:
+          targetNamespace: "postgres"
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
