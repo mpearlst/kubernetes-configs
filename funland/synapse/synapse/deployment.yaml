@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: synapse
-        image: ghcr.io/element-hq/synapse:v1.136.0
+        image: ghcr.io/element-hq/synapse:v1.137.0
         # securityContext:
         #   capabilities:
         #     drop: [ALL]
