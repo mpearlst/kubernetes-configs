@@ -45,9 +45,6 @@ kind: Service
 metadata:
   name: adguard-home-http
   namespace: adguard
-  annotations:
-    service.cilium.io/type: LoadBalancer
-    service.cilium.io/forwarding-mode: dsr
 spec:
   selector:
     app: adguard-home
