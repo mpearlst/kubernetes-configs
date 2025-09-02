@@ -21,22 +21,20 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgres-operator-ui
+  name: cnpg-application
   namespace: argocd
 spec:
   destination:
-    namespace: postgres-operator
     server: https://kubernetes.default.svc
+    namespace: cnpg-system
   project: default
-  source:
-    chart: postgres-operator-ui
-    repoURL: https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
-    targetRevision: 1.14.0
-    helm:
-      valuesObject:
-        envs:
-          targetNamespace: "postgres"
+  sources:
+    - chart: cloudnative-pg
+      repoURL: https://cloudnative-pg.github.io/charts
+      targetRevision: 0.26.0
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
     automated:
       allowEmpty: true
       prune: true
