@@ -25,12 +25,20 @@ spec:
         property: jwtsecret
     - secretKey: postgrespassword
       remoteRef:
-        key: postgres.cluster01.vikunja.owner
+        key: vikunja-db-credentials
         property: password
     - secretKey: postgresuser
       remoteRef:
-        key: postgres.cluster01.vikunja.owner
+        key: vikunja-db-credentials
         property: username
+    # - secretKey: postgrespassword
+    #   remoteRef:
+    #     key: postgres.cluster01.vikunja.owner
+    #     property: password
+    # - secretKey: postgresuser
+    #   remoteRef:
+    #     key: postgres.cluster01.vikunja.owner
+    #     property: username
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -84,22 +92,6 @@ spec:
     requests:
       storage: "1Gi"
   storageClassName: "longhorn"
-# ---
-# kind: PersistentVolumeClaim
-# apiVersion: v1
-# metadata:
-#   name: vikunja-config
-#   namespace: vikunja
-#   labels:
-#     app.kubernetes.io/instance: vikunja
-#     app.kubernetes.io/name: vikunja
-# spec:
-#   accessModes:
-#     - "ReadWriteOnce"
-#   resources:
-#     requests:
-#       storage: "2Gi"
-#   storageClassName: "longhorn"
 ---
 apiVersion: v1
 kind: Service
@@ -146,16 +138,6 @@ spec:
         app.kubernetes.io/instance: vikunja
         app.kubernetes.io/name: vikunja
     spec:
-      # initContainers:
-      # - name: change-volume-ownership
-      #   image: busybox:1.37
-      #   command: ["sh", "-c", "chown -R 1000:1000 /app/vikunja/files"]
-      #   volumeMounts:
-      #   - name: files
-      #     mountPath: /app/vikunja/files
-      #   securityContext:
-      #     runAsUser: 0
-      #     runAsGroup: 0
       containers:
         - env:
             - name: VIKUNJA_AUTH_LOCAL
@@ -163,7 +145,7 @@ spec:
             - name: VIKUNJA_DATABASE_TYPE
               value: postgres
             - name: VIKUNJA_DATABASE_HOST
-              value: cluster01.postgres
+              value: vikunja-dbc-rw
             - name: VIKUNJA_DATABASE_DATABASE
               value: vikunja
             - name: VIKUNJA_DATABASE_SSLMODE
