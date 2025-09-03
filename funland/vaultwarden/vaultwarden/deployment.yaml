@@ -129,11 +129,11 @@ spec:
         property: push_installation_key
     - secretKey: vaultwarden_db_password
       remoteRef:
-        key: postgres.cluster01.vaultwarden.owner
+        key: vaultwarden-db-credentials
         property: password
     - secretKey: vaultwarden_db_user
       remoteRef:
-        key: postgres.cluster01.vaultwarden.owner
+        key: vaultwarden-db-credentials
         property: username
     - secretKey: vaultwarden_db_connection_string
       remoteRef:
