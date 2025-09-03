@@ -145,7 +145,7 @@ spec:
             - name: VIKUNJA_DATABASE_TYPE
               value: postgres
             - name: VIKUNJA_DATABASE_HOST
-              value: vikunja-dbc-rw
+              value: vikunja-dbc-rw.postgres
             - name: VIKUNJA_DATABASE_DATABASE
               value: vikunja
             - name: VIKUNJA_DATABASE_SSLMODE
