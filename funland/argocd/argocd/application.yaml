@@ -62,7 +62,6 @@ spec:
                       - openid
                       - profile
                       - email
-                    logoutURL: https://auth.batlab.io/application/o/argocd/end-session?id_token_hint={{token}}
           rbac:
             policy.csv: |
               g, ArgoCD Admin, role:admin
