@@ -31,11 +31,7 @@ spec:
     name: n8n-secrets
     creationPolicy: Owner
   data:
-    - secretKey: DB_POSTGRESDB_PASSWORD
-      remoteRef:
-        key: n8n-db-credentials
-        property: password
-    - secretKey: POSTGRES_PASSWORD
+    - secretKey: dbpass
       remoteRef:
         key: n8n-db-credentials
         property: password
@@ -120,12 +116,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: n8n-secrets
-              key: password
+              key: dbpass
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: n8n-secrets
-              key: password
+              key: dbpass
         volumeMounts:
         - name: data
           mountPath: /home/node/.n8n
