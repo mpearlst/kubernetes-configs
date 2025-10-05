@@ -33,11 +33,11 @@ spec:
   data:
     - secretKey: DB_POSTGRESDB_PASSWORD
       remoteRef:
-        key: n8n
+        key: n8n-db-credentials
         property: DB_POSTGRESDB_PASSWORD
     - secretKey: POSTGRES_PASSWORD
       remoteRef:
-        key: n8n
+        key: n8n-db-credentials
         property: POSTGRES_PASSWORD
 ---
 apiVersion: v1
