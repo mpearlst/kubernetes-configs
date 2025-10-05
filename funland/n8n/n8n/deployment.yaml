@@ -42,7 +42,7 @@ metadata:
   name: n8n-config
   namespace: n8n
 data:
-  N8N_HOST: "n8n.example.com"
+  N8N_HOST: "n8n.batlab.io"
   N8N_PORT: "5678"
   N8N_PROTOCOL: "https"
   WEBHOOK_URL: "https://n8n.batlab.io/"
