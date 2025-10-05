@@ -107,7 +107,7 @@ spec:
     creationPolicy: Owner
     template:
       data:
-        database-url: "postgresql://{{ .vaultwarden_db_user }}:{{ .vaultwarden_db_password }}@{{ .vaultwarden_db_connection_string }}"
+        database-url: "postgresql://{{ .vaultwarden_db_user }}:{{ .vaultwarden_db_password }}@vaultwarden-dbc-rw.postgres:5432/vaultwarden"
         vaultwarden_admin_token: "{{ .vaultwarden_admin_token | toString }}"
         push_installation_id: "{{ .push_installation_id | toString }}"
         push_installation_key: "{{ .push_installation_key | toString }}"

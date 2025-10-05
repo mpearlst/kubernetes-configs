@@ -1,0 +1,50 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: n8n-dbc
+  namespace: postgres
+spec:
+  instances: 1
+  storage:
+    size: 1Gi
+  bootstrap:
+    initdb:
+      database: n8n
+      owner: n8n
+      postInitSQL:
+        - "REVOKE ALL ON SCHEMA public FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON FUNCTIONS FROM PUBLIC;"
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: n8n-db-credentials
+  namespace: postgres
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRefs:
+    - name: 1password
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: n8n-dbc-app
+  template:
+    data:
+      _metadata_origin: "push"
+      username: "{{ .username | toString }}"
+      password: "{{ .password | toString }}"
+  data:
+    - match:
+        secretKey: username
+        remoteRef:
+          remoteKey: n8n-db-credentials
+          property: username
+    - match:
+        secretKey: password
+        remoteRef:
+          remoteKey: n8n-db-credentials
+          property: password
