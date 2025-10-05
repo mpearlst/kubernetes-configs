@@ -34,11 +34,11 @@ spec:
     - secretKey: DB_POSTGRESDB_PASSWORD
       remoteRef:
         key: n8n-db-credentials
-        property: DB_POSTGRESDB_PASSWORD
+        property: password
     - secretKey: POSTGRES_PASSWORD
       remoteRef:
         key: n8n-db-credentials
-        property: POSTGRES_PASSWORD
+        property: password
 ---
 apiVersion: v1
 kind: ConfigMap
