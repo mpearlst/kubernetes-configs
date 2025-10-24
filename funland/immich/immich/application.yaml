@@ -82,19 +82,19 @@ spec:
     targetRevision: 0.10.1
     helm:
       valuesObject:
-        image:
-          tag: v2.1.0
         env:
           DB_VECTOR_EXTENSION: "vchord"
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  tag: v2.1.0
+                envFrom:
+                  - secretRef:
+                      name: immich-secret
         server:
           enabled: true
-          controllers:
-            main:
-              containers:
-                main:
-                  envFrom:
-                    - secretRef:
-                        name: immich-secret
           ingress:
             enabled: false
         immich:
