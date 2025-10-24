@@ -1,0 +1,51 @@
+---
+# Kustomize strategic merge patch for adding B2 backups to CNPG clusters
+# This is a reusable component that adds backup configuration
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: placeholder  # Will be replaced by actual cluster name
+spec:
+  backup:
+    # Retention policy - keep backups for 30 days
+    retentionPolicy: "30d"
+
+    # Backblaze B2 object store configuration
+    barmanObjectStore:
+      # Destination path - the DATABASE_NAME will be replaced per cluster
+      destinationPath: "s3://batcave-kubernetes/funland/postgres-backups/DATABASE_NAME"
+
+      # Backblaze B2 endpoint for us-west-000 region
+      endpointURL: "https://s3.us-west-000.backblazeb2.com"
+
+      # Credentials reference
+      s3Credentials:
+        accessKeyId:
+          name: b2-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2-backup-credentials
+          key: ACCESS_SECRET_KEY
+
+      # WAL (Write-Ahead Log) configuration
+      # Using snappy for better performance, or use gzip for better compression
+      wal:
+        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        maxParallel: 2
+        encryption: AES256  # Optional: encrypt WAL files
+
+      # Data backup configuration
+      data:
+        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        immediateCheckpoint: true
+        jobs: 2
+        encryption: AES256  # Optional: encrypt backup files
+
+      # S3 configuration
+      s3:
+        region: us-west-000
+
+      # Tags for backup objects (will be applied to S3 objects)
+      tags:
+        managed-by: "cnpg"
+        backup-location: "backblaze-b2"

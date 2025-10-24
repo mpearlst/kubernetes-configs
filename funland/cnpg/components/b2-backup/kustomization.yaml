@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+# This is a Kustomize component that adds B2 backup configuration
+# to CNPG clusters. Use it by adding it to the components list
+# in your kustomization.yaml
+
+patches:
+  - path: backup-config.yaml
+    target:
+      kind: Cluster
+      group: postgresql.cnpg.io
+      version: v1

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# This kustomization combines CNPG clusters with backup configuration
+
+resources:
+  # B2 backup credentials
+  - external-secrets/b2-backup-credentials.yaml
+
+  # All CNPG database clusters with backup configuration applied
+  - cnpg-clusters/
+
+# Note: The backup configuration is applied via the component
+# in cnpg-clusters/kustomization.yaml

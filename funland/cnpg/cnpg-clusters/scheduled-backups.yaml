@@ -1,0 +1,69 @@
+---
+# Scheduled backups for all CNPG clusters
+# These create daily full backups at 2 AM in addition to continuous WAL archiving
+
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: authentik-daily-backup
+  namespace: postgres
+spec:
+  # Cron schedule: Daily at 12:00 AM (midnight)
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: authentik-dbc
+  method: barmanObjectStore
+  immediate: true  # Take first backup immediately upon creation
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: vikunja-daily-backup
+  namespace: postgres
+spec:
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: vikunja-dbc
+  method: barmanObjectStore
+  immediate: true
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: n8n-daily-backup
+  namespace: postgres
+spec:
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: n8n-dbc
+  method: barmanObjectStore
+  immediate: true
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: vaultwarden-daily-backup
+  namespace: postgres
+spec:
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: vaultwarden-dbc
+  method: barmanObjectStore
+  immediate: true
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: immich-daily-backup
+  namespace: postgres
+spec:
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: immich-dbc
+  method: barmanObjectStore
+  immediate: true
