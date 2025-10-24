@@ -5,7 +5,7 @@ kind: Kustomization
 
 resources:
   # B2 backup credentials
-  - external-secrets/b2-backup-credentials.yaml
+  - components/b2-backup-credentials.yaml
 
   # All CNPG database clusters with backup configuration applied
   - cnpg-clusters/
