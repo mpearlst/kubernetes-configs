@@ -41,10 +41,6 @@ spec:
         jobs: 2
         encryption: AES256  # Optional: encrypt backup files
 
-      # S3 configuration
-      s3:
-        region: us-west-000
-
       # Tags for backup objects (will be applied to S3 objects)
       tags:
         managed-by: "cnpg"
