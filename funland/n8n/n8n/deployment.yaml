@@ -72,7 +72,7 @@ spec:
         runAsGroup: 1000
       containers:
       - name: n8n
-        image: n8nio/n8n:1.117.0
+        image: n8nio/n8n:1.117.1
         ports:
         - containerPort: 5678
           name: http
