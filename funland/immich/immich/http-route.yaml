@@ -12,5 +12,5 @@ spec:
     - "immich.batlab.io"
   rules:
     - backendRefs:
-        - name: immich-server
-          port: 3001
+        - name: immich-application-server
+          port: 2283
