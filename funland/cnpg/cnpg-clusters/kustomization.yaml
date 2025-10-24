@@ -23,9 +23,6 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/authentik
-      - op: add
-        path: /spec/backup/barmanObjectStore/tags/cluster
-        value: authentik-dbc
 
   - target:
       kind: Cluster
@@ -34,9 +31,6 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/vikunja
-      - op: add
-        path: /spec/backup/barmanObjectStore/tags/cluster
-        value: vikunja-dbc
 
   - target:
       kind: Cluster
@@ -45,9 +39,6 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/n8n
-      - op: add
-        path: /spec/backup/barmanObjectStore/tags/cluster
-        value: n8n-dbc
 
   - target:
       kind: Cluster
@@ -56,9 +47,6 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/vaultwarden
-      - op: add
-        path: /spec/backup/barmanObjectStore/tags/cluster
-        value: vaultwarden-dbc
 
   - target:
       kind: Cluster
@@ -67,6 +55,3 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/immich
-      - op: add
-        path: /spec/backup/barmanObjectStore/tags/cluster
-        value: immich-dbc

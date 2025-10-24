@@ -41,7 +41,7 @@ spec:
         jobs: 2
         encryption: AES256  # Optional: encrypt backup files
 
-      # Tags for backup objects (will be applied to S3 objects)
-      tags:
-        managed-by: "cnpg"
-        backup-location: "backblaze-b2"
+      # Note: Backblaze B2 does not support S3 object tagging, so tags are commented out
+      # tags:
+      #   managed-by: "cnpg"
+      #   backup-location: "backblaze-b2"
