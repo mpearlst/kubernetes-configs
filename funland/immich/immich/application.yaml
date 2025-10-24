@@ -110,18 +110,13 @@ spec:
               secretKeyRef:
                 name: immich-secret
                 key: DB_DATABASE_NAME
+          DB_VECTOR_EXTENSION: "vchord"
         immich:
           persistence:
             library:
               existingClaim: immich-library
-        redis:
+        valkey:
           enabled: true
-          architecture: standalone
-          master:
-            persistence:
-              enabled: false
-        postgresql:
-          enabled: false
         server:
           ingress:
             enabled: false
