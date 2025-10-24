@@ -12,7 +12,7 @@ resources:
 
 # Use the B2 backup component to add backup config to all clusters
 components:
-  - ../components/b2-backup
+  - ../cnpg-components/b2-backup
 
 # Customize the backup path for each cluster
 patches:

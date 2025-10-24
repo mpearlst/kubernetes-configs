@@ -109,7 +109,7 @@ kubectl get cluster -n postgres -o jsonpath='{range .items[*]}{.metadata.name}{"
 
 The default compression is **snappy** for optimal performance. To change:
 
-Edit `funland/cnpg/components/b2-backup/backup-config.yaml`:
+Edit `funland/cnpg/cnpg-components/b2-backup/backup-config.yaml`:
 
 **For better compression (slower):**
 ```yaml

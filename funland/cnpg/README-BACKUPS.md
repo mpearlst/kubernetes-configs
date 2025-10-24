@@ -80,7 +80,7 @@ kubectl describe cluster authentik-dbc -n postgres
 
 ### Compression Options
 
-The backup configuration uses **snappy** compression by default. You can change this in `components/b2-backup/backup-config.yaml`:
+The backup configuration uses **snappy** compression by default. You can change this in `cnpg-components/b2-backup/backup-config.yaml`:
 
 **Available compression algorithms:**
 - `snappy`: Fast compression, moderate compression ratio (recommended for most cases)
@@ -106,7 +106,7 @@ data:
 
 ### Retention Policy
 
-Backups are retained for **30 days** by default. Change in `components/b2-backup/backup-config.yaml`:
+Backups are retained for **30 days** by default. Change in `cnpg-components/b2-backup/backup-config.yaml`:
 ```yaml
 backup:
   retentionPolicy: "30d"  # Format: <number>d (days), <number>w (weeks), <number>m (months)
