@@ -28,15 +28,15 @@ spec:
           key: ACCESS_SECRET_KEY
 
       # WAL (Write-Ahead Log) configuration
-      # Using snappy for better performance, or use gzip for better compression
+      # Using zstd for excellent compression and speed (CNPG 1.27.1 supports it)
       wal:
-        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        compression: zstd  # Best option: fast compression with excellent ratio
         maxParallel: 2
         encryption: AES256  # Optional: encrypt WAL files
 
       # Data backup configuration
       data:
-        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        compression: zstd  # Best option: fast compression with excellent ratio
         immediateCheckpoint: true
         jobs: 2
         encryption: AES256  # Optional: encrypt backup files
