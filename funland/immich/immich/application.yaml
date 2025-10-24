@@ -83,7 +83,7 @@ spec:
     helm:
       valuesObject:
         image:
-          tag: v1.128.0
+          tag: v2.1.0
         env:
           DB_VECTOR_EXTENSION: "vchord"
         server:
