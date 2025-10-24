@@ -25,6 +25,31 @@ spec:
       destination:
         server: "https://kubernetes.default.svc"
         namespace: '{{index .path.segments 1}}'
+      ignoreDifferences:
+        - group: postgresql.cnpg.io
+          kind: Cluster
+          jqPathExpressions:
+            - .spec.affinity
+            - .spec.backup.target
+            - .spec.bootstrap.initdb.encoding
+            - .spec.bootstrap.initdb.localeCType
+            - .spec.bootstrap.initdb.localeCollate
+            - .spec.enablePDB
+            - .spec.enableSuperuserAccess
+            - .spec.failoverDelay
+            - .spec.imageName
+            - .spec.logLevel
+            - .spec.maxSyncReplicas
+            - .spec.minSyncReplicas
+            - .spec.monitoring
+            - .spec.postgresql
+            - .spec.primaryUpdateMethod
+            - .spec.primaryUpdateStrategy
+            - .spec.resources
+            - .spec.smartShutdownTimeout
+            - .spec.startDelay
+            - .spec.stopDelay
+            - .spec.switchoverDelay
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
