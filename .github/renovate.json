@@ -14,16 +14,5 @@
       "/manifests/[^/]+/[^/]+/deployment\\.yaml/",
       "/funland/[^/]+/[^/]+/deployment\\.yaml/"
     ]
-  },
-  "regexManagers": [
-    {
-      "description": "Update image tags in ArgoCD Application Helm values",
-      "fileMatch": ["/funland/[^/]+/[^/]+/application\\.yaml$"],
-      "matchStrings": [
-        "image:\\s*\\n\\s*tag:\\s*(?<currentValue>.*?)\\s"
-      ],
-      "depNameTemplate": "ghcr.io/immich-app/immich",
-      "datasourceTemplate": "docker"
-    }
-  ]
+  }
 }
