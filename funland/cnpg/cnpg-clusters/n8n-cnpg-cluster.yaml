@@ -7,7 +7,14 @@ spec:
   instances: 3
   storage:
     size: 1Gi
-    storageClass: longhorn-single
+    storageClassName: longhorn-single
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              postgresql: n8n-dbc
+          topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:
       database: n8n

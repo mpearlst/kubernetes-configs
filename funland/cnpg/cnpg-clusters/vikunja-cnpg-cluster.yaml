@@ -7,7 +7,14 @@ spec:
   instances: 3
   storage:
     size: 500Mi
-    storageClass: longhorn-single
+    storageClassName: longhorn-single
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              postgresql: vikunja-dbc
+          topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:
       database: vikunja

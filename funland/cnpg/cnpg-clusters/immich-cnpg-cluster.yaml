@@ -8,7 +8,14 @@ spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
   storage:
     size: 10Gi
-    storageClass: longhorn-single
+    storageClassName: longhorn-single
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              postgresql: immich-dbc
+          topologyKey: kubernetes.io/hostname
   postgresql:
     shared_preload_libraries:
       - "vchord.so"
