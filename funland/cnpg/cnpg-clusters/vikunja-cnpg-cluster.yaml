@@ -7,7 +7,7 @@ spec:
   instances: 3
   storage:
     size: 500Mi
-    storageClassName: longhorn-single
+    storageClass: longhorn-single
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

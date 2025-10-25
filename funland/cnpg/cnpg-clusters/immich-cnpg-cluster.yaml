@@ -8,7 +8,7 @@ spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.9-0.4.3
   storage:
     size: 10Gi
-    storageClassName: longhorn-single
+    storageClass: longhorn-single
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
