@@ -8,6 +8,7 @@ resources:
   - n8n-cnpg-cluster.yaml
   - vaultwarden-cnpg-cluster.yaml
   - immich-cnpg-cluster.yaml
+  - synapse-cnpg-cluster.yaml
   - scheduled-backups.yaml  # Daily backups at midnight
 
 # Use the B2 backup component to add backup config to all clusters
@@ -55,3 +56,11 @@ patches:
       - op: replace
         path: /spec/backup/barmanObjectStore/destinationPath
         value: s3://batcave-kubernetes/funland/postgres-backups/immich
+
+  - target:
+      kind: Cluster
+      name: synapse-dbc
+    patch: |-
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: s3://batcave-kubernetes/funland/postgres-backups/synapse

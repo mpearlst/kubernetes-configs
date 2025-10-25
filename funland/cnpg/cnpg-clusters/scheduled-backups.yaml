@@ -67,3 +67,16 @@ spec:
     name: immich-dbc
   method: barmanObjectStore
   immediate: true
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: synapse-daily-backup
+  namespace: postgres
+spec:
+  schedule: "0 0 0 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: synapse-dbc
+  method: barmanObjectStore
+  immediate: true
