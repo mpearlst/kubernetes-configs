@@ -7,6 +7,7 @@ spec:
   instances: 1
   storage:
     size: 2Gi
+    storageClass: longhorn-single
   bootstrap:
     initdb:
       database: vaultwarden
