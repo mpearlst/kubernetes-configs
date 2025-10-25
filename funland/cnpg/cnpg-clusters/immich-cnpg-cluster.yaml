@@ -14,7 +14,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              postgresql: immich-dbc
+              cnpg.io/cluster: immich-dbc
           topologyKey: kubernetes.io/hostname
   postgresql:
     shared_preload_libraries:

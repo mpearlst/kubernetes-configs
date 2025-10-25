@@ -13,7 +13,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              postgresql: n8n-dbc
+              cnpg.io/cluster: n8n-dbc
           topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:

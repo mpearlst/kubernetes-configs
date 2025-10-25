@@ -13,7 +13,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              postgresql: authentik-dbc
+              cnpg.io/cluster: authentik-dbc
           topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:

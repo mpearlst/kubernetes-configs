@@ -13,7 +13,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              postgresql: vikunja-dbc
+              cnpg.io/cluster: vikunja-dbc
           topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:

@@ -13,7 +13,7 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              postgresql: synapse-dbc
+              cnpg.io/cluster: synapse-dbc
           topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:
