@@ -4,7 +4,7 @@ metadata:
   name: vaultwarden-dbc
   namespace: postgres
 spec:
-  instances: 1
+  instances: 3
   storage:
     size: 2Gi
     storageClass: longhorn-single
