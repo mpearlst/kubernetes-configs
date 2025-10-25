@@ -5,6 +5,8 @@ metadata:
   namespace: postgres
 spec:
   instances: 3
+  monitoring:
+    enablePodMonitor: true
   storage:
     size: 5Gi
     storageClass: longhorn-single
