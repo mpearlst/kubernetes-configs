@@ -24,15 +24,6 @@ spec:
       containers:
       - name: synapse
         image: ghcr.io/element-hq/synapse:v1.140.0
-        # securityContext:
-        #   capabilities:
-        #     drop: [ALL]
-        #   readOnlyRootFilesystem: true
-        #   privileged: false
-        #   allowPrivilegeEscalation: false
-        #   runAsNonRoot: true
-        #   seccompProfile:
-        #     type: RuntimeDefault
         env:
           - name: "TZ"
             value: "America/New_York"

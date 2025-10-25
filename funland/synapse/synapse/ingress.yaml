@@ -28,7 +28,7 @@ spec:
   - host: batlab.io
     http:
       paths:
-      - path: /.well-known/matrix
+      - path: /.well-known/matrix/server
         pathType: Prefix
         backend:
           service:
