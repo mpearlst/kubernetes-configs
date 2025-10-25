@@ -4,9 +4,10 @@ metadata:
   name: vikunja-dbc
   namespace: postgres
 spec:
-  instances: 1
+  instances: 3
   storage:
     size: 500Mi
+    storageClass: longhorn-single
   bootstrap:
     initdb:
       database: vikunja
