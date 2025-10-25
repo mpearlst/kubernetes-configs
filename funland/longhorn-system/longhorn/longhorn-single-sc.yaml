@@ -5,5 +5,6 @@ metadata:
 provisioner: driver.longhorn.io
 parameters:
   numberOfReplicas: "1"
+  backup: "false"
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
