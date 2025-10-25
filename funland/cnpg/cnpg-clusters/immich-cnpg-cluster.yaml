@@ -10,12 +10,9 @@ spec:
     size: 10Gi
     storageClass: longhorn-single
   affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              cnpg.io/cluster: immich-dbc
-          topologyKey: kubernetes.io/hostname
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   postgresql:
     shared_preload_libraries:
       - "vchord.so"

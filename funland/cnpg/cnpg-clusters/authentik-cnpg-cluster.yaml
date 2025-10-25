@@ -9,12 +9,9 @@ spec:
     size: 1Gi
     storageClass: longhorn-single
   affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              cnpg.io/cluster: authentik-dbc
-          topologyKey: kubernetes.io/hostname
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   bootstrap:
     initdb:
       database: authentik

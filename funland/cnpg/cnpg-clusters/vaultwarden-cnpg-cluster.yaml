@@ -9,12 +9,9 @@ spec:
     size: 2Gi
     storageClass: longhorn-single
   affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              cnpg.io/cluster: vaultwarden-dbc
-          topologyKey: kubernetes.io/hostname
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   bootstrap:
     initdb:
       database: vaultwarden

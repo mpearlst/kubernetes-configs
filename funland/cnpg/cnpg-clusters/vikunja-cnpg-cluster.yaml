@@ -9,12 +9,9 @@ spec:
     size: 500Mi
     storageClass: longhorn-single
   affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              cnpg.io/cluster: vikunja-dbc
-          topologyKey: kubernetes.io/hostname
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   bootstrap:
     initdb:
       database: vikunja
