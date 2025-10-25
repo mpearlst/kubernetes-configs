@@ -4,9 +4,10 @@ metadata:
   name: synapse-dbc
   namespace: postgres
 spec:
-  instances: 1
+  instances: 3
   storage:
     size: 5Gi
+    storageClass: longhorn-single
   bootstrap:
     initdb:
       database: synapse
