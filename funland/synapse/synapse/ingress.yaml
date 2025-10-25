@@ -1,4 +1,3 @@
-apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: synapse-ingress
@@ -10,6 +9,25 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: synapse
+            port:
+              number: 8008
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: matrix-wellknown-ingress
+  namespace: synapse
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+  - host: batlab.io
+    http:
+      paths:
+      - path: /.well-known/matrix
         pathType: Prefix
         backend:
           service:
