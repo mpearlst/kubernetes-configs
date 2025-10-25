@@ -7,7 +7,14 @@ spec:
   instances: 3
   storage:
     size: 2Gi
-    storageClass: longhorn-single
+    storageClassName: longhorn-single
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              postgresql: vaultwarden-dbc
+          topologyKey: kubernetes.io/hostname
   bootstrap:
     initdb:
       database: vaultwarden
