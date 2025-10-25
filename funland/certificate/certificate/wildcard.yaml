@@ -10,6 +10,7 @@ spec:
   commonName: '*.batlab.io'
   dnsNames:
   - '*.batlab.io'
+  - 'batlab.io'
 ---
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
