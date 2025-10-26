@@ -4,7 +4,7 @@ metadata:
   name: synapse-dbc
   namespace: postgres
 spec:
-  instances: 1
+  instances: 3
   monitoring:
     enablePodMonitor: true
   storage:
