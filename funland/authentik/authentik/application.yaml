@@ -84,9 +84,9 @@ spec:
             host: "${AUTHENTIK_EMAIL__HOST}"
             port: 465
             use_tls: true
-            username: "${AUTHENTIK_EMAIL__USERNAME}"
-            password: "${AUTHENTIK_EMAIL__PASSWORD}"
-            from: "${AUTHENTIK_EMAIL__FROM}"
+            username: "$AUTHENTIK_EMAIL__USERNAME"
+            password: "$AUTHENTIK_EMAIL__PASSWORD"
+            from: "$AUTHENTIK_EMAIL__FROM"
         redis:
           enabled: true
           master:
