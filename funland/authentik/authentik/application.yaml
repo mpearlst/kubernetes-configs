@@ -67,6 +67,7 @@ spec:
           postgresql:
             host: "authentik-dbc-rw.postgres"
             name: "authentik"
+            host_reader: "authentik-dbc-ro.postgres"
         redis:
           enabled: true
           master:
