@@ -14,5 +14,23 @@
       "/manifests/[^/]+/[^/]+/deployment\\.yaml/",
       "/funland/[^/]+/[^/]+/deployment\\.yaml/"
     ]
-  }
+  },
+  "regexManagers": [
+    {
+      "fileMatch": ["^funland/cloudflare/cloudflare/application\\.yaml$"],
+      "matchStrings": [
+        "tag: (?<currentValue>.*)"
+      ],
+      "depNameTemplate": "cloudflare/cloudflared",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": ["^funland/immich/immich/application\\.yaml$"],
+      "matchStrings": [
+        "tag: (?<currentValue>.*)"
+      ],
+      "depNameTemplate": "ghcr.io/immich-app/immich-server",
+      "datasourceTemplate": "docker"
+    }
+  ]
 }
