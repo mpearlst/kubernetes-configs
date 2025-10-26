@@ -43,6 +43,18 @@ spec:
       remoteRef:
         key: authentik-db-credentials
         property: username
+    - secretKey: smtp_address
+      remoteRef:
+        key: smtp
+        property: smtp_address
+    - secretKey: smtp_user
+      remoteRef:
+        key: smtp
+        property: smtp_user
+    - secretKey: smtp_password
+      remoteRef:
+        key: smtp
+        property: smtp_password
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -68,6 +80,13 @@ spec:
             host: "authentik-dbc-rw.postgres"
             name: "authentik"
             host_reader: "authentik-dbc-ro.postgres"
+          email:
+            host: "${AUTHENTIK_EMAIL__HOST}"
+            port: 465
+            use_tls: true
+            username: "${AUTHENTIK_EMAIL__USERNAME}"
+            password: "${AUTHENTIK_EMAIL__PASSWORD}"
+            from: "${AUTHENTIK_EMAIL__FROM}"
         redis:
           enabled: true
           master:
@@ -104,6 +123,26 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: postgrespassword
+                  name: authentik-configsecrets
+            - name: AUTHENTIK_EMAIL__HOST
+              valueFrom:
+                secretKeyRef:
+                  key: smtp_address
+                  name: authentik-configsecrets
+            - name: AUTHENTIK_EMAIL__USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: smtp_user
+                  name: authentik-configsecrets
+            - name: AUTHENTIK_EMAIL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: smtp_password
+                  name: authentik-configsecrets
+            - name: AUTHENTIK_EMAIL__FROM
+              valueFrom:
+                secretKeyRef:
+                  key: smtp_user
                   name: authentik-configsecrets
   syncPolicy:
     automated:
