@@ -81,7 +81,7 @@ spec:
             name: "authentik"
             host_reader: "authentik-dbc-ro.postgres"
           email:
-            host: "${AUTHENTIK_EMAIL__HOST}"
+            host: "$AUTHENTIK_EMAIL__HOST"
             port: 465
             use_tls: true
             username: "$AUTHENTIK_EMAIL__USERNAME"
