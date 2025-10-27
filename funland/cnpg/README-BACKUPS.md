@@ -94,7 +94,6 @@ The backup configuration uses **snappy** compression by default. You can change 
 - `snappy`: Fast compression, moderate compression ratio (recommended for most cases)
 - `gzip`: Good compression, slower than snappy (good for storage-constrained environments)
 - `bzip2`: Best compression, slowest (rarely used)
-- `zstd`: Excellent compression and speed (requires CNPG 1.23+)
 
 **To use gzip instead:**
 ```yaml
@@ -102,14 +101,6 @@ wal:
   compression: gzip
 data:
   compression: gzip
-```
-
-**To use zstd (requires CNPG 1.23+):**
-```yaml
-wal:
-  compression: zstd
-data:
-  compression: zstd
 ```
 
 ### Retention Policy

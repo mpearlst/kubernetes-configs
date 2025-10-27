@@ -30,13 +30,13 @@ spec:
       # WAL (Write-Ahead Log) configuration
       # Using snappy for better performance, or use gzip for better compression
       wal:
-        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        compression: snappy  # Options: gzip, bzip2, snappy
         maxParallel: 2
         encryption: AES256  # Optional: encrypt WAL files
 
       # Data backup configuration
       data:
-        compression: snappy  # Options: gzip, bzip2, snappy, zstd (if supported)
+        compression: snappy  # Options: gzip, bzip2, snappy
         immediateCheckpoint: true
         jobs: 2
         encryption: AES256  # Optional: encrypt backup files
