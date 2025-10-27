@@ -15,19 +15,27 @@ The backup solution uses:
 
 ```
 funland/cnpg/
-├── components/
-│   └── b2-backup/              # Reusable backup configuration component
-│       ├── backup-config.yaml  # Strategic merge patch for backup config
-│       └── kustomization.yaml  # Component definition
-├── external-secrets/
-│   └── b2-backup-credentials.yaml  # ExternalSecret for B2 credentials
-└── cnpg-clusters/
-    ├── kustomization.yaml      # Applies backup to all clusters
-    ├── authentik-cnpg-cluster.yaml
-    ├── vikunja-cnpg-cluster.yaml
-    ├── n8n-cnpg-cluster.yaml
-    ├── vaultwarden-cnpg-cluster.yaml
-    └── immich-cnpg-cluster.yaml
+├── cnpg-components/           # Components and configurations
+│   ├── b2-backup/            # Reusable backup configuration component
+│   │   └── ...              # Backup configuration files
+│   ├── b2-backup-credentials.yaml  # ExternalSecret for B2 credentials
+│   └── README.md
+├── cnpg-clusters/            # PostgreSQL cluster definitions
+│   ├── kustomization.yaml    # Applies backup to all clusters
+│   ├── authentik-cnpg-cluster.yaml
+│   ├── immich-cnpg-cluster.yaml
+│   ├── n8n-cnpg-cluster.yaml
+│   ├── synapse-cnpg-cluster.yaml
+│   ├── vaultwarden-cnpg-cluster.yaml
+│   ├── vikunja-cnpg-cluster.yaml
+│   ├── scheduled-backups.yaml
+│   └── README.md
+├── cnpg-operator/            # Operator configuration
+│   ├── application.yaml
+│   └── README.md
+├── kustomization.yaml
+├── QUICKSTART.md
+└── README.md
 ```
 
 ## Setup Instructions
@@ -47,7 +55,7 @@ Create a new item in 1Password with the following fields:
 - **Field name**: `keyId` → Your B2 application key ID
 - **Field name**: `applicationKey` → Your B2 application key
 
-The ExternalSecret in `external-secrets/b2-backup-credentials.yaml` will pull these credentials and create a Kubernetes secret.
+The ExternalSecret in `funland/cnpg/cnpg-components/b2-backup-credentials.yaml` will pull these credentials and create a Kubernetes secret.
 
 ### 3. Deploy the Configuration
 
@@ -80,7 +88,7 @@ kubectl describe cluster authentik-dbc -n postgres
 
 ### Compression Options
 
-The backup configuration uses **snappy** compression by default. You can change this in `cnpg-components/b2-backup/backup-config.yaml`:
+The backup configuration uses **snappy** compression by default. You can change this in `funland/cnpg/cnpg-components/b2-backup/backup-config.yaml`:
 
 **Available compression algorithms:**
 - `snappy`: Fast compression, moderate compression ratio (recommended for most cases)
