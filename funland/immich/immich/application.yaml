@@ -56,6 +56,13 @@ spec:
         DB_USERNAME: "{{ .immich_db_user | toString }}"
         DB_PASSWORD: "{{ .immich_db_password | toString }}"
         DB_DATABASE_NAME: "immich"
+        OAUTH_ENABLED: "true"
+        OAUTH_ISSUER_URL: "https://auth.batlab.io/application/o/immich/"
+        OAUTH_SCOPE: "openid email profile"
+        OAUTH_BUTTON_TEXT: "Login with Authentik"
+        OAUTH_AUTO_LAUNCH: "false"
+        OAUTH_CLIENT_ID: "{{ .oidc_client_id | toString }}"
+        OAUTH_CLIENT_SECRET: "{{ .oidc_client_secret | toString }}"
   data:
     - secretKey: immich_db_user
       remoteRef:
@@ -65,38 +72,6 @@ spec:
       remoteRef:
         key: immich-db-credentials
         property: password
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: immich-config
-  namespace: immich
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  refreshInterval: "5m"
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: 1password
-  target:
-    creationPolicy: Owner
-    template:
-      data:
-        config.json: |
-          {
-            "oauth": {
-              "enabled": true,
-              "issuerUrl": "https://auth.batlab.io/application/o/immich/",
-              "clientId": "{{ .oidc_client_id | toString }}",
-              "clientSecret": "{{ .oidc_client_secret | toString }}",
-              "scope": "openid email profile",
-              "buttonText": "Login with Authentik",
-              "autoRegister": true,
-              "autoLaunch": false,
-              "signingAlgorithm": "RS256"
-            }
-          }
-  data:
     - secretKey: oidc_client_id
       remoteRef:
         key: immich-authentik-oidc
@@ -130,20 +105,9 @@ spec:
               main:
                 image:
                   tag: v2.1.0
-                env:
-                  - name: IMMICH_CONFIG_FILE
-                    value: /config/config.json
                 envFrom:
                   - secretRef:
                       name: immich-secret
-                volumeMounts:
-                  - name: config
-                    mountPath: /config
-                    readOnly: true
-            volumes:
-              - name: config
-                secret:
-                  secretName: immich-config
         server:
           enabled: true
           ingress:
