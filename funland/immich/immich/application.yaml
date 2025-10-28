@@ -56,6 +56,8 @@ spec:
         DB_USERNAME: "{{ .immich_db_user | toString }}"
         DB_PASSWORD: "{{ .immich_db_password | toString }}"
         DB_DATABASE_NAME: "immich"
+        IMMICH_AUTH_OIDC_CLIENT_ID: "{{ .oidc_client_id | toString }}"
+        IMMICH_AUTH_OIDC_CLIENT_SECRET: "{{ .oidc_client_secret | toString }}"
   data:
     - secretKey: immich_db_user
       remoteRef:
@@ -65,6 +67,14 @@ spec:
       remoteRef:
         key: immich-db-credentials
         property: password
+    - secretKey: oidc_client_id
+      remoteRef:
+        key: immich-authentik-oidc
+        property: client_id
+    - secretKey: oidc_client_secret
+      remoteRef:
+        key: immich-authentik-oidc
+        property: client_secret
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -84,12 +94,28 @@ spec:
       valuesObject:
         env:
           DB_VECTOR_EXTENSION: "vchord"
+          OAUTH_ENABLED: "true"
+          OAUTH_ISSUER_URL: "https://auth.batlab.io/application/o/immich/"
+          OAUTH_SCOPE: "openid email profile"
+          OAUTH_BUTTON_TEXT: "Login with Authentik"
+          OAUTH_AUTO_LAUNCH: "false"
         controllers:
           main:
             containers:
               main:
                 image:
                   tag: v2.1.0
+                env:
+                  - name: OAUTH_CLIENT_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: immich-secret
+                        key: IMMICH_AUTH_OIDC_CLIENT_ID
+                  - name: OAUTH_CLIENT_SECRET
+                    valueFrom:
+                      secretKeyRef:
+                        name: immich-secret
+                        key: IMMICH_AUTH_OIDC_CLIENT_SECRET
                 envFrom:
                   - secretRef:
                       name: immich-secret
