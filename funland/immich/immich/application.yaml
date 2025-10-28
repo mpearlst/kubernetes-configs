@@ -136,17 +136,18 @@ spec:
                 envFrom:
                   - secretRef:
                       name: immich-secret
+                volumeMounts:
+                  - name: config
+                    mountPath: /config
+                    readOnly: true
+            volumes:
+              - name: config
+                secret:
+                  secretName: immich-config
         server:
           enabled: true
           ingress:
             enabled: false
-        persistence:
-          config:
-            type: secret
-            name: immich-config
-            globalMounts:
-              - path: /config
-                readOnly: true
         immich:
           persistence:
             library:
