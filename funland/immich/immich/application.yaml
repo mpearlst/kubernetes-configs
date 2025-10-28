@@ -94,11 +94,6 @@ spec:
       valuesObject:
         env:
           DB_VECTOR_EXTENSION: "vchord"
-          OAUTH_ENABLED: "true"
-          OAUTH_ISSUER_URL: "https://auth.batlab.io/application/o/immich/"
-          OAUTH_SCOPE: "openid email profile"
-          OAUTH_BUTTON_TEXT: "Login with Authentik"
-          OAUTH_AUTO_LAUNCH: "false"
         controllers:
           main:
             containers:
@@ -106,6 +101,16 @@ spec:
                 image:
                   tag: v2.1.0
                 env:
+                  - name: OAUTH_ENABLED
+                    value: "true"
+                  - name: OAUTH_ISSUER_URL
+                    value: "https://auth.batlab.io/application/o/immich/"
+                  - name: OAUTH_SCOPE
+                    value: "openid email profile"
+                  - name: OAUTH_BUTTON_TEXT
+                    value: "Login with Authentik"
+                  - name: OAUTH_AUTO_LAUNCH
+                    value: "false"
                   - name: OAUTH_CLIENT_ID
                     valueFrom:
                       secretKeyRef:
