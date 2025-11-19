@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: synapse
-        image: ghcr.io/element-hq/synapse:v1.142.0
+        image: ghcr.io/element-hq/synapse:v1.142.1
         env:
           - name: "TZ"
             value: "America/New_York"
