@@ -24,7 +24,7 @@ spec:
         app: adguard-home
     spec:
       containers:
-      - image: adguard/adguardhome:v0.107.69
+      - image: adguard/adguardhome:v0.107.70
         name: adguard-home
         volumeMounts:
         - name: config 
