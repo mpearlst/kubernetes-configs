@@ -30,7 +30,7 @@ spec:
       kind: ClusterSecretStore
   selector:
     secret:
-      name: certificate-batlab
+      name: batlab
   data:
     - match:
         secretKey: tls.crt
