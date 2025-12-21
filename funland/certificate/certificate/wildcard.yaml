@@ -8,6 +8,10 @@ spec:
     name: letsencrypt-dns
     kind: ClusterIssuer
   commonName: '*.batlab.io'
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
   dnsNames:
   - '*.batlab.io'
   - 'batlab.io'
