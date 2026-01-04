@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: privatebin-ingress
-  namespace: privatebin
+  name: immich-ingress
+  namespace: immich
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
