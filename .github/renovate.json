@@ -31,6 +31,14 @@
       ],
       "depNameTemplate": "ghcr.io/immich-app/immich-server",
       "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": ["^funland/newt/newt/application\\.yaml$"],
+      "matchStrings": [
+        "image:\\s+tag: \"(?<currentValue>.*)\""
+      ],
+      "depNameTemplate": "fosrl/newt",
+      "datasourceTemplate": "docker"
     }
   ]
 }
