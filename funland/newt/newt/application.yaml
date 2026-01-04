@@ -1,0 +1,59 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: newt
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: newt-auth
+  namespace: newt
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+  data:
+    - secretKey: PANGOLIN_ENDPOINT
+      remoteRef:
+        key: newt
+        property: endpoint
+    - secretKey: NEWT_ID
+      remoteRef:
+        key: newt
+        property: id
+    - secretKey: NEWT_SECRET
+      remoteRef:
+        key: newt
+        property: secret
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: newt-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: newt
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: newt
+    repoURL: https://fosrl.github.io/helm-charts
+    targetRevision: "*"
+    helm:
+      valuesObject:
+        newtInstances:
+          - name: main-tunnel
+            auth:
+              existingSecretName: newt-auth
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
