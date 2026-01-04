@@ -9,7 +9,7 @@ spec:
   - host: immich.batlab.io
     http:
       paths:
-      - path: /
+      - path: /share
         pathType: Prefix
         backend:
           service:
