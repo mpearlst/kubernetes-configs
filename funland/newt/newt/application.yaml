@@ -45,11 +45,12 @@ spec:
   source:
     chart: newt
     repoURL: https://fosrl.github.io/helm-charts
-    targetRevision: "*"
+    targetRevision: "1.1.0"
     helm:
       valuesObject:
         newtInstances:
           - name: main-tunnel
+            enabled: true
             auth:
               existingSecretName: newt-auth
   syncPolicy:
