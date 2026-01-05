@@ -13,7 +13,7 @@ Additionally, a `PushSecret` resource is defined to push the generated TLS certi
 The `PushSecret` is configured as follows:
 
 - **PushSecret Name:** `batlab-wildcard-cert`
-- **Source Secret:** `certificate-batlab`
+- **Source Secret:** `batlab`
 - **1Password Secret:** `batlab-wildcard-cert`
 
 It pushes the following keys:

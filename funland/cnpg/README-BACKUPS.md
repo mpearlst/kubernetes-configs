@@ -266,7 +266,8 @@ batcave-kubernetes/
         ├── vikunja/
         ├── n8n/
         ├── vaultwarden/
-        └── immich/
+        ├── immich/
+        └── synapse/
 ```
 
 Each database directory contains:
