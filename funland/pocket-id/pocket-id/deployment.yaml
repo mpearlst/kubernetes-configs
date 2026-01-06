@@ -67,7 +67,7 @@ spec:
             secretKeyRef:
               name: pocket-id-secrets
               key: ENCRYPTION_KEY
-        - name: PUBLIC_APP_URL
+        - name: APP_URL
           value: "https://id.batlab.io"
         - name: TRUST_PROXY
           value: "true"
