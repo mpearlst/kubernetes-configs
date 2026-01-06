@@ -67,6 +67,8 @@ spec:
             secretKeyRef:
               name: pocket-id-secrets
               key: ENCRYPTION_KEY
+        - name: PUBLIC_APP_URL
+          value: "https://id.batlab.io"
         volumeMounts:
         - name: data
           mountPath: /app/data
