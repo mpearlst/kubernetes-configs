@@ -5,6 +5,26 @@ metadata:
   name: pocket-id
 
 ---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: pocket-id-secrets
+  namespace: pocket-id
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: 1password
+    kind: ClusterSecretStore
+  target:
+    name: pocket-id-secrets
+    creationPolicy: Owner
+  data:
+    - secretKey: ENCRYPTION_KEY
+      remoteRef:
+        key: pocket-id-secrets
+        property: encryption_key
+
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -41,6 +61,12 @@ spec:
         ports:
         - containerPort: 1411
           name: http
+        env:
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: pocket-id-secrets
+              key: ENCRYPTION_KEY
         volumeMounts:
         - name: data
           mountPath: /app/data
