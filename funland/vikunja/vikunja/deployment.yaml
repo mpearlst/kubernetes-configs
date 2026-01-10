@@ -1,111 +1,3 @@
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: vikunja
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: vikunja-configsecrets
-  namespace: vikunja
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  refreshInterval: "5m"
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: 1password
-  target:
-    creationPolicy: Owner
-  data:
-    - secretKey: jwtsecret
-      remoteRef:
-        key: vikunja
-        property: jwtsecret
-    - secretKey: postgrespassword
-      remoteRef:
-        key: vikunja-db-credentials
-        property: password
-    - secretKey: postgresuser
-      remoteRef:
-        key: vikunja-db-credentials
-        property: username
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: vikunja-sso
-  namespace: vikunja
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  refreshInterval: "5m"
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: 1password
-  target:
-    creationPolicy: Owner
-    template:
-      data:
-        config.yaml: |-
-          auth:
-            openid:
-              enabled: true
-              redirecturl: https://vikunja.batlab.io/auth/openid/
-              providers:
-                - name: authentik
-                  authurl: https://auth.batlab.io/application/o/vikunja/
-                  logouturl: https://auth.batlab.io/application/o/vikunja/end-session/
-                  clientid: "{{ .client_id | toString }}"
-                  clientsecret: "{{ .client_secret | toString }}"
-  data:
-    - secretKey: client_id
-      remoteRef:
-        key: vikunja-sso
-        property: vikunja_client_id
-    - secretKey: client_secret
-      remoteRef:
-        key: vikunja-sso
-        property: vikunja_client_secret
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: vikunja-files
-  namespace: vikunja
-  labels:
-    app.kubernetes.io/instance: vikunja
-    app.kubernetes.io/name: vikunja
-spec:
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: "1Gi"
-  storageClassName: "longhorn"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vikunja
-  namespace: vikunja
-  labels:
-    app.kubernetes.io/instance: vikunja
-    app.kubernetes.io/name: vikunja
-    app.kubernetes.io/service: vikunja
-spec:
-  type: ClusterIP
-  ports:
-    - port: 3456
-      targetPort: 3456
-      protocol: TCP
-      name: api
-  selector:
-    app.kubernetes.io/component: app
-    app.kubernetes.io/instance: vikunja
-    app.kubernetes.io/name: vikunja
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -131,7 +23,9 @@ spec:
         app.kubernetes.io/name: vikunja
     spec:
       containers:
-        - env:
+        - name: main
+          image: vikunja/vikunja:0.24.6
+          env:
             - name: VIKUNJA_AUTH_LOCAL
               value: "false"
             - name: VIKUNJA_DATABASE_TYPE
@@ -159,8 +53,6 @@ spec:
                 secretKeyRef:
                   name: vikunja-configsecrets
                   key: jwtsecret
-          image: vikunja/vikunja:0.24.6
-          name: main
           resources:
             limits:
               cpu: "100m"
@@ -183,24 +75,3 @@ spec:
         - name: files
           persistentVolumeClaim:
             claimName: vikunja-files
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: vikunja
-  namespace: vikunja
-spec:
-  parentRefs:
-    - name: external
-      namespace: gateway
-      sectionName: https
-  hostnames:
-    - "vikunja.batlab.io"
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - name: vikunja
-          port: 3456
