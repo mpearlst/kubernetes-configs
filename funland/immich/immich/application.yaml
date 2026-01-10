@@ -89,6 +89,7 @@ spec:
             containers:
               main:
                 image:
+                  # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server
                   tag: v2.4.1
                 envFrom:
                   - secretRef:

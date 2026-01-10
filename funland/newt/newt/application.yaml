@@ -49,6 +49,7 @@ spec:
     helm:
       valuesObject:
         image:
+          # renovate: datasource=docker depName=fosrl/newt
           tag: "1.8.1"
         newtInstances:
           - name: main-tunnel
