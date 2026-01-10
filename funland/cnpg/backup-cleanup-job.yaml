@@ -1,0 +1,155 @@
+# Utility Job for listing and pruning CloudNativePG backups in Backblaze B2
+#
+# Usage:
+# 1. List backups (dry-run):
+#    kubectl create -f backup-cleanup-job.yaml
+#    kubectl logs -n postgres job/backup-cleanup-synapse
+#
+# 2. Delete backups older than retention policy:
+#    Edit JOB_MODE to "delete" and apply
+#
+# 3. Clean up job:
+#    kubectl delete job backup-cleanup-synapse -n postgres
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup-cleanup-synapse
+  namespace: postgres
+spec:
+  ttlSecondsAfterFinished: 3600  # Auto-cleanup after 1 hour
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: backup-manager
+          image: ghcr.io/cloudnative-pg/postgresql:17.5
+          env:
+            # Configuration
+            - name: CLUSTER_NAME
+              value: "synapse-dbc"
+            - name: BACKUP_PATH
+              value: "s3://batcave-kubernetes/funland/postgres-backups/synapse"
+            - name: ENDPOINT_URL
+              value: "https://s3.us-west-000.backblazeb2.com"
+            - name: RETENTION_POLICY
+              value: "RECOVERY WINDOW OF 30 DAYS"  # Must match cluster retention
+            - name: JOB_MODE
+              value: "list"  # Options: "list" or "delete"
+
+            # Credentials from secret
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: b2-backup-credentials
+                  key: ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: b2-backup-credentials
+                  key: ACCESS_SECRET_KEY
+
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+
+              echo "================================================"
+              echo "CloudNativePG Backup Management Utility"
+              echo "================================================"
+              echo "Cluster: $CLUSTER_NAME"
+              echo "Backup Path: $BACKUP_PATH"
+              echo "Retention Policy: $RETENTION_POLICY"
+              echo "Mode: $JOB_MODE"
+              echo "================================================"
+              echo
+
+              if [ "$JOB_MODE" = "list" ]; then
+                echo "Listing all backups:"
+                echo "-------------------"
+                barman-cloud-backup-list \
+                  --endpoint-url "$ENDPOINT_URL" \
+                  --cloud-provider aws-s3 \
+                  "$BACKUP_PATH" \
+                  "$CLUSTER_NAME"
+
+                echo
+                echo "To see which backups would be deleted:"
+                echo "Run with JOB_MODE=delete-dry-run"
+
+              elif [ "$JOB_MODE" = "delete-dry-run" ]; then
+                echo "DRY RUN - Checking which backups would be deleted:"
+                echo "---------------------------------------------------"
+                barman-cloud-backup-delete \
+                  --endpoint-url "$ENDPOINT_URL" \
+                  --cloud-provider aws-s3 \
+                  --retention-policy "$RETENTION_POLICY" \
+                  --dry-run \
+                  -v \
+                  "$BACKUP_PATH" \
+                  "$CLUSTER_NAME"
+
+              elif [ "$JOB_MODE" = "delete" ]; then
+                echo "WARNING: This will permanently delete old backups!"
+                echo "Deleting backups outside retention policy..."
+                echo "--------------------------------------------"
+                barman-cloud-backup-delete \
+                  --endpoint-url "$ENDPOINT_URL" \
+                  --cloud-provider aws-s3 \
+                  --retention-policy "$RETENTION_POLICY" \
+                  -v \
+                  "$BACKUP_PATH" \
+                  "$CLUSTER_NAME"
+                echo
+                echo "Deletion complete!"
+
+              else
+                echo "ERROR: Invalid JOB_MODE. Use: list, delete-dry-run, or delete"
+                exit 1
+              fi
+
+              echo
+              echo "================================================"
+              echo "Job completed successfully"
+              echo "================================================"
+---
+# Template for other clusters - just copy and modify the cluster name
+# Uncomment and edit as needed:
+
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: backup-cleanup-authentik
+#   namespace: postgres
+# spec:
+#   ttlSecondsAfterFinished: 3600
+#   template:
+#     spec:
+#       restartPolicy: Never
+#       containers:
+#         - name: backup-manager
+#           image: ghcr.io/cloudnative-pg/postgresql:17.5
+#           env:
+#             - name: CLUSTER_NAME
+#               value: "authentik-dbc"
+#             - name: BACKUP_PATH
+#               value: "s3://batcave-kubernetes/funland/postgres-backups/authentik"
+#             - name: ENDPOINT_URL
+#               value: "https://s3.us-west-000.backblazeb2.com"
+#             - name: RETENTION_POLICY
+#               value: "RECOVERY WINDOW OF 30 DAYS"
+#             - name: JOB_MODE
+#               value: "list"
+#             - name: AWS_ACCESS_KEY_ID
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: b2-backup-credentials
+#                   key: ACCESS_KEY_ID
+#             - name: AWS_SECRET_ACCESS_KEY
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: b2-backup-credentials
+#                   key: ACCESS_SECRET_KEY
+#           command: ["/bin/bash", "-c"]
+#           args: ["<same script as above>"]
