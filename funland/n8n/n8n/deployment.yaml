@@ -74,13 +74,29 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /home/node/.n8n
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: false  # n8n needs write access to data
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             requests:
               memory: "512Mi"
               cpu: "250m"
+              ephemeral-storage: "256Mi"
             limits:
               memory: "1Gi"
               cpu: "1000m"
+              ephemeral-storage: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 5678
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30  # Allow 5 minutes for startup
           livenessProbe:
             httpGet:
               path: /healthz

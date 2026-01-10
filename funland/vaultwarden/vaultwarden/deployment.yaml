@@ -75,9 +75,37 @@ spec:
           requests:
             cpu: "100m"
             memory: "128Mi"
+            ephemeral-storage: "64Mi"
           limits:
             cpu: "500m"
             memory: "512Mi"
+            ephemeral-storage: "256Mi"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false  # Vaultwarden needs write access for data
+          seccompProfile:
+            type: RuntimeDefault
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /alive
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
 ---
 apiVersion: v1
 kind: Service

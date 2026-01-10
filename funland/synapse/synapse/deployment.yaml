@@ -45,8 +45,41 @@ spec:
             ephemeral-storage: 128Mi
           requests:
             cpu: 100m
-            memory: 64Mi
+            memory: 512Mi  # More realistic based on 4Gi limit
             ephemeral-storage: 16Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 991
+          runAsGroup: 991
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false  # Synapse needs write access to data directory
+          seccompProfile:
+            type: RuntimeDefault
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8008
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8008
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8008
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 30  # Allow 5 minutes for startup
       volumes:
         - name: synapse-data
           persistentVolumeClaim:

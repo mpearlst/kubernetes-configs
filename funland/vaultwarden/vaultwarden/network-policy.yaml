@@ -1,0 +1,129 @@
+---
+# Network policies for Vaultwarden namespace
+# Implements deny-by-default with explicit allow rules
+
+# Default deny all ingress and egress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: vaultwarden
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# Allow Vaultwarden to receive traffic from Gateway
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-gateway
+  namespace: vaultwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: vaultwarden
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # Allow traffic from gateway namespace
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: gateway
+        # Allow traffic from monitoring namespace (Prometheus scraping)
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 80
+---
+# Allow Vaultwarden egress to PostgreSQL database
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-to-postgres
+  namespace: vaultwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: vaultwarden
+  policyTypes:
+    - Egress
+  egress:
+    # Allow connection to PostgreSQL in postgres namespace
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+# Allow Vaultwarden egress to DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: vaultwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: vaultwarden
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS queries to kube-system (CoreDNS/Cilium DNS)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow Vaultwarden egress for SMTP (email notifications)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-smtp
+  namespace: vaultwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: vaultwarden
+  policyTypes:
+    - Egress
+  egress:
+    # Allow SMTP traffic to external servers
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 465  # SMTPS
+        - protocol: TCP
+          port: 587  # SMTP submission
+---
+# Allow Vaultwarden egress for HTTPS (push notifications, license checks)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-https-egress
+  namespace: vaultwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: vaultwarden
+  policyTypes:
+    - Egress
+  egress:
+    # Allow HTTPS to any destination for push notifications
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443

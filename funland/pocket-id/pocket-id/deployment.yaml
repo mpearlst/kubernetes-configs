@@ -17,10 +17,21 @@ spec:
     spec:
       containers:
         - name: pocket-id
-          image: ghcr.io/pocket-id/pocket-id:v2
+          # renovate: datasource=docker depName=ghcr.io/pocket-id/pocket-id
+          image: ghcr.io/pocket-id/pocket-id:v2.2.0
           ports:
             - containerPort: 1411
               name: http
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: false  # Pocket-ID needs write access to data
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: ENCRYPTION_KEY
               valueFrom:
@@ -38,9 +49,11 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "100m"
+              ephemeral-storage: "64Mi"
             limits:
               memory: "512Mi"
               cpu: "500m"
+              ephemeral-storage: "256Mi"
           livenessProbe:
             exec:
               command:

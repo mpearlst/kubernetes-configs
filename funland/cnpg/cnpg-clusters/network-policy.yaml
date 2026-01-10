@@ -1,0 +1,135 @@
+---
+# Network policies for postgres namespace
+# Allows only authorized applications to connect to databases
+
+# Default deny all ingress and egress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: postgres
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# Allow PostgreSQL ingress from application namespaces
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-from-apps
+  namespace: postgres
+spec:
+  podSelector:
+    matchLabels:
+      postgresql: cloudnative-pg
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow connections from authenticated application namespaces
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: vaultwarden
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: immich
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: n8n
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: synapse
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: vikunja
+        # Allow monitoring
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+# Allow PostgreSQL pods to communicate with each other (for replication)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-replication
+  namespace: postgres
+spec:
+  podSelector:
+    matchLabels:
+      postgresql: cloudnative-pg
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow postgres pods to talk to each other
+    - from:
+        - podSelector:
+            matchLabels:
+              postgresql: cloudnative-pg
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 8000  # CNPG status port
+  egress:
+    # Allow postgres pods to talk to each other
+    - to:
+        - podSelector:
+            matchLabels:
+              postgresql: cloudnative-pg
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 8000
+---
+# Allow PostgreSQL egress for DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: postgres
+spec:
+  podSelector:
+    matchLabels:
+      postgresql: cloudnative-pg
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow PostgreSQL egress for backups to B2
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backup-egress
+  namespace: postgres
+spec:
+  podSelector:
+    matchLabels:
+      postgresql: cloudnative-pg
+  policyTypes:
+    - Egress
+  egress:
+    # Allow HTTPS to Backblaze B2 for backups
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443

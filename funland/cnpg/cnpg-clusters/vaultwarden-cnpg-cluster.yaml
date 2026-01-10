@@ -14,6 +14,27 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: required
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: "s3://batcave-kubernetes/funland/postgres-backups/vaultwarden"
+      endpointURL: "https://s3.us-west-000.backblazeb2.com"
+      s3Credentials:
+        accessKeyId:
+          name: b2-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2-backup-credentials
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: snappy
+        maxParallel: 2
+        encryption: AES256
+      data:
+        compression: snappy
+        immediateCheckpoint: true
+        jobs: 2
+        encryption: AES256
   bootstrap:
     initdb:
       database: vaultwarden

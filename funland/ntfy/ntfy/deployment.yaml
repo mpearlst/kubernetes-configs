@@ -19,6 +19,21 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
+            ephemeral-storage: "128Mi"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+            ephemeral-storage: "32Mi"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false  # NTFY needs write access to cache and auth
+          seccompProfile:
+            type: RuntimeDefault
         ports:
         - containerPort: 80
           name: http
