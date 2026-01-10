@@ -38,7 +38,7 @@ funland/                          # Cluster name
 ├── external-secrets/            # External Secrets Operator + 1Password
 ├── cnpg/                        # CloudNativePG operator + database clusters
 ├── longhorn-system/longhorn/    # Persistent storage
-├── monitoring/                  # Prometheus, Grafana, metrics-server
+├── monitoring/                  # Prometheus, Grafana, Loki, Promtail, metrics-server
 └── [app-namespace]/[app]/       # Application deployments
 ```
 
@@ -198,9 +198,12 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | AdGuard Home | adguard | DNS ad-blocking |
 | Authentik | authentik | Identity provider / SSO |
 | Cert-Manager | cert-manager | TLS certificate automation |
+| Cilium | kube-system | CNI with Gateway API, Hubble observability |
 | Grafana | monitoring | Metrics visualization |
+| Hubble | kube-system | Network flow observability UI |
 | Immich | immich | Photo/video management |
 | Jellyfin | media | Media server |
+| Loki | monitoring | Log aggregation |
 | Longhorn | longhorn-system | Distributed storage |
 | n8n | n8n | Workflow automation |
 | Newt | newt | Pangolin tunnel client |
@@ -208,6 +211,7 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Pocket ID | pocket-id | OIDC provider |
 | Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection |
+| Promtail | monitoring | Log shipping agent |
 | Synapse | synapse | Matrix homeserver |
 | Vaultwarden | vaultwarden | Bitwarden-compatible password manager |
 | Vikunja | vikunja | Task management |
@@ -216,7 +220,51 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 
 - **IP Pool:** `192.168.10.30` - `192.168.10.49` (Cilium L2 announcements)
 - **Internal Gateway:** `192.168.10.30` - Routes internal services via HTTPRoute resources
+- **External Gateway:** `192.168.10.31` - Routes public-facing services
 - **CNI:** Cilium with kube-proxy replacement and Gateway API enabled
+
+## Observability Stack
+
+### Metrics (Prometheus + Grafana)
+- Prometheus scrapes metrics from all services with ServiceMonitors
+- Cilium exports network metrics (DNS, TCP, HTTP, drops, flows)
+- Grafana dashboards available at `grafana.batlab.io`
+
+### Logging (Loki + Promtail)
+- Promtail runs as a DaemonSet, collecting logs from all pods
+- Loki aggregates logs in SingleBinary mode with Longhorn storage
+- Query logs via Grafana's Explore tab
+
+### Network Observability (Hubble)
+- Hubble UI available at `hubble.batlab.io`
+- Real-time network flow visualization
+- DNS query tracking and HTTP request inspection
+
+## Database Backups (CloudNativePG)
+
+All PostgreSQL clusters are configured with automated backups to Backblaze B2:
+
+| Database | Backup Path |
+|----------|-------------|
+| authentik-dbc | `s3://batcave-kubernetes/funland/postgres-backups/authentik` |
+| immich-dbc | `s3://batcave-kubernetes/funland/postgres-backups/immich` |
+| n8n-dbc | `s3://batcave-kubernetes/funland/postgres-backups/n8n` |
+| synapse-dbc | `s3://batcave-kubernetes/funland/postgres-backups/synapse` |
+| vaultwarden-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vaultwarden` |
+| vikunja-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vikunja` |
+
+**Backup Configuration:**
+- **Retention:** 30 days
+- **Compression:** Snappy
+- **Encryption:** AES256 (WAL and data)
+- **Schedule:** Daily at midnight (via ScheduledBackup resources)
+- **Continuous:** WAL archiving enabled for point-in-time recovery
+
+**Verify backups:**
+```sh
+kubectl get scheduledbackups -n postgres
+kubectl get backups -n postgres
+```
 
 ## Troubleshooting
 
