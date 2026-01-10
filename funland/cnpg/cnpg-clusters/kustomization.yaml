@@ -1,7 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Include all CNPG cluster definitions
 resources:
   - authentik-cnpg-cluster.yaml
   - vikunja-cnpg-cluster.yaml
@@ -9,58 +8,5 @@ resources:
   - vaultwarden-cnpg-cluster.yaml
   - immich-cnpg-cluster.yaml
   - synapse-cnpg-cluster.yaml
-  - scheduled-backups.yaml  # Daily backups at midnight
-
-# Use the B2 backup component to add backup config to all clusters
-components:
-  - ../cnpg-components/b2-backup
-
-# Customize the backup path for each cluster
-patches:
-  - target:
-      kind: Cluster
-      name: authentik-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/authentik
-
-  - target:
-      kind: Cluster
-      name: vikunja-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/vikunja
-
-  - target:
-      kind: Cluster
-      name: n8n-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/n8n
-
-  - target:
-      kind: Cluster
-      name: vaultwarden-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/vaultwarden
-
-  - target:
-      kind: Cluster
-      name: immich-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/immich
-
-  - target:
-      kind: Cluster
-      name: synapse-dbc
-    patch: |-
-      - op: replace
-        path: /spec/backup/barmanObjectStore/destinationPath
-        value: s3://batcave-kubernetes/funland/postgres-backups/synapse
+  - scheduled-backups.yaml
+  - network-policy.yaml
