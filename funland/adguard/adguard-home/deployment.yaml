@@ -43,21 +43,41 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: "15m"
+            cpu: "500m"
+            memory: "1Gi"
+            ephemeral-storage: "512Mi"
+          requests:
+            cpu: "100m"
             memory: "256Mi"
             ephemeral-storage: "64Mi"
-          requests:
-            cpu: "5m"
-            memory: "64Mi"
-        # securityContext:
-        #   capabilities:
-        #     drop: [ALL]
-        #   readOnlyRootFilesystem: true
-        #   privileged: false
-        #   allowPrivilegeEscalation: false
-        #   runAsNonRoot: true
-        #   seccompProfile:
-        #     type: RuntimeDefault
+        securityContext:
+          capabilities:
+            drop: [ALL]
+            add: [NET_BIND_SERVICE]  # Required for DNS on port 53
+          readOnlyRootFilesystem: false  # AdGuard needs to write to work/config
+          privileged: false
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
       volumes:
       - name: work
         persistentVolumeClaim:
