@@ -9,4 +9,3 @@ resources:
   - immich-cnpg-cluster.yaml
   - synapse-cnpg-cluster.yaml
   - scheduled-backups.yaml
-  - network-policy.yaml
