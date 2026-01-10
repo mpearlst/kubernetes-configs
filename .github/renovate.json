@@ -4,6 +4,8 @@
     "config:recommended"
   ],
   "prHourlyLimit": 3,
+  "prConcurrentLimit": 5,
+  "pruneStaleBranches": true,
   "argocd": {
     "managerFilePatterns": [
       "/funland/[^/]+/[^/]+/application\\.yaml/"
@@ -11,34 +13,16 @@
   },
   "kubernetes": {
     "managerFilePatterns": [
-      "/manifests/[^/]+/[^/]+/deployment\\.yaml/",
       "/funland/[^/]+/[^/]+/deployment\\.yaml/"
     ]
   },
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^funland/cloudflare/cloudflare/application\\.yaml$"],
+      "customType": "regex",
+      "fileMatch": ["^funland/.+/application\\.yaml$"],
       "matchStrings": [
-        "tag: (?<currentValue>.*)"
-      ],
-      "depNameTemplate": "cloudflare/cloudflared",
-      "datasourceTemplate": "docker"
-    },
-    {
-      "fileMatch": ["^funland/immich/immich/application\\.yaml$"],
-      "matchStrings": [
-        "tag: (?<currentValue>.*)"
-      ],
-      "depNameTemplate": "ghcr.io/immich-app/immich-server",
-      "datasourceTemplate": "docker"
-    },
-    {
-      "fileMatch": ["^funland/newt/newt/application\\.yaml$"],
-      "matchStrings": [
-        "image:\\s+tag: \"(?<currentValue>.*)\""
-      ],
-      "depNameTemplate": "fosrl/newt",
-      "datasourceTemplate": "docker"
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ]
     }
   ]
 }
