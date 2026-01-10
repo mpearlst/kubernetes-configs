@@ -16,24 +16,36 @@ spec:
       valuesObject:
         ipam:
           mode: kubernetes
-        # prometheus:
-        #   enabled: true
-        # operator:
-        #   prometheus:
-        #     enabled: true
-        #   hubble:
-        #     enabled: true
-        #     metrics:
-        #       enableOpenMetrics: true
-        #       enabled:
-        #         - dns:query
-        #         - drop
-        #         - tcp
-        #         - flow
-        #         - port-distribution
-        #         - icmp
-        #         - http
-        #       #enabled: {dns,drop,tcp,flow,port-distribution,icmp,httpV2:exemplars=true;labelsContext=source_ip\,source_namespace\,source_workload\,destination_ip\,destination_namespace\,destination_workload\,traffic_direction}
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+        operator:
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+        hubble:
+          enabled: true
+          relay:
+            enabled: true
+          ui:
+            enabled: true
+          metrics:
+            enableOpenMetrics: true
+            serviceMonitor:
+              enabled: true
+            enabled:
+              - dns:query
+              - drop
+              - tcp
+              - flow
+              - port-distribution
+              - icmp
+              - httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction
+            dashboards:
+              enabled: true
+              namespace: monitoring
         kubeProxyReplacement: true
         securityContext:
           capabilities:
