@@ -7,5 +7,4 @@ resources:
   - n8n-cnpg-cluster.yaml
   - vaultwarden-cnpg-cluster.yaml
   - immich-cnpg-cluster.yaml
-  - synapse-cnpg-cluster.yaml
   - scheduled-backups.yaml

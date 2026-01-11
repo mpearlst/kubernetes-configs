@@ -25,7 +25,6 @@ funland/cnpg/
 │   ├── authentik-cnpg-cluster.yaml
 │   ├── immich-cnpg-cluster.yaml
 │   ├── n8n-cnpg-cluster.yaml
-│   ├── synapse-cnpg-cluster.yaml
 │   ├── vaultwarden-cnpg-cluster.yaml
 │   ├── vikunja-cnpg-cluster.yaml
 │   ├── scheduled-backups.yaml
@@ -267,7 +266,6 @@ batcave-kubernetes/
         ├── n8n/
         ├── vaultwarden/
         ├── immich/
-        └── synapse/
 ```
 
 Each database directory contains:

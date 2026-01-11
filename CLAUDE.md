@@ -112,7 +112,7 @@ spec:
 
 **Gateway options:**
 - `internal` - For services only accessible on the local network
-- `external` - For services exposed publicly (used by: jellyfin, ntfy, privatebin, synapse, vikunja)
+- `external` - For services exposed publicly (used by: jellyfin, ntfy, privatebin, vikunja)
 
 ### Adding a CloudNativePG Database
 

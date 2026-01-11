@@ -212,7 +212,6 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection |
 | Promtail | monitoring | Log shipping agent |
-| Synapse | synapse | Matrix homeserver |
 | Vaultwarden | vaultwarden | Bitwarden-compatible password manager |
 | Vikunja | vikunja | Task management |
 
@@ -249,7 +248,6 @@ All PostgreSQL clusters are configured with automated backups to Backblaze B2:
 | authentik-dbc | `s3://batcave-kubernetes/funland/postgres-backups/authentik` |
 | immich-dbc | `s3://batcave-kubernetes/funland/postgres-backups/immich` |
 | n8n-dbc | `s3://batcave-kubernetes/funland/postgres-backups/n8n` |
-| synapse-dbc | `s3://batcave-kubernetes/funland/postgres-backups/synapse` |
 | vaultwarden-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vaultwarden` |
 | vikunja-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vikunja` |
 
