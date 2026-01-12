@@ -29,17 +29,30 @@ spec:
     spec:
       # Security: Disable service account token mounting (vaultwarden doesn't need K8s API access)
       automountServiceAccountToken: false
-      # Note: Pod-level security context removed - vaultwarden image runs as root and requires write access to /data
-      # Future: Add persistent volume with proper ownership to enable runAsNonRoot
+      # Security: Pod-level security context for non-root execution
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # InitContainer: Set proper ownership on persistent volume
+      initContainers:
+      - name: data-permissions
+        image: busybox:1.37
+        command: ['sh', '-c', 'chown -R 1000:1000 /data && chmod -R 755 /data']
+        securityContext:
+          runAsUser: 0  # Must run as root to chown
+        volumeMounts:
+        - name: vaultwarden-data
+          mountPath: /data
       containers:
       - name: vaultwarden
         image: vaultwarden/server:1.35.2
-        # Security: Container-level security context (limited by image requirements)
+        # Security: Container-level security context with non-root execution
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
-            drop: [ALL]
-            add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]  # Required for file operations in /data
+            drop: [ALL]  # No capabilities needed with proper file ownership
           readOnlyRootFilesystem: false  # Vaultwarden needs to write to /data
           seccompProfile:
             type: RuntimeDefault
@@ -121,6 +134,15 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+        # Volume mount: Persistent storage for vaultwarden data
+        volumeMounts:
+        - name: vaultwarden-data
+          mountPath: /data
+      # Persistent volume for vaultwarden data (RSA keys, icons, attachments)
+      volumes:
+      - name: vaultwarden-data
+        persistentVolumeClaim:
+          claimName: vaultwarden-data
 ---
 apiVersion: v1
 kind: Service
