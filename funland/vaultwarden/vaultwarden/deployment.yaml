@@ -29,20 +29,17 @@ spec:
     spec:
       # Security: Disable service account token mounting (vaultwarden doesn't need K8s API access)
       automountServiceAccountToken: false
-      # Security: Pod-level security context
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+      # Note: Pod-level security context removed - vaultwarden image runs as root and requires write access to /data
+      # Future: Add persistent volume with proper ownership to enable runAsNonRoot
       containers:
       - name: vaultwarden
         image: vaultwarden/server:1.35.2
-        # Security: Container-level security context
+        # Security: Container-level security context (limited by image requirements)
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: [ALL]
+            add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]  # Required for file operations in /data
           readOnlyRootFilesystem: false  # Vaultwarden needs to write to /data
           seccompProfile:
             type: RuntimeDefault
