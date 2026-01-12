@@ -1,0 +1,16 @@
+# Audit reports (keep private, not for public repo)
+docs/audits/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
