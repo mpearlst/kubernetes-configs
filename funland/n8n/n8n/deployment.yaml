@@ -21,7 +21,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: n8n
-          image: n8nio/n8n:2.3.2
+          image: n8nio/n8n:2.4.0
           ports:
             - containerPort: 5678
               name: http
