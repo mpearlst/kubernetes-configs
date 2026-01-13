@@ -1,8 +1,9 @@
 # Jellyfin Security Hardening Summary
 
 **Date**: 2026-01-12
-**Status**: 🔄 IN PROGRESS (Branch Ready for Review)
-**Branch**: security/jellyfin-critical-hardening
+**Status**: ✅ MERGED TO MAIN
+**Branch**: security/jellyfin-critical-hardening → main
+**Commit**: 52fa8fc (merged in f4a2e7a)
 **Severity**: CRITICAL-2 from security audit
 
 ---
@@ -238,35 +239,44 @@ With 4-core CPU limit, Jellyfin can handle:
 
 ---
 
-## Next Actions
+## Deployment Verification ✅
 
-### 1. Test Deployment
+### Testing Completed
+All verification checks passed:
+- ✅ Pod starts successfully as UID 568
+- ✅ Media library accessible (NFS read with proper permissions)
+- ✅ Config and cache writable
+- ✅ Health probes passing (liveness + readiness)
+- ✅ Web UI accessible at https://jellyfin.batlab.io
+
+### Verification Commands Used
 ```bash
-# Apply changes (via ArgoCD or kubectl)
-kubectl apply -f funland/media/jellyfin/deployment.yaml
-
-# Wait for rollout
-kubectl rollout status deployment/jellyfin -n media
-
-# Verify pod runs as UID 568
+# Pod running as UID 568
 kubectl exec -n media deployment/jellyfin -- id
+# Output: uid=568 gid=568 groups=568
 
-# Test web UI access
-curl -I http://jellyfin.batlab.io/health
+# Security context verified
+kubectl get pod -n media -l app.kubernetes.io/name=jellyfin -o jsonpath='{.items[0].spec.securityContext}' | jq
+
+# NFS media library accessible
+kubectl exec -n media deployment/jellyfin -- ls -la /media | head -10
+
+# Health endpoint responding
+kubectl exec -n media deployment/jellyfin -- curl -s -o /dev/null -w "%{http_code}" http://localhost:8096/health
+# Output: 200
 ```
 
-### 2. Merge to Main
-Once testing confirms:
-- Pod starts successfully as UID 568
-- Media library accessible (NFS read)
-- Config and cache writable
-- Health probes passing
-- Web UI accessible
+---
 
-### 3. Remaining Critical Issues
+## Remaining Critical Issues
+
+### Next Priority
 1. **CRITICAL-1**: Pocket-ID security hardening (SSO provider)
 2. **CRITICAL-0**: Network policies (cluster-wide)
 3. **HIGH**: Vikunja container-level security
+
+### Branch Status
+- Branch `security/jellyfin-critical-hardening` has been merged and deleted
 
 ---
 
@@ -291,13 +301,7 @@ Once testing confirms:
 
 - ✅ CRITICAL-4: vaultwarden (COMPLETED)
 - ✅ CRITICAL-3: ntfy (COMPLETED)
-- 🔄 CRITICAL-2: jellyfin (THIS BRANCH)
+- ✅ CRITICAL-2: jellyfin (COMPLETED - THIS BRANCH)
 - ⏳ CRITICAL-1: pocket-id (NEXT)
 - ⏳ CRITICAL-0: Network policies (applies to all services)
 - ⏳ HIGH-6: Standard labels for remaining services
-
----
-
-**Branch Status**: Ready for testing and merge
-**Deployment Risk**: LOW (non-breaking changes, security hardening only)
-**Rollback Plan**: Revert commit or re-deploy previous manifest
