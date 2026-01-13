@@ -11,10 +11,24 @@ spec:
       labels:
         app: ntfy
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      automountServiceAccountToken: false
       containers:
       - name: ntfy
         image: binwiederhier/ntfy:v2.15
         args: ["serve"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false
+          seccompProfile:
+            type: RuntimeDefault
         resources:
           limits:
             memory: "128Mi"
@@ -29,6 +43,14 @@ spec:
           initialDelaySeconds: 40
           timeoutSeconds: 10
           periodSeconds: 60
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
           failureThreshold: 3
         volumeMounts:
         - name: config
@@ -61,7 +83,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Mi
+      storage: 100Mi
   storageClassName: longhorn
   volumeMode: Filesystem
 ---
@@ -75,7 +97,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Mi
+      storage: 1Gi
   storageClassName: longhorn
   volumeMode: Filesystem
 ---
