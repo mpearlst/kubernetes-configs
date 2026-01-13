@@ -9,20 +9,38 @@ metadata:
   name: jellyfin
   namespace: media
   labels:
-    app: jellyfin
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/version: "10.11.5"
+    app.kubernetes.io/component: media-server
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
 spec:
   revisionHistoryLimit: 1
   replicas: 1
   selector:
     matchLabels:
-      app: jellyfin
+      app.kubernetes.io/name: jellyfin
+      app.kubernetes.io/instance: jellyfin
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: jellyfin
+        app.kubernetes.io/name: jellyfin
+        app.kubernetes.io/instance: jellyfin
+        app.kubernetes.io/version: "10.11.5"
+        app.kubernetes.io/component: media-server
+        app.kubernetes.io/part-of: homelab
+        app.kubernetes.io/managed-by: argocd
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+      automountServiceAccountToken: false
       containers:
       - image: jellyfin/jellyfin:10.11.5
         name: jellyfin
@@ -37,18 +55,35 @@ spec:
         - containerPort: 8096
         resources:
           limits:
-            cpu: "1000m"
+            cpu: "4000m"
             memory: 4Gi
             # ephemeral-storage: 4Gi
           requests:
-            cpu: "400m"
+            cpu: "500m"
             memory: 3.5G
         securityContext:
           allowPrivilegeEscalation: false
-          # capabilities:
-          #   drop: [ALL]
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false
           seccompProfile:
             type: RuntimeDefault
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8096
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8096
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
       - name: cache
         emptyDir:
