@@ -1,6 +1,3 @@
-# Audit reports (keep private, not for public repo)
-docs/audits/
-
 # Temporary files
 *.tmp
 *.swp
