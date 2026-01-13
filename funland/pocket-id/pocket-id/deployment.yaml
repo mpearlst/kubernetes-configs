@@ -4,16 +4,27 @@ metadata:
   name: pocket-id
   namespace: pocket-id
   labels:
-    app: pocket-id
+    app.kubernetes.io/name: pocket-id
+    app.kubernetes.io/instance: pocket-id
+    app.kubernetes.io/version: "2"
+    app.kubernetes.io/component: sso-provider
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pocket-id
+      app.kubernetes.io/name: pocket-id
+      app.kubernetes.io/instance: pocket-id
   template:
     metadata:
       labels:
-        app: pocket-id
+        app.kubernetes.io/name: pocket-id
+        app.kubernetes.io/instance: pocket-id
+        app.kubernetes.io/version: "2"
+        app.kubernetes.io/component: sso-provider
+        app.kubernetes.io/part-of: homelab
+        app.kubernetes.io/managed-by: argocd
     spec:
       containers:
         - name: pocket-id

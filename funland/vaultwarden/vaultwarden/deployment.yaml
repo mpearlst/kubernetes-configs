@@ -15,11 +15,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vaultwarden
+      app.kubernetes.io/name: vaultwarden
+      app.kubernetes.io/instance: vaultwarden
   template:
     metadata:
       labels:
-        app: vaultwarden
         app.kubernetes.io/name: vaultwarden
         app.kubernetes.io/instance: vaultwarden
         app.kubernetes.io/version: "1.35.2"
@@ -140,9 +140,17 @@ kind: Service
 metadata:
   name: vaultwarden
   namespace: vaultwarden
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/version: "1.35.2"
+    app.kubernetes.io/component: password-manager
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
 spec:
   selector:
-    app: vaultwarden
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
   ports:
     - protocol: TCP
       port: 80

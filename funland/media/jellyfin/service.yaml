@@ -3,9 +3,17 @@ kind: Service
 metadata:
   name: jellyfin
   namespace: media
+  labels:
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/version: "10.11.5"
+    app.kubernetes.io/component: media-server
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
 spec:
   selector:
-    app: jellyfin
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: jellyfin
   ports:
   - protocol: TCP
     name: "jellyfin"

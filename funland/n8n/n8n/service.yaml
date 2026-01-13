@@ -4,7 +4,12 @@ metadata:
   name: n8n
   namespace: n8n
   labels:
-    app: n8n
+    app.kubernetes.io/name: n8n
+    app.kubernetes.io/instance: n8n
+    app.kubernetes.io/version: "2.4.0"
+    app.kubernetes.io/component: workflow-automation
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
 spec:
   type: ClusterIP
   ports:
@@ -13,4 +18,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: n8n
+    app.kubernetes.io/name: n8n
+    app.kubernetes.io/instance: n8n
