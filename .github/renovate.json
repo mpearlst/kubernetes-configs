@@ -23,6 +23,23 @@
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Update app.kubernetes.io/version labels to match image versions",
+      "fileMatch": ["^funland/.+/deployment\\.yaml$"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*image=(?<depName>\\S+)\\n\\s*app\\.kubernetes\\.io/version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Group image updates with their version labels in same PR",
+      "matchDatasources": ["docker"],
+      "matchFileNames": ["funland/**/deployment.yaml"],
+      "groupName": "{{depName}} version updates"
     }
   ]
 }

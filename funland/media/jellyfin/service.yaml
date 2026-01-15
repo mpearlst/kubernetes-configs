@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: jellyfin
     app.kubernetes.io/instance: jellyfin
+    # renovate: image=jellyfin/jellyfin
     app.kubernetes.io/version: "10.11.5"
     app.kubernetes.io/component: media-server
     app.kubernetes.io/part-of: homelab

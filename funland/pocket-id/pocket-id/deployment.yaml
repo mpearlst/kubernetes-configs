@@ -6,7 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: pocket-id
     app.kubernetes.io/instance: pocket-id
-    app.kubernetes.io/version: "2"
+    # renovate: image=ghcr.io/pocket-id/pocket-id
+    app.kubernetes.io/version: "v2"
     app.kubernetes.io/component: sso-provider
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -21,7 +22,8 @@ spec:
       labels:
         app.kubernetes.io/name: pocket-id
         app.kubernetes.io/instance: pocket-id
-        app.kubernetes.io/version: "2"
+        # renovate: image=ghcr.io/pocket-id/pocket-id
+        app.kubernetes.io/version: "v2"
         app.kubernetes.io/component: sso-provider
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd

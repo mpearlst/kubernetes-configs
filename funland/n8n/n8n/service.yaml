@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: n8n
     app.kubernetes.io/instance: n8n
+    # renovate: image=n8nio/n8n
     app.kubernetes.io/version: "2.4.0"
     app.kubernetes.io/component: workflow-automation
     app.kubernetes.io/part-of: homelab

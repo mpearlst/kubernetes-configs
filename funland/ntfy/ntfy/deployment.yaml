@@ -6,7 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: ntfy
     app.kubernetes.io/instance: ntfy
-    app.kubernetes.io/version: "2.15"
+    # renovate: image=binwiederhier/ntfy
+    app.kubernetes.io/version: "v2.15"
     app.kubernetes.io/component: notification-service
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -20,7 +21,8 @@ spec:
       labels:
         app.kubernetes.io/name: ntfy
         app.kubernetes.io/instance: ntfy
-        app.kubernetes.io/version: "2.15"
+        # renovate: image=binwiederhier/ntfy
+        app.kubernetes.io/version: "v2.15"
         app.kubernetes.io/component: notification-service
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
@@ -123,7 +125,8 @@ metadata:
   labels:
     app.kubernetes.io/name: ntfy
     app.kubernetes.io/instance: ntfy
-    app.kubernetes.io/version: "2.15"
+    # renovate: image=binwiederhier/ntfy
+    app.kubernetes.io/version: "v2.15"
     app.kubernetes.io/component: notification-service
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
