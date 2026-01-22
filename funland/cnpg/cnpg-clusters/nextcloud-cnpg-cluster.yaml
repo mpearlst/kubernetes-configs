@@ -1,0 +1,115 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: nextcloud-dbc
+  namespace: postgres
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.9
+  monitoring:
+    enablePodMonitor: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+  storage:
+    size: 20Gi
+    storageClass: longhorn-single
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: "s3://batcave-kubernetes/funland/postgres-backups/nextcloud"
+      endpointURL: "https://s3.us-west-000.backblazeb2.com"
+      s3Credentials:
+        accessKeyId:
+          name: b2-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2-backup-credentials
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: snappy
+        maxParallel: 2
+        encryption: AES256
+      data:
+        compression: snappy
+        immediateCheckpoint: true
+        jobs: 2
+        encryption: AES256
+  postgresql:
+    parameters:
+      # Connection Management
+      max_connections: "200"
+
+      # Memory Settings (tuned for 2Gi limit)
+      shared_buffers: "512MB"
+      effective_cache_size: "1536MB"
+      maintenance_work_mem: "256MB"
+      work_mem: "2621kB"
+
+      # WAL Settings
+      wal_buffers: "16MB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+      checkpoint_completion_target: "0.9"
+
+      # Query Planner
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+
+      # Nextcloud-Specific Optimizations
+      max_locks_per_transaction: "128"
+      idle_in_transaction_session_timeout: "600000"
+
+      # Performance
+      synchronous_commit: "on"
+      full_page_writes: "on"
+  bootstrap:
+    initdb:
+      database: nextcloud
+      owner: nextcloud
+      postInitApplicationSQL:
+        - "REVOKE ALL ON SCHEMA public FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM PUBLIC;"
+        - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON FUNCTIONS FROM PUBLIC;"
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: nextcloud-db-credentials
+  namespace: postgres
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRefs:
+    - name: 1password
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: nextcloud-dbc-app
+  template:
+    data:
+      _metadata_origin: "push"
+      username: "{{ .username | toString }}"
+      password: "{{ .password | toString }}"
+  data:
+    - match:
+        secretKey: username
+        remoteRef:
+          remoteKey: nextcloud-db-credentials
+          property: username
+    - match:
+        secretKey: password
+        remoteRef:
+          remoteKey: nextcloud-db-credentials
+          property: password

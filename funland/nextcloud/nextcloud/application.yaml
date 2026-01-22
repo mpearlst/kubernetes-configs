@@ -1,0 +1,383 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: nextcloud
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-data-nfs
+spec:
+  capacity:
+    storage: 250Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: "192.168.11.13"
+    path: /mnt/tank/nextcloud
+  mountOptions:
+    - nfsvers=4.2
+    - hard
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-data
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: nextcloud-data-nfs
+  resources:
+    requests:
+      storage: 250Gi
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: nextcloud-db-secret
+  namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+    template:
+      data:
+        db-username: "{{ .nextcloud_db_user | toString }}"
+        db-password: "{{ .nextcloud_db_password | toString }}"
+  data:
+    - secretKey: nextcloud_db_user
+      remoteRef:
+        key: nextcloud-db-credentials
+        property: username
+    - secretKey: nextcloud_db_password
+      remoteRef:
+        key: nextcloud-db-credentials
+        property: password
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: nextcloud-secret
+  namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+    template:
+      data:
+        nextcloud-username: "{{ .admin_username | toString }}"
+        nextcloud-password: "{{ .admin_password | toString }}"
+        redis-password: "{{ .redis_password | toString }}"
+  data:
+    - secretKey: admin_username
+      remoteRef:
+        key: nextcloud-credentials
+        property: username
+    - secretKey: admin_password
+      remoteRef:
+        key: nextcloud-credentials
+        property: password
+    - secretKey: redis_password
+      remoteRef:
+        key: nextcloud-credentials
+        property: redis-password
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: nextcloud-notify-push-secret
+  namespace: nextcloud
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  refreshInterval: "5m"
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 1password
+  target:
+    creationPolicy: Owner
+    template:
+      data:
+        database-url: "postgresql://{{ .db_username | urlquery }}:{{ .db_password | urlquery }}@nextcloud-dbc-rw.postgres:5432/nextcloud"
+        redis-url: "redis://:{{ .redis_password | urlquery }}@nextcloud-application-redis-master.nextcloud:6379"
+  data:
+    - secretKey: db_username
+      remoteRef:
+        key: nextcloud-db-credentials
+        property: username
+    - secretKey: db_password
+      remoteRef:
+        key: nextcloud-db-credentials
+        property: password
+    - secretKey: redis_password
+      remoteRef:
+        key: nextcloud-credentials
+        property: redis-password
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nextcloud-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: nextcloud
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: nextcloud
+    repoURL: https://nextcloud.github.io/helm/
+    targetRevision: 6.3.1
+    helm:
+      valuesObject:
+        image:
+          # renovate: datasource=docker depName=nextcloud
+          tag: "30.0.4-apache"
+
+        # Pod Security Context
+        podSecurityContext:
+          runAsUser: 33  # www-data user in nextcloud image
+          runAsGroup: 33
+          fsGroup: 33
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+
+        # Container Security Context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false  # Nextcloud needs write access to temp dirs
+          runAsNonRoot: true
+          runAsUser: 33
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+              - SETGID
+              - SETUID
+              - NET_BIND_SERVICE  # For binding to port 80
+
+        # Service Account
+        serviceAccount:
+          create: true
+          automountServiceAccountToken: false
+
+        # Deployment Strategy
+        deploymentStrategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 0
+            maxUnavailable: 1
+
+        # Lifecycle hooks for graceful termination
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - sleep 15
+
+        # Topology spread for better resilience
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: nextcloud
+
+        nextcloud:
+          host: nextcloud.batlab.io
+          existingSecret:
+            enabled: true
+            secretName: nextcloud-secret
+            usernameKey: nextcloud-username
+            passwordKey: nextcloud-password
+
+          extraEnv:
+            - name: OVERWRITEPROTOCOL
+              value: "https"
+            - name: OVERWRITECLIURL
+              value: "https://nextcloud.batlab.io"
+            - name: TRUSTED_PROXIES
+              value: "10.0.0.0/8 192.168.0.0/16"
+
+          # PHP-FPM settings for performance
+          phpConfigs:
+            opcache.ini: |
+              opcache.enable=1
+              opcache.memory_consumption=256
+              opcache.interned_strings_buffer=16
+              opcache.max_accelerated_files=10000
+              opcache.revalidate_freq=60
+              opcache.save_comments=1
+            uploadLimit.ini: |
+              upload_max_filesize = 16G
+              post_max_size = 16G
+              max_execution_time = 3600
+              max_input_time = 3600
+              memory_limit = 1G
+
+          # Default configs
+          defaultConfigs:
+            .htaccess: true
+            redis.config.php: true
+            apache-pretty-urls.config.php: true
+            apcu.config.php: true
+            apps.config.php: true
+            autoconfig.php: true
+            smtp.config.php: false
+
+          # Custom Nextcloud configuration
+          configs:
+            custom.config.php: |
+              <?php
+              $CONFIG = array (
+                'memcache.local' => '\\OC\\Memcache\\APCu',
+                'memcache.distributed' => '\\OC\\Memcache\\Redis',
+                'memcache.locking' => '\\OC\\Memcache\\Redis',
+                'filelocking.enabled' => true,
+                'default_phone_region' => 'US',
+                'maintenance_window_start' => 1,
+                'log_type' => 'file',
+                'logfile' => '/var/www/html/data/nextcloud.log',
+                'loglevel' => 2,
+                'preview_max_x' => 2048,
+                'preview_max_y' => 2048,
+                'jpeg_quality' => 85,
+                'enabledPreviewProviders' => array(
+                  'OC\\Preview\\PNG',
+                  'OC\\Preview\\JPEG',
+                  'OC\\Preview\\GIF',
+                  'OC\\Preview\\HEIC',
+                  'OC\\Preview\\BMP',
+                  'OC\\Preview\\XBitmap',
+                  'OC\\Preview\\MP3',
+                  'OC\\Preview\\TXT',
+                  'OC\\Preview\\MarkDown',
+                  'OC\\Preview\\PDF',
+                ),
+                'notify_push' => array(
+                  'base_endpoint' => 'https://nextcloud.batlab.io/push',
+                  'log_level' => 'warn',
+                ),
+              );
+
+        # Internal database disabled - using CloudNativePG
+        internalDatabase:
+          enabled: false
+
+        # External PostgreSQL configuration
+        externalDatabase:
+          enabled: true
+          type: postgresql
+          host: nextcloud-dbc-rw.postgres:5432
+          database: nextcloud
+          existingSecret:
+            enabled: true
+            secretName: nextcloud-db-secret
+            usernameKey: db-username
+            passwordKey: db-password
+
+        # Redis for caching
+        redis:
+          enabled: true
+          auth:
+            enabled: true
+            existingSecret: nextcloud-secret
+            existingSecretPasswordKey: redis-password
+          master:
+            persistence:
+              enabled: true
+              size: 8Gi
+              storageClass: longhorn
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+
+        # Persistent storage - using NFS share
+        persistence:
+          enabled: true
+          existingClaim: nextcloud-data
+          accessMode: ReadWriteMany
+
+        # Ingress disabled - using Gateway API
+        ingress:
+          enabled: false
+
+        # Resources for nextcloud pod
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+
+        # Startup probe - allows time for initial startup
+        startupProbe:
+          enabled: true
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30  # Allow up to 5 minutes for startup
+          successThreshold: 1
+
+        # Liveness probe
+        livenessProbe:
+          enabled: true
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+
+        # Readiness probe
+        readinessProbe:
+          enabled: true
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+
+        # Metrics and monitoring
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            namespace: nextcloud
+            labels:
+              prometheus: kube-prometheus
+
+        # Cron job for background tasks
+        cronjob:
+          enabled: true
+          schedule: "*/5 * * * *"
+
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
