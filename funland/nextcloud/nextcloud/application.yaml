@@ -305,7 +305,7 @@ spec:
             persistence:
               enabled: true
               size: 8Gi
-              storageClass: longhorn
+              storageClass: longhorn-single
             resources:
               requests:
                 cpu: 100m
