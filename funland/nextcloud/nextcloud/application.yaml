@@ -299,6 +299,10 @@ spec:
         # Redis for caching
         redis:
           enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/redis
+            tag: 7.4.2-debian-12-r0
           auth:
             enabled: true
             existingSecret: nextcloud-secret
