@@ -58,7 +58,7 @@ spec:
             - name: PORT
               value: "7867"
             - name: NEXTCLOUD_HOST
-              value: "nextcloud-application:8080"
+              value: "nextcloud-application"
             - name: POSTGRES_HOST
               value: "nextcloud-dbc-rw.postgres"
             - name: POSTGRES_DB
