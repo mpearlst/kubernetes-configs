@@ -313,32 +313,15 @@ spec:
             cpu: 2000m
             memory: 2Gi
 
-        # Startup probe - allows time for initial startup
+        # Probes disabled during initial deployment to allow long initialization
         startupProbe:
-          enabled: true
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 30  # Allow up to 5 minutes for startup
-          successThreshold: 1
+          enabled: false
 
-        # Liveness probe
         livenessProbe:
-          enabled: true
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
+          enabled: false
 
-        # Readiness probe
         readinessProbe:
-          enabled: true
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
+          enabled: false
 
         # Metrics and monitoring
         metrics:
