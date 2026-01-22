@@ -24,7 +24,7 @@ spec:
         app.kubernetes.io/component: push-notifications
         app.kubernetes.io/part-of: nextcloud
     spec:
-      serviceAccountName: nextcloud
+      serviceAccountName: default
       automountServiceAccountToken: false
 
       securityContext:
