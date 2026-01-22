@@ -149,29 +149,7 @@ spec:
 
         # Pod Security Context
         podSecurityContext:
-          runAsUser: 33  # www-data user in nextcloud image
-          runAsGroup: 33
-          fsGroup: 33
-          runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
-
-        # Container Security Context
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false  # Nextcloud needs write access to temp dirs
-          runAsNonRoot: true
-          runAsUser: 33
-          capabilities:
-            drop:
-              - ALL
-            add:
-              - CHOWN
-              - DAC_OVERRIDE
-              - FOWNER
-              - SETGID
-              - SETUID
-              - NET_BIND_SERVICE  # For binding to port 80
+          fsGroup: 33  # www-data group for NFS permissions
 
         # Service Account
         serviceAccount:
@@ -296,13 +274,13 @@ spec:
             usernameKey: db-username
             passwordKey: db-password
 
-        # Redis for caching
+        # Redis for caching (using Valkey as drop-in replacement)
         redis:
           enabled: true
           image:
             registry: docker.io
-            repository: bitnami/redis
-            tag: 7.4.2-debian-12-r0
+            repository: valkey/valkey
+            tag: "8.0"
           auth:
             enabled: true
             existingSecret: nextcloud-secret
