@@ -147,10 +147,6 @@ spec:
           # renovate: datasource=docker depName=nextcloud
           tag: "30.0.4-apache"
 
-        # Pod Security Context
-        podSecurityContext:
-          fsGroup: 33  # www-data group for NFS permissions
-
         # Service Account
         serviceAccount:
           create: true
