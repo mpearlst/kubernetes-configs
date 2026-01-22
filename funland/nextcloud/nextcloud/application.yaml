@@ -157,6 +157,8 @@ spec:
             tag: "1.27-alpine"
           config:
             default: true
+            custom: |
+              add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
           resources:
             requests:
               cpu: 50m
