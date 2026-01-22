@@ -37,7 +37,7 @@ spec:
 
       containers:
         - name: notify-push
-          image: nextcloud/notify_push:0.7.0
+          image: nextcloud/aio-notify-push:latest
           imagePullPolicy: IfNotPresent
 
           securityContext:

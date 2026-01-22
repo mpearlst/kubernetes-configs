@@ -145,7 +145,24 @@ spec:
       valuesObject:
         image:
           # renovate: datasource=docker depName=nextcloud
-          tag: "30.0.4-apache"
+          tag: "30.0.4-fpm-alpine"
+          flavor: fpm-alpine
+
+        # Nginx configuration for FPM
+        nginx:
+          enabled: true
+          image:
+            repository: nginx
+            tag: "1.27-alpine"
+          config:
+            default: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
 
         # Service Account
         serviceAccount:
@@ -313,15 +330,30 @@ spec:
             cpu: 2000m
             memory: 2Gi
 
-        # Probes disabled during initial deployment to allow long initialization
+        # Health probes - re-enabled after successful initialization
         startupProbe:
-          enabled: false
+          enabled: true
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 60  # Allow up to 10 minutes for startup
+          successThreshold: 1
 
         livenessProbe:
-          enabled: false
+          enabled: true
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+          successThreshold: 1
 
         readinessProbe:
-          enabled: false
+          enabled: true
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
 
         # Metrics and monitoring
         metrics:
