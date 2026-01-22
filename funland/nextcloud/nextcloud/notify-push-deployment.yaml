@@ -57,20 +57,29 @@ spec:
           env:
             - name: PORT
               value: "7867"
-            - name: NEXTCLOUD_URL
-              value: "https://nextcloud.batlab.io"
-            - name: DATABASE_PREFIX
-              value: "oc_"
-            - name: DATABASE_URL
+            - name: NEXTCLOUD_HOST
+              value: "nextcloud-application:8080"
+            - name: POSTGRES_HOST
+              value: "nextcloud-dbc-rw.postgres"
+            - name: POSTGRES_DB
+              value: "nextcloud"
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: nextcloud-notify-push-secret
-                  key: database-url
-            - name: REDIS_URL
+                  key: db-username
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: nextcloud-notify-push-secret
-                  key: redis-url
+                  key: db-password
+            - name: REDIS_HOST
+              value: "nextcloud-application-redis-master"
+            - name: REDIS_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-notify-push-secret
+                  key: redis-password
 
           resources:
             requests:

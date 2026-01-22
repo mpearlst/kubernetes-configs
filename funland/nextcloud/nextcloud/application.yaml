@@ -111,8 +111,9 @@ spec:
     creationPolicy: Owner
     template:
       data:
-        database-url: "postgresql://{{ .db_username | urlquery }}:{{ .db_password | urlquery }}@nextcloud-dbc-rw.postgres:5432/nextcloud"
-        redis-url: "redis://:{{ .redis_password | urlquery }}@nextcloud-application-redis-master.nextcloud:6379"
+        db-username: "{{ .db_username | toString }}"
+        db-password: "{{ .db_password | toString }}"
+        redis-password: "{{ .redis_password | toString }}"
   data:
     - secretKey: db_username
       remoteRef:
