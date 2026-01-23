@@ -15,6 +15,31 @@ spec:
   dnsNames:
   - '*.batlab.io'
   - 'batlab.io'
+  keystores:
+    pkcs12:
+      create: true
+      passwordSecretRef:
+        name: pkcs12-password
+        key: password
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: pkcs12-password
+  namespace: certificate
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: 1password
+    kind: ClusterSecretStore
+  target:
+    name: pkcs12-password
+    creationPolicy: Owner
+  data:
+    - secretKey: password
+      remoteRef:
+        key: batlab-pkcs12-password
+        property: password
 ---
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
@@ -42,3 +67,8 @@ spec:
         remoteRef:
           remoteKey: batlab-wildcard-cert
           property: privatekey
+    - match:
+        secretKey: keystore.p12
+        remoteRef:
+          remoteKey: batlab-wildcard-cert
+          property: keystore-p12
