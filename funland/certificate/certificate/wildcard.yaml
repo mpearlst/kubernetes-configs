@@ -68,8 +68,3 @@ spec:
         remoteRef:
           remoteKey: batlab-wildcard-cert
           property: privatekey
-    - match:
-        secretKey: keystore.p12
-        remoteRef:
-          remoteKey: batlab-wildcard-cert
-          property: keystore-p12
