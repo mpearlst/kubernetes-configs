@@ -63,6 +63,23 @@ spec:
         server:
           ingress:
             enabled: false
+          volumes:
+            - name: wildcard-cert
+              secret:
+                secretName: batlab-certificate
+          volumeMounts:
+            - name: wildcard-cert
+              mountPath: /certs
+              readOnly: true
+        worker:
+          volumes:
+            - name: wildcard-cert
+              secret:
+                secretName: batlab-certificate
+          volumeMounts:
+            - name: wildcard-cert
+              mountPath: /certs
+              readOnly: true
         authentik:
           postgresql:
             host: "authentik-dbc-rw.postgres"
