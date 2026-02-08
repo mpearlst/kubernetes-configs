@@ -57,7 +57,7 @@ spec:
         cloudflared:
           image:
             # renovate: datasource=docker depName=cloudflare/cloudflared
-            tag: 2026.1.2
+            tag: 2026.2.0
   syncPolicy:
     automated:
       allowEmpty: true
