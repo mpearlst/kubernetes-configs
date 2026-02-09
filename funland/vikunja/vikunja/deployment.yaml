@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: main
-          image: vikunja/vikunja:1.0.0
+          image: vikunja/vikunja:1.1.0
           env:
             - name: VIKUNJA_AUTH_LOCAL
               value: "false"
