@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: ntfy
     app.kubernetes.io/instance: ntfy
     # renovate: image=binwiederhier/ntfy
-    app.kubernetes.io/version: "v2.16"
+    app.kubernetes.io/version: "v2.17"
     app.kubernetes.io/component: notification-service
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/name: ntfy
         app.kubernetes.io/instance: ntfy
         # renovate: image=binwiederhier/ntfy
-        app.kubernetes.io/version: "v2.16"
+        app.kubernetes.io/version: "v2.17"
         app.kubernetes.io/component: notification-service
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
@@ -36,7 +36,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: ntfy
-        image: binwiederhier/ntfy:v2.16
+        image: binwiederhier/ntfy:v2.17
         args: ["serve"]
         securityContext:
           allowPrivilegeEscalation: false
@@ -126,7 +126,7 @@ metadata:
     app.kubernetes.io/name: ntfy
     app.kubernetes.io/instance: ntfy
     # renovate: image=binwiederhier/ntfy
-    app.kubernetes.io/version: "v2.16"
+    app.kubernetes.io/version: "v2.17"
     app.kubernetes.io/component: notification-service
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
