@@ -8,7 +8,7 @@ spec:
   sources:
     - chart: prometheus
       repoURL: https://prometheus-community.github.io/helm-charts
-      targetRevision: 28.9.0
+      targetRevision: 28.12.0
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
