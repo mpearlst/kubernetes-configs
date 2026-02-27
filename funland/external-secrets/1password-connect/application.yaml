@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 1password-connect
+  name: 1password-connect-application
   namespace: argocd
 spec:
   destination:
