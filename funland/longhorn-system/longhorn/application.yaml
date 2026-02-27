@@ -25,13 +25,11 @@ spec:
         values: |
           preUpgradeChecker:
             jobEnabled: false
+            upgradeVersionCheck: false
           image:
             longhorn:
               manager:
-                tag: v1.11.0-hotfix-1
-          preUpgradeChecker:
-            jobEnabled: false
-            upgradeVersionCheck: false
+                tag: v1.11.0-hotfix-1   
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
