@@ -25,7 +25,7 @@ spec:
         values: |
           preUpgradeChecker:
             jobEnabled: false
-          upgradeVersionCheck: false
+            upgradeVersionCheck: false
           image:
             longhorn:
               manager:
