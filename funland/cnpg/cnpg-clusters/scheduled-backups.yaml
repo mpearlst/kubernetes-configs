@@ -19,19 +19,6 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: vikunja-daily-backup
-  namespace: postgres
-spec:
-  schedule: "0 0 0 * * *"
-  backupOwnerReference: self
-  cluster:
-    name: vikunja-dbc
-  method: barmanObjectStore
-  immediate: true
----
-apiVersion: postgresql.cnpg.io/v1
-kind: ScheduledBackup
-metadata:
   name: n8n-daily-backup
   namespace: postgres
 spec:

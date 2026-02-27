@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - authentik-cnpg-cluster.yaml
-  - vikunja-cnpg-cluster.yaml
   - n8n-cnpg-cluster.yaml
   - vaultwarden-cnpg-cluster.yaml
   - immich-cnpg-cluster.yaml
