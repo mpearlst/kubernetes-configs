@@ -1,22 +1,26 @@
-# ClusterSecretStore Configuration
+# ClusterSecretStore
 
-This directory contains the definition for a `ClusterSecretStore` resource, which configures how the [External Secrets Operator](https://external-secrets.io/) connects to an external secret management system.
+Defines the `ClusterSecretStore` named `1password` that External Secrets Operator uses to fetch secrets from 1Password vaults via the Connect API.
 
-## 1Password ClusterSecretStore
+## Prerequisites
 
-The `cluster-secret-store.yaml` file defines a `ClusterSecretStore` named `1password`. This resource specifies the connection details for a 1Password Connect server, allowing the External Secrets Operator to retrieve secrets from 1Password vaults.
+The Connect API token secret must exist in the `external-secrets` namespace before this store can become `Ready`. See the [1password-connect bootstrap instructions](../1password-connect/README.md) for how to create it.
 
-## Dependencies
-
-This configuration relies on the following components:
-
-- **[External Secrets Operator](https://external-secrets.io/):** The operator that utilizes this `ClusterSecretStore` to fetch secrets.
-- **1Password Connect Server:** An instance of the 1Password Connect server must be running and accessible within the cluster.
-
-## Secrets
-
-This `ClusterSecretStore` requires a secret for authentication with the 1Password Connect server. The details are as follows:
-
-- **Secret Name:** `1passwordconnect`
+- **Secret name:** `op-connect-token`
 - **Namespace:** `external-secrets`
 - **Key:** `token`
+
+## How it works
+
+ESO reads `op-connect-token` to authenticate HTTP requests to the Connect server at `http://onepassword-connect.1password-connect.svc.cluster.local:8080`. All `ExternalSecret` resources that reference `secretStoreRef.name: 1password` go through this store.
+
+## Verification
+
+```bash
+kubectl get clustersecretstore 1password
+```
+
+Status should show `Ready: True`. If it shows `ConnectionError`, check that:
+1. The `op-connect-token` secret exists in the `external-secrets` namespace
+2. The Connect pods are running in `1password-connect`
+3. The token value is correct

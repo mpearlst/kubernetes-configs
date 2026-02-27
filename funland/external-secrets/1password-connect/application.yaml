@@ -1,40 +1,11 @@
----
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: 1passwordconnect
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: 1passwordconnect
-  namespace: 1passwordconnect
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  refreshInterval: "5m"
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: 1password
-  target:
-    creationPolicy: Owner
-    template:
-      data:
-        1password-credentials.json: "{{ .json }}"
-  data:
-    - secretKey: json
-      remoteRef:
-        key: 1password
-        property: 1password-credentials.json
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 1password-connect-application
+  name: 1password-connect
   namespace: argocd
 spec:
   destination:
-    namespace: 1passwordconnect
+    namespace: 1password-connect
     server: https://kubernetes.default.svc
   project: default
   source:
@@ -42,9 +13,10 @@ spec:
     repoURL: https://1password.github.io/connect-helm-charts
     targetRevision: 2.3.0
     helm:
+      releaseName: onepassword
       valuesObject:
         connect:
-          credentialsName: 1passwordconnect
+          credentialsName: op-connect-credentials
           credentialsKey: 1password-credentials.json
           serviceType: ClusterIP
   syncPolicy:
@@ -52,3 +24,5 @@ spec:
       allowEmpty: true
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
