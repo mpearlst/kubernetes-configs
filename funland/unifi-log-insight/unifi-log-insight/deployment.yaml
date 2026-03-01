@@ -47,6 +47,8 @@ spec:
           value: INFO
         - name: UNIFI_VERIFY_SSL
           value: "false"
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         envFrom:
         - secretRef:
             name: unifi-log-secret
