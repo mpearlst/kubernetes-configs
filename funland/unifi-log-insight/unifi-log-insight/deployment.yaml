@@ -1,0 +1,122 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: unifi-log-insight
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-log-insight
+  namespace: unifi-log-insight
+  labels:
+    app: unifi-log-insight
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unifi-log-insight
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: unifi-log-insight
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - name: unifi-log-insight
+        # renovate: image=jmasarweh/unifi-log-insight
+        image: jmasarweh/unifi-log-insight:latest
+        ports:
+        - containerPort: 8090
+          name: http
+          protocol: TCP
+        - containerPort: 514
+          name: syslog
+          protocol: UDP
+        env:
+        - name: TZ
+          value: America/New_York
+        - name: RETENTION_DAYS
+          value: "60"
+        - name: DNS_RETENTION_DAYS
+          value: "10"
+        - name: LOG_LEVEL
+          value: INFO
+        - name: UNIFI_VERIFY_SSL
+          value: "false"
+        envFrom:
+        - secretRef:
+            name: unifi-log-secret
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+            add: [NET_BIND_SERVICE]
+          seccompProfile:
+            type: RuntimeDefault
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8090
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+        - name: maxmind
+          mountPath: /app/maxmind
+      volumes:
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: unifi-log-insight-pgdata
+      - name: maxmind
+        persistentVolumeClaim:
+          claimName: unifi-log-insight-maxmind
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: unifi-log-insight-pgdata
+  namespace: unifi-log-insight
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: unifi-log-insight-maxmind
+  namespace: unifi-log-insight
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: longhorn
+  volumeMode: Filesystem

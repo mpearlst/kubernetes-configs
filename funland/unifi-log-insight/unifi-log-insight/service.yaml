@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-log-insight-web
+  namespace: unifi-log-insight
+spec:
+  selector:
+    app: unifi-log-insight
+  ports:
+  - protocol: TCP
+    name: http
+    port: 8090
+    targetPort: 8090
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-log-insight-syslog
+  namespace: unifi-log-insight
+  annotations:
+    service.cilium.io/type: LoadBalancer
+spec:
+  selector:
+    app: unifi-log-insight
+  ports:
+  - protocol: UDP
+    name: syslog
+    port: 514
+    targetPort: 514
+  type: LoadBalancer
