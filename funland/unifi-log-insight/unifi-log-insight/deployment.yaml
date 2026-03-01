@@ -50,13 +50,6 @@ spec:
         envFrom:
         - secretRef:
             name: unifi-log-secret
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop: [ALL]
-            add: [NET_BIND_SERVICE]
-          seccompProfile:
-            type: RuntimeDefault
         livenessProbe:
           httpGet:
             path: /
