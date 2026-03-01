@@ -27,8 +27,8 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: unifi-log-insight
-        # renovate: image=jmasarweh/unifi-log-insight
-        image: jmasarweh/unifi-log-insight:latest
+        # renovate: image=ghcr.io/jmasarweh/unifi-log-insight
+        image: ghcr.io/jmasarweh/unifi-log-insight:2.9.0
         ports:
         - containerPort: 8090
           name: http
