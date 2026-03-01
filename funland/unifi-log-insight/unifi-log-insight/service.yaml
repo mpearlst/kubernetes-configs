@@ -10,8 +10,8 @@ spec:
   ports:
   - protocol: TCP
     name: http
-    port: 8090
-    targetPort: 8090
+    port: 8000
+    targetPort: 8000
   type: ClusterIP
 ---
 apiVersion: v1

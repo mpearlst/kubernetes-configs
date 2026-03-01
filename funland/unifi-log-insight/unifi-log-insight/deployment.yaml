@@ -30,7 +30,7 @@ spec:
         # renovate: image=ghcr.io/jmasarweh/unifi-log-insight
         image: ghcr.io/jmasarweh/unifi-log-insight:2.9.0
         ports:
-        - containerPort: 8090
+        - containerPort: 8000
           name: http
           protocol: TCP
         - containerPort: 514
@@ -53,7 +53,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 8090
+            port: 8000
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
@@ -61,7 +61,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: 8090
+            port: 8000
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5

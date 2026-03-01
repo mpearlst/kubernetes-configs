@@ -13,4 +13,4 @@ spec:
   rules:
     - backendRefs:
         - name: unifi-log-insight-web
-          port: 8090
+          port: 8000
