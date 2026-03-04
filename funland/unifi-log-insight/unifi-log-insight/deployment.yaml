@@ -13,7 +13,7 @@ metadata:
     app: unifi-log-insight
 spec:
   revisionHistoryLimit: 1
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: unifi-log-insight
@@ -92,6 +92,8 @@ apiVersion: v1
 metadata:
   name: unifi-log-insight-pgdata
   namespace: unifi-log-insight
+  annotations:
+    longhorn.io/data-locality: "strict-local"
 spec:
   accessModes:
     - ReadWriteOnce
