@@ -12,6 +12,14 @@ This directory contains Kubernetes Gateway API resources for managing ingress an
 
 This configuration relies on a Kubernetes Gateway API implementation being deployed in the cluster, such as [Cilium](https://cilium.io/) or Istio.
 
+### Gateway API CRDs
+
+The Gateway API CRDs are managed separately in `funland/gateway-api/gateway-api-crds/` and must be installed before these resources can be applied.
+
+**Current version**: v1.5.0
+
+The CRD installation uses an App of Apps pattern with **Server-Side Apply** (`ServerSideApply=true`) enabled. This is required because the Gateway API CRD manifests are large and can exceed the 1MB annotation limit used by client-side apply.
+
 ## Secrets
 
 The `external-gateway.yaml` and `internal-gateway.yaml` resources both require a TLS secret for HTTPS traffic. The details are as follows:
