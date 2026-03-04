@@ -12,6 +12,7 @@ metadata:
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
