@@ -47,6 +47,12 @@ spec:
           value: INFO
         - name: UNIFI_VERIFY_SSL
           value: "false"
+        - name: DB_HOST
+          value: "unifi-log-dbc-rw.postgres.svc.cluster.local"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "unifi_logs"
         envFrom:
         - secretRef:
             name: unifi-log-secret
@@ -74,32 +80,12 @@ spec:
             cpu: "200m"
             memory: "512Mi"
         volumeMounts:
-        - name: pgdata
-          mountPath: /var/lib/postgresql/data
-          subPath: pgdata
         - name: maxmind
           mountPath: /app/maxmind
       volumes:
-      - name: pgdata
-        persistentVolumeClaim:
-          claimName: unifi-log-insight-pgdata
       - name: maxmind
         persistentVolumeClaim:
           claimName: unifi-log-insight-maxmind
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: unifi-log-insight-pgdata
-  namespace: unifi-log-insight
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: longhorn-single
-  volumeMode: Filesystem
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
