@@ -5,6 +5,8 @@ metadata:
   namespace: postgres
 spec:
   instances: 3
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.9-1.1.1
   monitoring:
     enablePodMonitor: true

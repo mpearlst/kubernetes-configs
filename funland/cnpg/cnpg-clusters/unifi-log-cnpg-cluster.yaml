@@ -5,6 +5,8 @@ metadata:
   namespace: postgres
 spec:
   instances: 3
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
   imageName: ghcr.io/cloudnative-pg/postgresql:18.3
   monitoring:
     enablePodMonitor: true
