@@ -29,4 +29,5 @@ spec:
     name: syslog
     port: 514
     targetPort: 514
+  loadBalancerIP: 192.168.101.3
   type: LoadBalancer
