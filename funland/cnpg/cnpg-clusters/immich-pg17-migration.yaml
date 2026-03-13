@@ -1,0 +1,77 @@
+# Migration cluster: immich PG 16 -> PG 17
+#
+# This performs a live logical import (pg_dump/restore) from the running
+# immich-dbc (PG 16) cluster into a new immich-dbc-pg17 (PG 17) cluster.
+# The vchord extension is included in the dump and restored automatically.
+#
+# Steps:
+#   1. Add this file to cnpg-clusters/kustomization.yaml resources
+#   2. kubectl apply -k funland/cnpg/cnpg-clusters/
+#   3. Watch progress: kubectl get cluster immich-dbc-pg17 -n postgres -w
+#   4. Once "Cluster in healthy state", update immich app:
+#      - Change DB_HOSTNAME / host in ExternalSecret to immich-dbc-pg17-rw.postgres
+#      - Update credentials from secret: immich-dbc-pg17-app
+#   5. Delete old cluster and this file, update kustomization.yaml
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-dbc-pg17
+  namespace: postgres
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.9-1.1.1
+  monitoring:
+    enablePodMonitor: true
+  storage:
+    size: 10Gi
+    storageClass: longhorn-single
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  postgresql:
+    shared_preload_libraries:
+      - "vchord.so"
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: "s3://batcave-kubernetes/funland/postgres-backups/immich-pg17"
+      endpointURL: "https://s3.us-west-000.backblazeb2.com"
+      s3Credentials:
+        accessKeyId:
+          name: b2-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2-backup-credentials
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: snappy
+        maxParallel: 2
+        encryption: AES256
+      data:
+        compression: snappy
+        immediateCheckpoint: true
+        jobs: 2
+        encryption: AES256
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      import:
+        type: microservice
+        databases:
+          - immich
+        source:
+          externalCluster: immich-dbc-pg16
+  externalClusters:
+    - name: immich-dbc-pg16
+      connectionParameters:
+        host: immich-dbc-rw.postgres
+        user: postgres
+        sslmode: require
+      password:
+        name: immich-dbc-superuser
+        key: password
