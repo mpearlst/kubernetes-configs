@@ -23,6 +23,7 @@ spec:
     port: 853
     targetPort: 853
   type: LoadBalancer
+  externalTrafficPolicy: Local
   loadBalancerIP: 192.168.101.5
 # ---
 # apiVersion: v1
