@@ -1,0 +1,51 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: bgp-cluster-config
+spec:
+  bgpInstances:
+    - name: default
+      localASN: 64512
+      peers:
+        - name: unifi-router
+          peerASN: 64514
+          peerAddress: 192.168.10.1
+          peerConfigRef:
+            name: default-peer
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeerConfig
+metadata:
+  name: default-peer
+spec:
+  timers:
+    holdTimeSeconds: 90
+    keepAliveTimeSeconds: 30
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: bgp
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPAdvertisement
+metadata:
+  name: lb-services
+  labels:
+    advertise: bgp
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector: {}
+---
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: pool
+spec:
+  blocks:
+    - cidr: "192.168.100.0/24"

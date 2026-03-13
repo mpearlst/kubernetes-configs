@@ -71,7 +71,7 @@ spec:
           hostRoot: /sys/fs/cgroup
         k8sServiceHost: localhost #Remove for most kubernetes clusters
         k8sServicePort: 7445 #Remove for most kubernetes clusters
-        l2announcements:
+        bgpControlPlane:
           enabled: true
         gatewayAPI:
           enabled: true
