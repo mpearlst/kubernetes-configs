@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  "ignorePaths": [
+    "funland/cnpg/cnpg-clusters/immich-cnpg-cluster.yaml"
+  ],
   "prHourlyLimit": 3,
   "prConcurrentLimit": 5,
   "pruneStaleBranches": true,
