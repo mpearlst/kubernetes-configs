@@ -32,6 +32,15 @@
         "#\\s*renovate:\\s*image=(?<depName>\\S+)\\n\\s*app\\.kubernetes\\.io/version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Update CNPG cluster imageName references",
+      "fileMatch": ["^funland/cnpg/cnpg-clusters/.+-cnpg-cluster\\.yaml$"],
+      "matchStrings": [
+        "imageName:\\s*(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
