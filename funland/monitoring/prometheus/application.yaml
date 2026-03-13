@@ -5,10 +5,21 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  sources:
-    - chart: prometheus
-      repoURL: https://prometheus-community.github.io/helm-charts
-      targetRevision: 28.13.0
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 75.0.0
+    helm:
+      valuesObject:
+        grafana:
+          enabled: false
+        alertmanager:
+          enabled: false
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector: {}
+            serviceMonitorNamespaceSelector: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
