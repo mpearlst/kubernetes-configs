@@ -29,8 +29,10 @@ spec:
     - group: apiextensions.k8s.io
       kind: CustomResourceDefinition
       jqPathExpressions:
-        - .spec.conversion
+        - .spec
         - .status
+        - .metadata.annotations
+        - .metadata.labels
   syncPolicy:
     automated:
       allowEmpty: true
@@ -38,3 +40,4 @@ spec:
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
