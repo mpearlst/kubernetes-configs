@@ -198,22 +198,23 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | AdGuard Home | adguard | DNS ad-blocking |
 | Authentik | authentik | Identity provider / SSO |
 | Cert-Manager | cert-manager | TLS certificate automation |
-| Cilium | kube-system | CNI with Gateway API, Hubble observability |
+| Cilium | kube-system | CNI with Gateway API, BGP, Hubble observability |
+| Cloudflare Tunnel | cloudflare | Cloudflare tunnel ingress controller |
+| etcd-operator | etcd-operator | etcd cluster operator (aenix-io) |
 | Grafana | monitoring | Metrics visualization |
-| Hubble | kube-system | Network flow observability UI |
+| Gravity DNS | gravity | Replicated DNS server powered by etcd |
 | Immich | immich | Photo/video management |
 | Jellyfin | media | Media server |
 | Loki | monitoring | Log aggregation |
 | Longhorn | longhorn-system | Distributed storage |
 | n8n | n8n | Workflow automation |
-| Newt | newt | Pangolin tunnel client |
 | ntfy | ntfy | Push notifications |
-| Pocket ID | pocket-id | OIDC provider |
+| OpenSpeedTest | openspeedtest | Network speed testing |
 | Privatebin | privatebin | Encrypted pastebin |
-| Prometheus | monitoring | Metrics collection |
+| Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
 | Promtail | monitoring | Log shipping agent |
+| Unifi Log Insight | unifi-log-insight | UniFi network log analysis |
 | Vaultwarden | vaultwarden | Bitwarden-compatible password manager |
-| Vikunja | vikunja | Task management |
 
 ## Network Architecture
 
@@ -249,7 +250,6 @@ All PostgreSQL clusters are configured with automated backups to Backblaze B2:
 | immich-dbc | `s3://batcave-kubernetes/funland/postgres-backups/immich` |
 | n8n-dbc | `s3://batcave-kubernetes/funland/postgres-backups/n8n` |
 | vaultwarden-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vaultwarden` |
-| vikunja-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vikunja` |
 
 **Backup Configuration:**
 - **Retention:** 30 days

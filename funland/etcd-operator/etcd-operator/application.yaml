@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: etcd-operator
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: etcd-operator-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: etcd-operator
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: etcd-operator
+    repoURL: ghcr.io/aenix-io/charts
+    targetRevision: 0.4.2
+    helm:
+      valuesObject: {}
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

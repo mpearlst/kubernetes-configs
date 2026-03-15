@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gravity-dns
+  namespace: gravity
+spec:
+  selector:
+    app.kubernetes.io/name: gravity
+  ports:
+  - protocol: TCP
+    name: dns-tcp
+    port: 53
+    targetPort: 53
+  - protocol: UDP
+    name: dns-udp
+    port: 53
+    targetPort: 53
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  loadBalancerIP: 192.168.101.10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gravity-http
+  namespace: gravity
+spec:
+  selector:
+    app.kubernetes.io/name: gravity
+  ports:
+  - protocol: TCP
+    name: http
+    port: 8008
+    targetPort: 8008
+  type: ClusterIP
