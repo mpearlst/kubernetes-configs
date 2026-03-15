@@ -16,4 +16,4 @@ This deployment has the following features enabled:
 - **Hubble:** Hubble is enabled for network observability.
 - **kube-proxy replacement:** Cilium replaces `kube-proxy` for service routing.
 - **Gateway API:** Cilium is configured to work with the Kubernetes Gateway API.
-- **L2 Announcements:** Allows services to be exposed on the local network.
+- **BGP Control Plane:** Advertises LoadBalancer IPs via BGP peering with the UniFi router.
