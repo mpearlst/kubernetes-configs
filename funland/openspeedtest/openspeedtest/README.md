@@ -13,7 +13,7 @@ This deployment uses the `openspeedtest/latest` Docker image.
 This application is exposed two ways:
 
 - **HTTPRoute** (`speedtest.batlab.io`) — routes through the internal gateway for convenient browser access. Note that reverse proxy buffering can affect the accuracy of speed test results.
-- **LoadBalancer** (`192.168.101.6:3000`) — direct access bypassing the reverse proxy, recommended for accurate speed test measurements.
+- **LoadBalancer** (`192.168.101.6`) — direct access bypassing the reverse proxy, recommended for accurate speed test measurements.
 
 ## Dependencies
 
