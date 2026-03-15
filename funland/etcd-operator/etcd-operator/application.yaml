@@ -18,7 +18,13 @@ spec:
     repoURL: ghcr.io/aenix-io/charts
     targetRevision: 0.4.2
     helm:
-      valuesObject: {}
+      valuesObject:
+        kubeRbacProxy:
+          vpa:
+            enabled: false
+        etcdOperator:
+          vpa:
+            enabled: false
   syncPolicy:
     automated:
       allowEmpty: true
