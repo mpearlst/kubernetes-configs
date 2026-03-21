@@ -48,6 +48,8 @@ spec:
       postInitApplicationSQL:
         - CREATE EXTENSION IF NOT EXISTS "vchord" CASCADE;
         - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
+        - UPDATE pg_extension SET extowner = (SELECT oid FROM pg_authid WHERE rolname = 'immich') WHERE extname = 'vchord';
+        - UPDATE pg_extension SET extowner = (SELECT oid FROM pg_authid WHERE rolname = 'immich') WHERE extname = 'earthdistance';
         - "REVOKE ALL ON SCHEMA public FROM PUBLIC;"
         - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM PUBLIC;"
         - "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM PUBLIC;"
