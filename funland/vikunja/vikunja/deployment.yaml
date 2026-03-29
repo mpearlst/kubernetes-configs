@@ -22,8 +22,15 @@ spec:
         app.kubernetes.io/instance: vikunja
         app.kubernetes.io/name: vikunja
     spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - name: main
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
           image: vikunja/vikunja:1.1.0
           env:
             - name: VIKUNJA_AUTH_LOCAL
