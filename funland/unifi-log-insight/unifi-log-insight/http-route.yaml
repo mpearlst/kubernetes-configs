@@ -19,6 +19,7 @@ spec:
         requestHeaderModifier:
           add:
           - name: X-ULI-Proxy-Auth
+            value: ""
             valueFrom:
               secretKeyRef:
                 name: unifi-log-secret
