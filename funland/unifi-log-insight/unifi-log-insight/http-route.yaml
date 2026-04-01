@@ -14,3 +14,12 @@ spec:
     - backendRefs:
         - name: unifi-log-insight-web
           port: 8000
+      filters:
+      - type: RequestHeaderModifier
+        requestHeaderModifier:
+          add:
+          - name: X-ULI-Proxy-Auth
+            valueFrom:
+              secretKeyRef:
+                name: unifi-log-secret
+                key: PROXY_HEADER_VALUE
