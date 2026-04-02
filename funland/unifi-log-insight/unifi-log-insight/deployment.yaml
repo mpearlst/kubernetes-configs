@@ -28,7 +28,7 @@ spec:
       containers:
       - name: unifi-log-insight
         # renovate: image=ghcr.io/jmasarweh/unifi-log-insight
-        image: ghcr.io/jmasarweh/unifi-log-insight:3.4.1
+        image: ghcr.io/jmasarweh/unifi-log-insight:3.5.0
         ports:
         - containerPort: 8000
           name: http
