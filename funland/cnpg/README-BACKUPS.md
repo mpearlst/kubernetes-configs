@@ -24,7 +24,6 @@ funland/cnpg/
 │   ├── kustomization.yaml    # Applies backup to all clusters
 │   ├── authentik-cnpg-cluster.yaml
 │   ├── immich-cnpg-cluster.yaml
-│   ├── n8n-cnpg-cluster.yaml
 │   ├── vaultwarden-cnpg-cluster.yaml
 │   ├── vikunja-cnpg-cluster.yaml
 │   ├── scheduled-backups.yaml
@@ -263,7 +262,6 @@ batcave-kubernetes/
     └── postgres-backups/
         ├── authentik/
         ├── vikunja/
-        ├── n8n/
         ├── vaultwarden/
         ├── immich/
 ```

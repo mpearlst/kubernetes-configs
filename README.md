@@ -207,7 +207,6 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Jellyfin | media | Media server |
 | Loki | monitoring | Log aggregation |
 | Longhorn | longhorn-system | Distributed storage |
-| n8n | n8n | Workflow automation |
 | ntfy | ntfy | Push notifications |
 | OpenSpeedTest | openspeedtest | Network speed testing |
 | Privatebin | privatebin | Encrypted pastebin |
@@ -248,7 +247,6 @@ All PostgreSQL clusters are configured with automated backups to Backblaze B2:
 |----------|-------------|
 | authentik-dbc | `s3://batcave-kubernetes/funland/postgres-backups/authentik` |
 | immich-dbc | `s3://batcave-kubernetes/funland/postgres-backups/immich` |
-| n8n-dbc | `s3://batcave-kubernetes/funland/postgres-backups/n8n` |
 | vaultwarden-dbc | `s3://batcave-kubernetes/funland/postgres-backups/vaultwarden` |
 
 **Backup Configuration:**
