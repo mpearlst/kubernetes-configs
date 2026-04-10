@@ -31,7 +31,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: vikunja/vikunja:2.2.2
+          image: vikunja/vikunja:2.3.0
           env:
             - name: VIKUNJA_AUTH_LOCAL
               value: "false"
