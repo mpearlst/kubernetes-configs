@@ -11,7 +11,7 @@ spec:
   monitoring:
     enablePodMonitor: true
   storage:
-    size: 1Gi
+    size: 2Gi
     storageClass: longhorn-single
   affinity:
     enablePodAntiAffinity: true
