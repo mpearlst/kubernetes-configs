@@ -14,7 +14,7 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-    podAntiAffinityType: required
+    podAntiAffinityType: preferred
   bootstrap:
     initdb:
       database: unifi_logs

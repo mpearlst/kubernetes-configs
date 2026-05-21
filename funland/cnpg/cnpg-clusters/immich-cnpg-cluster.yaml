@@ -14,7 +14,7 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-    podAntiAffinityType: required
+    podAntiAffinityType: preferred
   backup:
     retentionPolicy: "30d"
     barmanObjectStore:
