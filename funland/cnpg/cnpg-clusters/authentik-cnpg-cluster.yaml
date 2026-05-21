@@ -7,7 +7,7 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.3
   storage:
-    size: 2Gi
+    size: 5Gi
     storageClass: longhorn-single
   affinity:
     enablePodAntiAffinity: true
