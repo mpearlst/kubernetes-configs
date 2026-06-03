@@ -26,7 +26,7 @@ spec:
       securityContext:
         fsGroup: 1000
       containers:
-      - image: adguard/adguardhome:v0.107.75
+      - image: adguard/adguardhome:v0.107.77
         name: adguard-home
         volumeMounts:
         - name: config 
