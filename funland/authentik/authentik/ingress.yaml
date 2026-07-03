@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authentik-ingress
+  namespace: authentik
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+  - host: auth.batlab.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: authentik-application-server
+            port:
+              number: 80
