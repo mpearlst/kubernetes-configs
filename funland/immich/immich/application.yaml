@@ -90,7 +90,7 @@ spec:
               main:
                 image:
                   # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server
-                  tag: v3.0.1
+                  tag: v3.0.3
                 envFrom:
                   - secretRef:
                       name: immich-secret
