@@ -4,10 +4,11 @@
     "config:recommended"
   ],
   "ignorePaths": [
-    "funland/cnpg/cnpg-clusters/immich-cnpg-cluster.yaml"
+    "funland/cnpg/cnpg-clusters/immich-cnpg-cluster.yaml",
+    "archive/**"
   ],
-  "prHourlyLimit": 3,
-  "prConcurrentLimit": 5,
+  "prHourlyLimit": 6,
+  "prConcurrentLimit": 10,
   "pruneStaleBranches": true,
   "argocd": {
     "managerFilePatterns": [
@@ -52,6 +53,18 @@
       "matchDatasources": ["docker"],
       "matchFileNames": ["funland/**/deployment.yaml"],
       "groupName": "{{depName}} version updates"
+    },
+    {
+      "description": "Auto-merge minor and patch updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Require PR review for major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ]
 }
