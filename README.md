@@ -262,6 +262,37 @@ kubectl get scheduledbackups -n postgres
 kubectl get backups -n postgres
 ```
 
+## Upgrading Talos & Kubernetes
+
+`funland/talos/talconfig.yaml` ([talhelper](https://github.com/budimanjojo/talhelper) config) is the source of truth for the Talos OS version (`talosVersion`) and the Kubernetes version (`kubernetesVersion`). It also declares the Longhorn-required Talos system extensions (`siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`) applied to every node.
+
+Renovate watches this file (see `.github/renovate.json`) and opens a PR whenever a new Talos or Kubernetes release is published. These PRs are **never auto-merged** — a node OS / control-plane bump needs human review and a controlled rollout, unlike the chart/image bumps elsewhere in this repo.
+
+Argo CD is not involved in this process: it only syncs Kubernetes API resources, while Talos/Kubernetes core upgrades go through the separate Talos API (`talosctl`). Merging the Renovate PR just records the target version — applying it is a manual runbook:
+
+```sh
+# Regenerate machine configs from the updated talconfig.yaml.
+# This also resolves the current schematic (Longhorn extensions) into an
+# installer image reference for each node, written to clusterconfig/*.yaml.
+talhelper genconfig
+
+# Look up the resolved installer image for a node, e.g.:
+yq '.machine.install.image' clusterconfig/funland-funland-worker-1.yaml
+# -> factory.talos.dev/installer/<schematic-id>:<new-talos-version>
+
+# Roll the Talos OS upgrade node-by-node - workers first, control plane last.
+# Validate cluster/Longhorn health between each node before continuing.
+talosctl upgrade --nodes 192.168.10.21 --image <installer-image-from-above>
+talosctl upgrade --nodes 192.168.10.22 --image <installer-image-from-above>
+talosctl upgrade --nodes 192.168.10.23 --image <installer-image-from-above>
+talosctl upgrade --nodes 192.168.10.30 --image <installer-image-from-above>
+
+# Once every node is on the new Talos version, bump Kubernetes components
+talosctl upgrade-k8s --nodes 192.168.10.30 --to <new-kubernetes-version>
+```
+
+> **Note:** `talhelper` also needs a `talsecret.yaml` (cluster/node secrets) to generate machine configs. Generate it locally with `talhelper gensecret` — it's gitignored and must never be committed in plaintext.
+
 ## Troubleshooting
 
 ### Node stuck in NotReady
