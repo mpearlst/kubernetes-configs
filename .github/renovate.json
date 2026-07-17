@@ -45,6 +45,28 @@
         "imageName:\\s*(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Talos OS version",
+      "fileMatch": ["^funland/talos/talconfig\\.yaml$"],
+      "matchStrings": [
+        "talosVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
+      ],
+      "depNameTemplate": "siderolabs/talos",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Kubernetes version",
+      "fileMatch": ["^funland/talos/talconfig\\.yaml$"],
+      "matchStrings": [
+        "kubernetesVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
+      ],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
     }
   ],
   "packageRules": [
@@ -64,6 +86,11 @@
     {
       "description": "Require PR review for major updates",
       "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Never auto-merge Talos/Kubernetes version bumps - manual upgrade runbook required",
+      "matchDepNames": ["siderolabs/talos", "kubernetes/kubernetes"],
       "automerge": false
     }
   ]

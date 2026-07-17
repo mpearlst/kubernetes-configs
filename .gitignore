@@ -11,3 +11,7 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# talhelper-generated secrets and machine configs (never commit in plaintext)
+talsecret.yaml
+clusterconfig/

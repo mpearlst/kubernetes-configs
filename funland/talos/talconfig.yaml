@@ -1,0 +1,52 @@
+# talhelper config - source of truth for the Talos OS and Kubernetes versions.
+#
+# talosVersion/kubernetesVersion are watched by Renovate (see .github/renovate.json)
+# so version bumps show up as PRs instead of drifting silently. Merging a bump PR
+# does NOT upgrade anything by itself - see the "Upgrading Talos & Kubernetes"
+# section in the README for the manual runbook.
+#
+# IMPORTANT: before merging this file for the first time, set talosVersion and
+# kubernetesVersion below to whatever the cluster is ACTUALLY running today, so
+# the first Renovate diff reflects a real upgrade rather than a fabricated jump.
+clusterName: funland
+talosVersion: v1.9.0
+kubernetesVersion: v1.31.0
+endpoint: https://192.168.10.30:6443
+allowSchedulingOnControlPlanes: false
+
+# Longhorn requires these Talos system extensions on every node (control plane
+# included, so Longhorn's manager/CSI components run cluster-wide even though
+# workloads themselves won't be scheduled on the control plane). talhelper
+# resolves this into a schematic ID via the Talos Image Factory automatically
+# when running `talhelper genconfig` - no manual schematic lookup needed.
+schematic:
+  customization:
+    systemExtensions:
+      officialExtensions:
+        - siderolabs/iscsi-tools
+        - siderolabs/util-linux-tools
+
+nodes:
+  - hostname: funland-cp-1
+    ipAddress: 192.168.10.30
+    controlPlane: true
+  - hostname: funland-worker-1
+    ipAddress: 192.168.10.21
+    controlPlane: false
+  - hostname: funland-worker-2
+    ipAddress: 192.168.10.22
+    controlPlane: false
+  - hostname: funland-worker-3
+    ipAddress: 192.168.10.23
+    controlPlane: false
+
+# Reproduces the existing bootstrap patch from the README (disable the default
+# CNI and kube-proxy so Cilium can replace both).
+patches:
+  - |-
+    cluster:
+      network:
+        cni:
+          name: none
+      proxy:
+        disabled: true
