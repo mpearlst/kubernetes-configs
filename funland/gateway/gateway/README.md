@@ -16,7 +16,7 @@ This configuration relies on a Kubernetes Gateway API implementation being deplo
 
 The Gateway API CRDs are managed separately in `funland/gateway-api/gateway-api-crds/` and must be installed before these resources can be applied.
 
-**Current version**: v1.5.0
+**Current version**: v1.6.1
 
 The CRD installation uses an App of Apps pattern with **Server-Side Apply** (`ServerSideApply=true`) enabled. This is required because the Gateway API CRD manifests are large and can exceed the 1MB annotation limit used by client-side apply.
 
