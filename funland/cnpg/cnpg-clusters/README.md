@@ -7,7 +7,6 @@ This directory contains the definitions for various PostgreSQL clusters managed 
 - `authentik-cnpg-cluster.yaml`: PostgreSQL cluster for Authentik.
 - `immich-cnpg-cluster.yaml`: PostgreSQL cluster for Immich.
 - `vaultwarden-cnpg-cluster.yaml`: PostgreSQL cluster for Vaultwarden.
-- `vikunja-cnpg-cluster.yaml`: PostgreSQL cluster for Vikunja.
 
 ## Scheduled Backups
 

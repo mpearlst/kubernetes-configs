@@ -7,16 +7,13 @@ The backup configuration has been set up with the following structure:
 ```
 funland/cnpg/
 ├── kustomization.yaml                    # Parent kustomization
-├── components/
-│   └── b2-backup/                        # Reusable backup template
-│       ├── backup-config.yaml            # Backup configuration
-│       └── kustomization.yaml            # Component definition
-├── external-secrets/
+├── cnpg-components/
 │   └── b2-backup-credentials.yaml        # B2 credentials from 1Password
 └── cnpg-clusters/
-    ├── kustomization.yaml                # Applies backup to all clusters
+    ├── kustomization.yaml                # Applies clusters + scheduled backups
     ├── scheduled-backups.yaml            # Daily backups at midnight
-    └── [cluster files...]                # Your existing cluster definitions
+    └── [cluster files...]                # Cluster definitions, each with its
+                                           # own inline spec.backup.barmanObjectStore
 ```
 
 ## Setup Steps
@@ -107,9 +104,9 @@ kubectl get cluster -n postgres -o jsonpath='{range .items[*]}{.metadata.name}{"
 
 ## Compression Options
 
-The default compression is **snappy** for optimal performance. To change:
+The default compression is **snappy** for optimal performance. Each cluster sets this independently in its own `spec.backup.barmanObjectStore` block. To change:
 
-Edit `funland/cnpg/cnpg-components/b2-backup/backup-config.yaml`:
+Edit the relevant cluster file, e.g. `funland/cnpg/cnpg-clusters/authentik-cnpg-cluster.yaml`:
 
 **For better compression (slower):**
 ```yaml
