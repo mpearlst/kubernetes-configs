@@ -1,6 +1,6 @@
 ---
 # Scheduled backups for all CNPG clusters
-# These create daily full backups at 2 AM in addition to continuous WAL archiving
+# These create daily full backups at midnight in addition to continuous WAL archiving
 
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup

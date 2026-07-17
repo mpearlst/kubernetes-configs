@@ -38,7 +38,8 @@ funland/                          # Cluster name
 ├── external-secrets/            # External Secrets Operator + 1Password
 ├── cnpg/                        # CloudNativePG operator + database clusters
 ├── longhorn-system/longhorn/    # Persistent storage
-├── monitoring/                  # Prometheus, Grafana, Loki, Promtail, metrics-server
+├── monitoring/                  # Prometheus, Grafana, metrics-server
+├── talos/                       # Talos/Kubernetes version tracking (talhelper)
 └── [app-namespace]/[app]/       # Application deployments
 ```
 
@@ -196,23 +197,26 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Application | Namespace | Description |
 |-------------|-----------|-------------|
 | AdGuard Home | adguard | DNS ad-blocking |
+| ArgoCD | argocd | GitOps continuous deployment |
 | Authentik | authentik | Identity provider / SSO |
 | Cert-Manager | cert-manager | TLS certificate automation |
+| Certificate | certificate | Wildcard TLS certificate |
 | Cilium | kube-system | CNI with Gateway API, BGP, Hubble observability |
+| CloudNativePG | postgres / cnpg-system | PostgreSQL operator + database clusters |
 | Cloudflare Tunnel | cloudflare | Cloudflare tunnel ingress controller |
-| etcd-operator | etcd-operator | etcd cluster operator (aenix-io) |
+| External Secrets Operator | external-secrets | Syncs secrets from 1Password |
+| Gateway | gateway | Gateway API Gateway resources (internal/external) |
+| Gateway API CRDs | gateway-api | Gateway API CRD definitions |
 | Grafana | monitoring | Metrics visualization |
-| Gravity DNS | gravity | Replicated DNS server powered by etcd |
 | Immich | immich | Photo/video management |
 | Jellyfin | media | Media server |
-| Loki | monitoring | Log aggregation |
 | Longhorn | longhorn-system | Distributed storage |
+| metrics-server | kube-system | Kubernetes resource metrics API |
 | ntfy | ntfy | Push notifications |
 | OpenSpeedTest | openspeedtest | Network speed testing |
+| 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
 | Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
-| Promtail | monitoring | Log shipping agent |
-| Unifi Log Insight | unifi-log-insight | UniFi network log analysis |
 | Vaultwarden | vaultwarden | Bitwarden-compatible password manager |
 
 ## Network Architecture
@@ -228,11 +232,6 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 - Prometheus scrapes metrics from all services with ServiceMonitors
 - Cilium exports network metrics (DNS, TCP, HTTP, drops, flows)
 - Grafana dashboards available at `grafana.batlab.io`
-
-### Logging (Loki + Promtail)
-- Promtail runs as a DaemonSet, collecting logs from all pods
-- Loki aggregates logs in SingleBinary mode with Longhorn storage
-- Query logs via Grafana's Explore tab
 
 ### Network Observability (Hubble)
 - Hubble UI available at `hubble.batlab.io`

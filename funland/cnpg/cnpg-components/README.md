@@ -5,7 +5,8 @@ This directory contains additional components and configurations related to [Clo
 ## Contents
 
 - `b2-backup-credentials.yaml`: Contains an ExternalSecret definition for fetching Backblaze B2 backup credentials.
-- `b2-backup/`: This subdirectory contains further configurations related to Backblaze B2 backups, such as `backup-config.yaml`.
+
+Per-cluster backup settings (compression, retention, encryption, destination path) are not defined here — they're set inline in each cluster's `spec.backup.barmanObjectStore` block under `funland/cnpg/cnpg-clusters/*.yaml`. There is no shared/reusable backup config in this directory.
 
 ## Secrets
 

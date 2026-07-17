@@ -6,4 +6,4 @@ Prometheus is an open-source systems monitoring and alerting toolkit. It collect
 
 ## Helm Chart
 
-This deployment uses the `prometheus` Helm chart from the [Prometheus Community Helm Charts repository](https://prometheus-community.github.io/helm-charts).
+This deployment uses the `kube-prometheus-stack` Helm chart from the [Prometheus Community Helm Charts repository](https://prometheus-community.github.io/helm-charts).

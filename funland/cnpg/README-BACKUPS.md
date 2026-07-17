@@ -9,23 +9,20 @@ The backup solution uses:
 - **Backblaze B2**: S3-compatible object storage for backup destination
 - **Barman**: PostgreSQL backup tool (integrated into CNPG)
 - **External Secrets Operator**: Pulls B2 credentials from 1Password
-- **Kustomize Components**: Reusable backup configuration template
+- **Inline per-cluster config**: Each cluster's `spec.backup.barmanObjectStore` block sets its own compression/retention/encryption/destination path (there is no shared Kustomize backup component)
 
 ## Directory Structure
 
 ```
 funland/cnpg/
 ├── cnpg-components/           # Components and configurations
-│   ├── b2-backup/            # Reusable backup configuration component
-│   │   └── ...              # Backup configuration files
 │   ├── b2-backup-credentials.yaml  # ExternalSecret for B2 credentials
 │   └── README.md
 ├── cnpg-clusters/            # PostgreSQL cluster definitions
-│   ├── kustomization.yaml    # Applies backup to all clusters
+│   ├── kustomization.yaml    # Applies clusters + scheduled backups
 │   ├── authentik-cnpg-cluster.yaml
 │   ├── immich-cnpg-cluster.yaml
 │   ├── vaultwarden-cnpg-cluster.yaml
-│   ├── vikunja-cnpg-cluster.yaml
 │   ├── scheduled-backups.yaml
 │   └── README.md
 ├── cnpg-operator/            # Operator configuration
@@ -86,7 +83,7 @@ kubectl describe cluster authentik-dbc -n postgres
 
 ### Compression Options
 
-The backup configuration uses **snappy** compression by default. You can change this in `funland/cnpg/cnpg-components/b2-backup/backup-config.yaml`:
+The backup configuration uses **snappy** compression by default. Each cluster sets this independently in its own `spec.backup.barmanObjectStore` block — e.g. `funland/cnpg/cnpg-clusters/authentik-cnpg-cluster.yaml`:
 
 **Available compression algorithms:**
 - `snappy`: Fast compression, moderate compression ratio (recommended for most cases)
@@ -103,7 +100,7 @@ data:
 
 ### Retention Policy
 
-Backups are retained for **30 days** by default. Change in `cnpg-components/b2-backup/backup-config.yaml`:
+Backups are retained for **30 days** by default. Change per-cluster in `cnpg-clusters/<app>-cnpg-cluster.yaml`:
 ```yaml
 backup:
   retentionPolicy: "30d"  # Format: <number>d (days), <number>w (weeks), <number>m (months)
@@ -159,7 +156,7 @@ kubectl get cluster authentik-dbc -n postgres -o jsonpath='{.status.lastSuccessf
 
 ## Scheduled Backups
 
-CNPG automatically performs continuous WAL archiving. To add scheduled full backups, create a `ScheduledBackup` resource:
+CNPG performs continuous WAL archiving automatically, and `funland/cnpg/cnpg-clusters/scheduled-backups.yaml` already defines a daily full backup for every cluster (`authentik-daily-backup`, `vaultwarden-daily-backup`, `immich-daily-backup`), applied via `cnpg-clusters/kustomization.yaml`:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -168,17 +165,15 @@ metadata:
   name: authentik-daily-backup
   namespace: postgres
 spec:
-  schedule: "0 0 2 * * *"  # Daily at 2 AM
+  schedule: "0 0 0 * * *"  # Daily at midnight
   backupOwnerReference: self
   cluster:
     name: authentik-dbc
   method: barmanObjectStore
+  immediate: true
 ```
 
-Apply it:
-```bash
-kubectl apply -f scheduled-backup.yaml
-```
+To add one for a new cluster, add a matching `ScheduledBackup` entry to `scheduled-backups.yaml` (it's already included in `cnpg-clusters/kustomization.yaml`, so no extra wiring is needed).
 
 ## Restore Operations
 
@@ -261,7 +256,6 @@ batcave-kubernetes/
 └── funland/
     └── postgres-backups/
         ├── authentik/
-        ├── vikunja/
         ├── vaultwarden/
         ├── immich/
 ```

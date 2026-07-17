@@ -54,8 +54,7 @@
         "talosVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
       ],
       "depNameTemplate": "siderolabs/talos",
-      "datasourceTemplate": "github-releases",
-      "extractVersionTemplate": "^v(?<version>.*)$"
+      "datasourceTemplate": "github-releases"
     },
     {
       "customType": "regex",
@@ -65,8 +64,7 @@
         "kubernetesVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
       ],
       "depNameTemplate": "kubernetes/kubernetes",
-      "datasourceTemplate": "github-releases",
-      "extractVersionTemplate": "^v(?<version>.*)$"
+      "datasourceTemplate": "github-releases"
     }
   ],
   "packageRules": [
