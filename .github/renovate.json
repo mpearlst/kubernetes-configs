@@ -77,6 +77,7 @@
     {
       "description": "Auto-merge minor and patch updates",
       "matchUpdateTypes": ["minor", "patch"],
+      "excludeDepNames": ["siderolabs/talos", "kubernetes/kubernetes"],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
