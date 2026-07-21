@@ -97,7 +97,8 @@ spec:
         server:
           enabled: true
           ingress:
-            enabled: false
+            main:
+              enabled: false
         immich:
           persistence:
             library:
