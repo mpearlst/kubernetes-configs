@@ -9,7 +9,7 @@
 # kubernetesVersion below to whatever the cluster is ACTUALLY running today, so
 # the first Renovate diff reflects a real upgrade rather than a fabricated jump.
 clusterName: funland
-talosVersion: v1.13.6
+talosVersion: v1.13.7
 kubernetesVersion: v1.34.9
 endpoint: https://192.168.10.20:6443
 allowSchedulingOnControlPlanes: false
