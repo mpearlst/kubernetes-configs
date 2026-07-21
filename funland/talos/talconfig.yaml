@@ -9,36 +9,28 @@
 # kubernetesVersion below to whatever the cluster is ACTUALLY running today, so
 # the first Renovate diff reflects a real upgrade rather than a fabricated jump.
 clusterName: funland
-talosVersion: v1.9.0
-kubernetesVersion: v1.31.0
-endpoint: https://192.168.10.30:6443
+talosVersion: v1.13.6
+kubernetesVersion: v1.34.9
+endpoint: https://192.168.10.20:6443
 allowSchedulingOnControlPlanes: false
 
-# Longhorn requires these Talos system extensions on every node (control plane
-# included, so Longhorn's manager/CSI components run cluster-wide even though
-# workloads themselves won't be scheduled on the control plane). talhelper
-# resolves this into a schematic ID via the Talos Image Factory automatically
-# when running `talhelper genconfig` - no manual schematic lookup needed.
-schematic:
-  customization:
-    systemExtensions:
-      officialExtensions:
-        - siderolabs/iscsi-tools
-        - siderolabs/util-linux-tools
-
 nodes:
-  - hostname: funland-cp-1
-    ipAddress: 192.168.10.30
+  - hostname: talos-g4c-g4l
+    ipAddress: 192.168.10.20
     controlPlane: true
-  - hostname: funland-worker-1
+    installDisk: /dev/sda
+  - hostname: talos-worker1
     ipAddress: 192.168.10.21
     controlPlane: false
-  - hostname: funland-worker-2
+    installDisk: /dev/sda
+  - hostname: talos-worker2
     ipAddress: 192.168.10.22
     controlPlane: false
-  - hostname: funland-worker-3
+    installDisk: /dev/sda
+  - hostname: talos-worker3
     ipAddress: 192.168.10.23
     controlPlane: false
+    installDisk: /dev/sda
 
 # Reproduces the existing bootstrap patch from the README (disable the default
 # CNI and kube-proxy so Cilium can replace both).
@@ -50,3 +42,32 @@ patches:
           name: none
       proxy:
         disabled: true
+
+# Longhorn requires these Talos system extensions on every node (control plane
+# included, so Longhorn's manager/CSI components run cluster-wide even though
+# workloads themselves won't be scheduled on the control plane), plus
+# qemu-guest-agent since every node is a QEMU VM. talhelper resolves this into
+# a schematic ID via the Talos Image Factory automatically when running
+# `talhelper genconfig` - no manual schematic lookup needed.
+#
+# NOTE: this must live under controlPlane/worker (or per-node), NOT as a
+# top-level `schematic:` key - talhelper's config schema doesn't have a
+# top-level schematic field, and silently ignores unrecognized keys instead
+# of erroring, which is what happened here originally.
+controlPlane:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/iscsi-tools
+          - siderolabs/util-linux-tools
+          - siderolabs/qemu-guest-agent
+
+worker:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/iscsi-tools
+          - siderolabs/util-linux-tools
+          - siderolabs/qemu-guest-agent
