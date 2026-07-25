@@ -80,8 +80,7 @@
       "excludeDepNames": ["siderolabs/talos", "kubernetes/kubernetes"],
       "automerge": true,
       "automergeType": "pr",
-      "platformAutomerge": true,
-      "requiredStatusChecks": null
+      "platformAutomerge": true
     },
     {
       "description": "Require PR review for major updates",
