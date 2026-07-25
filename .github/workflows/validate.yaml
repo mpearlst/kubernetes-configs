@@ -54,7 +54,9 @@ jobs:
 
       - name: Install kustomize
         run: |
-          curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s /usr/local/bin
+          if ! command -v kustomize >/dev/null; then
+            curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s /usr/local/bin
+          fi
 
       - name: Validate kustomize builds
         run: |
