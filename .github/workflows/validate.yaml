@@ -1,0 +1,72 @@
+name: Validate manifests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate YAML syntax
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'EOF'
+          import glob
+          import sys
+
+          import yaml
+
+          errors = []
+          files = sorted(set(glob.glob("**/*.yaml", recursive=True) + glob.glob("**/*.yml", recursive=True)))
+          for path in files:
+              if path.startswith(".git/"):
+                  continue
+              try:
+                  with open(path) as f:
+                      list(yaml.safe_load_all(f))
+              except yaml.YAMLError as e:
+                  errors.append(f"{path}: {e}")
+
+          if errors:
+              print(f"YAML syntax errors in {len(errors)} file(s):")
+              for e in errors:
+                  print(f"  {e}")
+              sys.exit(1)
+
+          print(f"Checked {len(files)} YAML file(s), no syntax errors.")
+          EOF
+
+      - name: Install kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz kubeconform
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate Kubernetes manifest structure
+        run: |
+          # Only feed kubeconform actual Kubernetes resources (apiVersion/kind);
+          # kustomize patch fragments and the Talos talconfig use other schemas.
+          grep -lZ '^apiVersion:' -r --include='*.yaml' funland \
+            | xargs -0 kubeconform -strict -ignore-missing-schemas -summary
+
+      - name: Install kustomize
+        run: |
+          if ! command -v kustomize >/dev/null; then
+            curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s /usr/local/bin
+          fi
+
+      - name: Validate kustomize builds
+        run: |
+          status=0
+          while IFS= read -r -d '' kfile; do
+            dir=$(dirname "$kfile")
+            echo "Building $dir"
+            if ! kustomize build "$dir" > /dev/null; then
+              echo "::error::kustomize build failed for $dir"
+              status=1
+            fi
+          done < <(find funland -name 'kustomization.yaml' -print0)
+          exit $status
