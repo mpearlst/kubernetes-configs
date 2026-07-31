@@ -8,7 +8,7 @@ This repository contains the configuration for a single-node (or multi-node) Kub
 
 **Key Components:**
 - **Talos Linux** - Immutable, secure Kubernetes OS
-- **Cilium** - CNI with Gateway API, BGP peering, and kube-proxy replacement
+- **Cilium** - CNI with Gateway API, L2 announcements, and kube-proxy replacement
 - **ArgoCD** - GitOps continuous deployment
 - **Longhorn** - Distributed block storage
 - **External Secrets + 1Password** - Secrets management
@@ -201,7 +201,7 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Authentik | authentik | Identity provider / SSO |
 | Cert-Manager | cert-manager | TLS certificate automation |
 | Certificate | certificate | Wildcard TLS certificate |
-| Cilium | kube-system | CNI with Gateway API, BGP, Hubble observability |
+| Cilium | kube-system | CNI with Gateway API, L2 announcements, Hubble observability |
 | CloudNativePG | postgres / cnpg-system | PostgreSQL operator + database clusters |
 | Cloudflare Tunnel | cloudflare | Cloudflare tunnel ingress controller |
 | External Secrets Operator | external-secrets | Syncs secrets from 1Password |
@@ -221,10 +221,10 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 
 ## Network Architecture
 
-- **IP Pool:** `192.168.101.0/24` (Cilium BGP advertisements, peered with UniFi router at ASN 64514)
-- **Internal Gateway:** `192.168.101.1` - Routes internal services via HTTPRoute resources
-- **External Gateway:** `192.168.101.2` - Routes public-facing services
-- **CNI:** Cilium with kube-proxy replacement, BGP control plane, and Gateway API enabled
+- **IP Pool:** `192.168.10.30` - `192.168.10.49` (Cilium L2 announcements, ARP on the local L2 segment)
+- **Internal Gateway:** `192.168.10.30` - Routes internal services via HTTPRoute resources
+- **External Gateway:** `192.168.10.31` - Routes public-facing services
+- **CNI:** Cilium with kube-proxy replacement, L2 announcements, and Gateway API enabled
 
 ## Observability Stack
 
@@ -305,7 +305,7 @@ Cilium is not running. Check Cilium pods: `kubectl get pods -n kube-system -l ap
 ### Services not accessible
 1. Verify Gateway: `kubectl get gateway -A`
 2. Check HTTPRoutes: `kubectl get httproute -A`
-3. Verify BGP peering: `kubectl get ciliumbgpclusterconfig,ciliumbgppeerconfig,ciliumloadbalancerippool`
+3. Verify L2 announcements: `kubectl get ciliuml2announcementpolicy,ciliumloadbalancerippool`
 
 ### Storage issues
 Check Longhorn dashboard or pods: `kubectl get pods -n longhorn-system`
