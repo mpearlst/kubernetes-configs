@@ -284,10 +284,10 @@ yq '.machine.install.image' clusterconfig/funland-funland-worker-1.yaml
 talosctl upgrade --nodes 192.168.10.21 --image <installer-image-from-above>
 talosctl upgrade --nodes 192.168.10.22 --image <installer-image-from-above>
 talosctl upgrade --nodes 192.168.10.23 --image <installer-image-from-above>
-talosctl upgrade --nodes 192.168.10.30 --image <installer-image-from-above>
+talosctl upgrade --nodes 192.168.10.20 --image <installer-image-from-above>
 
 # Once every node is on the new Talos version, bump Kubernetes components
-talosctl upgrade-k8s --nodes 192.168.10.30 --to <new-kubernetes-version>
+talosctl upgrade-k8s --nodes 192.168.10.20 --to <new-kubernetes-version>
 ```
 
 > **Note:** `talhelper` also needs a `talsecret.yaml` (cluster/node secrets) to generate machine configs. Generate it locally with `talhelper gensecret` — it's gitignored and must never be committed in plaintext.
