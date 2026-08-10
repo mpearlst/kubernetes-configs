@@ -3,6 +3,11 @@ kind: Namespace
 metadata:
   name: media
   annotations:
+    # This Namespace is shared by every app in funland/media/*; only sonarr
+    # declares it (the ApplicationSet's CreateNamespace=true handles
+    # creation for the rest) so ArgoCD's tracking-id ownership doesn't
+    # flip between apps on every sync. Prune=false is extra insurance in
+    # case ownership ever moves again — never let this get deleted.
     argocd.argoproj.io/sync-options: Prune=false
 ---
 apiVersion: apps/v1
