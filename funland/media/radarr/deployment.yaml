@@ -36,10 +36,13 @@ spec:
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
     spec:
+      # NOTE: unlike this repo's other apps, this image is NOT run as non-root.
+      # linuxserver.io images use s6-overlay, which must start as root (uid 0)
+      # to prepare /run and then drops to PUID/PGID itself internally. Forcing
+      # runAsUser here (as Jellyfin's own image supports) makes s6-overlay's
+      # preinit fail outright. fsGroup is kept so PVC ownership still lines up
+      # with PUID/PGID=568.
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 568
-        runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
       automountServiceAccountToken: false
@@ -66,9 +69,10 @@ spec:
           ports:
             - containerPort: 7878
           securityContext:
+            # capabilities are intentionally NOT dropped here: s6-overlay needs
+            # CAP_CHOWN/CAP_SETUID/CAP_SETGID (part of root's default set) to
+            # chown /run and step down to PUID/PGID=568 at startup.
             allowPrivilegeEscalation: false
-            capabilities:
-              drop: [ALL]
             readOnlyRootFilesystem: false
             seccompProfile:
               type: RuntimeDefault

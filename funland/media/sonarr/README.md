@@ -6,6 +6,10 @@ This directory contains the manifests for deploying [Sonarr](https://sonarr.tv/)
 
 This deployment uses the `linuxserver/sonarr` Docker image.
 
+## Security context
+
+Unlike this repo's other apps, this Deployment does **not** set `runAsNonRoot`/`runAsUser` or drop all Linux capabilities. `linuxserver.io` images use `s6-overlay`, which must start as root to prepare `/run` and then drops privileges to `PUID`/`PGID` itself; forcing a non-root UID or stripping `CAP_CHOWN`/`CAP_SETUID`/`CAP_SETGID` makes that startup fail outright (`s6-overlay-suexec: fatal: child failed with exit code 100`). `fsGroup: 568` is kept so PVC ownership still matches `PUID`/`PGID=568`.
+
 ## Access / SSO
 
 Sonarr is **not** exposed directly. `http-route.yaml` routes `sonarr.batlab.io` (internal gateway only) to the shared `authentik-proxy` Service in the `authentik` namespace (see `funland/authentik/authentik-proxy/`), which reverse-proxies to this app's own Service only after Authentik authenticates the request. Access is restricted to the `media-admins` Authentik group.
