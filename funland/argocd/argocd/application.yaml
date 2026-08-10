@@ -92,6 +92,17 @@ spec:
             - apiGroups: [""]
               resources: ["secrets"]
               verbs: ["get", "watch", "list"]
+          # Chart defaults (timeoutSeconds: 1) are too tight for this cluster's
+          # hardware and were causing the repo-server to crash-loop on liveness
+          # probe timeouts (context deadline exceeded) even though the process
+          # itself was healthy. Widen the timeout/period so transient latency
+          # doesn't trigger a kill.
+          readinessProbe:
+            timeoutSeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            timeoutSeconds: 5
+            periodSeconds: 15
         deploymentAnnotations:
           reloader.stakater.com/auto: "true"
         # To enable High Availability (HA) for the Argo CD server:
