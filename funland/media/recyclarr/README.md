@@ -17,12 +17,13 @@ The container's default entrypoint runs in "Cron Mode": it stays alive and re-sy
 ## Dependencies
 
 - **Storage:** Longhorn PVC (`recyclarr-config`, 2Gi) for `/config` (cache/logs).
-- **[External Secrets](https://external-secrets.io/):** Renders `/config/recyclarr.yml` from a template, reusing the **same** Radarr/Sonarr API keys those apps already consume (`radarr`/`sonarr` 1Password items, `api_key` property) — no separate key-extraction step.
+- **ConfigMap:** `recyclarr-yml` holds `/config/recyclarr.yml` in git — quality profiles and custom formats live here in plain sight, and secrets are never inlined into it. Values that need to stay secret use Recyclarr's [`!secret`](https://recyclarr.dev/wiki/yaml/secrets-reference/) YAML tag (e.g. `api_key: !secret radarr_apikey`), which Recyclarr resolves against `/config/secrets.yml` at runtime.
+- **[External Secrets](https://external-secrets.io/):** Renders `/config/secrets.yml`, reusing the **same** Radarr/Sonarr API keys those apps already consume (`radarr`/`sonarr` 1Password items, `api_key` property) — no separate key-extraction step.
 
 ## Secrets
 
-`recyclarr-config` ExternalSecret templates `recyclarr.yml` with `radarr.radarr-main.api_key` and `sonarr.sonarr-main.api_key` filled in from 1Password.
+`recyclarr-secret` ExternalSecret templates `secrets.yml` with `radarr_url`/`radarr_apikey`/`sonarr_url`/`sonarr_apikey` filled in from the existing `radarr`/`sonarr` 1Password items, mounted read-only at `/config/secrets.yml`. `recyclarr.yml` references these via `!secret <key>` — it holds no secret material itself, so it's safe to edit and diff in git.
 
 ## Manual setup
 
-The shipped `recyclarr.yml` only defines the connection to Radarr/Sonarr (`base_url`/`api_key`/`quality_definition`) — it does not yet include `custom_formats`/`quality_profiles`. Add those per the [TRaSH Guides](https://trash-guides.info/) once you've decided which profiles you want synced.
+Edit the `recyclarr-yml` ConfigMap's `recyclarr.yml` to add/adjust `custom_formats`/`quality_profiles` per the [TRaSH Guides](https://trash-guides.info/) — no 1Password changes needed unless you're changing which Radarr/Sonarr instances it talks to.

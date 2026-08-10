@@ -74,13 +74,20 @@ spec:
               mountPath: /config/recyclarr.yml
               subPath: recyclarr.yml
               readOnly: true
+            - name: recyclarr-secrets
+              mountPath: /config/secrets.yml
+              subPath: secrets.yml
+              readOnly: true
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: recyclarr-config
         - name: recyclarr-yml
+          configMap:
+            name: recyclarr-yml
+        - name: recyclarr-secrets
           secret:
-            secretName: recyclarr-config
+            secretName: recyclarr-secret
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
