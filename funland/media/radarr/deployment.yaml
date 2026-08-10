@@ -111,7 +111,7 @@ spec:
         - name: media
           nfs:
             server: "192.168.11.13"
-            path: /mnt/tank/media/library
+            path: /mnt/tank/media
             readOnly: false
 ---
 apiVersion: v1
