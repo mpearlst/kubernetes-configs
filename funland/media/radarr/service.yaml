@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  namespace: media
+  labels:
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: radarr
+    # renovate: image=linuxserver/radarr
+    app.kubernetes.io/version: "6.3.0.10514-ls313"
+    app.kubernetes.io/component: media-manager
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
+spec:
+  selector:
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: radarr
+  ports:
+    - port: 7878
+      targetPort: 7878

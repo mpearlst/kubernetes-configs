@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-media-httproutes-to-authentik-proxy
+  namespace: authentik
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: media
+  to:
+    - group: ""
+      kind: Service
+      name: authentik-proxy

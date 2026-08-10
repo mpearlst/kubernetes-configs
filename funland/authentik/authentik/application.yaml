@@ -60,6 +60,9 @@ spec:
     targetRevision: 2026.5.6
     helm:
       valuesObject:
+        blueprints:
+          configMaps:
+            - authentik-media-proxy-blueprint
         server:
           ingress:
             enabled: false

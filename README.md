@@ -199,6 +199,7 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | AdGuard Home | adguard | DNS ad-blocking |
 | ArgoCD | argocd | GitOps continuous deployment |
 | Authentik | authentik | Identity provider / SSO |
+| Authentik Proxy Outpost | authentik | Shared forward-auth SSO proxy for apps with no native OIDC support |
 | Cert-Manager | cert-manager | TLS certificate automation |
 | Certificate | certificate | Wildcard TLS certificate |
 | Cilium | kube-system | CNI with Gateway API, L2 announcements, Hubble observability |
@@ -214,9 +215,14 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | metrics-server | kube-system | Kubernetes resource metrics API |
 | ntfy | ntfy | Push notifications |
 | OpenSpeedTest | openspeedtest | Network speed testing |
+| Overseerr | media | Media request management UI (exposed as request.batlab.io) |
 | 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
 | Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
+| Prowlarr | media | Indexer manager (SSO via Authentik proxy outpost) |
+| Radarr | media | Movie collection manager (SSO via Authentik proxy outpost) |
+| Recyclarr | media | Syncs TRaSH Guides quality profiles into Radarr/Sonarr |
+| Sonarr | media | TV collection manager (SSO via Authentik proxy outpost) |
 | Vaultwarden | vaultwarden | Bitwarden-compatible password manager |
 
 ## Network Architecture

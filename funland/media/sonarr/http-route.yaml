@@ -1,0 +1,21 @@
+# NOTE: this deliberately does NOT point at the local `sonarr` Service.
+# Traffic must transit the shared authentik-proxy outpost (funland/authentik/authentik-proxy/)
+# for the Authentik SSO gate to apply. See funland/authentik/authentik-proxy/reference-grant.yaml
+# for the ReferenceGrant that permits this cross-namespace backendRef.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: internal
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - "sonarr.batlab.io"
+  rules:
+    - backendRefs:
+        - name: authentik-proxy
+          namespace: authentik
+          port: 9000

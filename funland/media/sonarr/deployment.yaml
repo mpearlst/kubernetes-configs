@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: media
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: media
+  labels:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: sonarr
+    # renovate: image=linuxserver/sonarr
+    app.kubernetes.io/version: "4.0.19.2979-ls321"
+    app.kubernetes.io/component: tv-manager
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sonarr
+      app.kubernetes.io/instance: sonarr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sonarr
+        app.kubernetes.io/instance: sonarr
+        # renovate: image=linuxserver/sonarr
+        app.kubernetes.io/version: "4.0.19.2979-ls321"
+        app.kubernetes.io/component: tv-manager
+        app.kubernetes.io/part-of: homelab
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+      automountServiceAccountToken: false
+      containers:
+        - name: sonarr
+          image: lscr.io/linuxserver/sonarr:4.0.19.2979-ls321
+          env:
+            - name: PUID
+              value: "568"
+            - name: PGID
+              value: "568"
+            - name: TZ
+              value: "America/New_York"
+            # Trusts the authentik-proxy outpost sitting in front of this app
+            # (see funland/media/sonarr/http-route.yaml) instead of prompting
+            # its own login screen.
+            - name: SONARR__AUTH__METHOD
+              value: "External"
+            - name: SONARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-secret
+                  key: api_key
+          ports:
+            - containerPort: 8989
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8989
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8989
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /media
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr-config
+        - name: media
+          nfs:
+            server: "192.168.11.13"
+            path: /mnt/tank/media/library
+            readOnly: false
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-config
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem

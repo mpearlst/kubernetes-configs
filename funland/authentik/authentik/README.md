@@ -16,6 +16,10 @@ This application has the following dependencies:
 - **PostgreSQL:** It requires a PostgreSQL database. This deployment uses a database managed by the [Cloud Native PostgreSQL (CNPG) operator](https://cloudnative-pg.io/).
 - **Redis:** It uses a Redis instance for caching, which is deployed as part of the Helm chart.
 
+## Blueprints
+
+`application.yaml` mounts the `authentik-media-proxy-blueprint` ConfigMap (from `funland/authentik/authentik-proxy/blueprint-configmap.yaml`) via the chart's native `blueprints.configMaps` value. This declaratively provisions the `media-admins` group, Proxy Providers/Applications, and outpost used to SSO-protect Prowlarr/Radarr/Sonarr — see `funland/authentik/authentik-proxy/README.md`.
+
 ## Secrets
 
 This application uses External Secrets to create a secret named `authentik-configsecrets` with the following keys:

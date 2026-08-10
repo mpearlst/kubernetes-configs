@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: media
+  labels:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: sonarr
+    # renovate: image=linuxserver/sonarr
+    app.kubernetes.io/version: "4.0.19.2979-ls321"
+    app.kubernetes.io/component: tv-manager
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
+spec:
+  selector:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: sonarr
+  ports:
+    - port: 8989
+      targetPort: 8989

@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentik-media-proxy-blueprint
+  namespace: authentik
+data:
+  media-proxy.yaml: |
+    version: 1
+    metadata:
+      name: media-stack-proxy-outpost
+    entries:
+      - model: authentik_core.group
+        id: media-admins-group
+        identifiers:
+          name: media-admins
+        attrs:
+          is_superuser: false
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: prowlarr-provider
+        identifiers:
+          name: prowlarr-proxy-provider
+        attrs:
+          authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          mode: proxy
+          internal_host: http://prowlarr.media.svc.cluster.local:9696
+          external_host: https://prowlarr.batlab.io
+          internal_host_ssl_validation: false
+          cookie_domain: batlab.io
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: radarr-provider
+        identifiers:
+          name: radarr-proxy-provider
+        attrs:
+          authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          mode: proxy
+          internal_host: http://radarr.media.svc.cluster.local:7878
+          external_host: https://radarr.batlab.io
+          internal_host_ssl_validation: false
+          cookie_domain: batlab.io
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: sonarr-provider
+        identifiers:
+          name: sonarr-proxy-provider
+        attrs:
+          authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          mode: proxy
+          internal_host: http://sonarr.media.svc.cluster.local:8989
+          external_host: https://sonarr.batlab.io
+          internal_host_ssl_validation: false
+          cookie_domain: batlab.io
+
+      - model: authentik_core.application
+        id: prowlarr-application
+        identifiers:
+          slug: prowlarr
+        attrs:
+          name: Prowlarr
+          slug: prowlarr
+          provider: !KeyOf prowlarr-provider
+          policy_engine_mode: any
+          meta_launch_url: https://prowlarr.batlab.io
+
+      - model: authentik_core.application
+        id: radarr-application
+        identifiers:
+          slug: radarr
+        attrs:
+          name: Radarr
+          slug: radarr
+          provider: !KeyOf radarr-provider
+          policy_engine_mode: any
+          meta_launch_url: https://radarr.batlab.io
+
+      - model: authentik_core.application
+        id: sonarr-application
+        identifiers:
+          slug: sonarr
+        attrs:
+          name: Sonarr
+          slug: sonarr
+          provider: !KeyOf sonarr-provider
+          policy_engine_mode: any
+          meta_launch_url: https://sonarr.batlab.io
+
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !KeyOf prowlarr-application
+          group: !KeyOf media-admins-group
+          order: 0
+        attrs:
+          enabled: true
+          negate: false
+
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !KeyOf radarr-application
+          group: !KeyOf media-admins-group
+          order: 0
+        attrs:
+          enabled: true
+          negate: false
+
+      - model: authentik_policies.policybinding
+        identifiers:
+          target: !KeyOf sonarr-application
+          group: !KeyOf media-admins-group
+          order: 0
+        attrs:
+          enabled: true
+          negate: false
+
+      - model: authentik_outposts.outpost
+        id: media-proxy-outpost
+        identifiers:
+          name: media-proxy-outpost
+        attrs:
+          type: proxy
+          providers:
+            - !KeyOf prowlarr-provider
+            - !KeyOf radarr-provider
+            - !KeyOf sonarr-provider
+          config:
+            authentik_host: https://auth.batlab.io
+            log_level: info
