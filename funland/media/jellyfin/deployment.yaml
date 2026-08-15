@@ -13,7 +13,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   revisionHistoryLimit: 1
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: jellyfin
