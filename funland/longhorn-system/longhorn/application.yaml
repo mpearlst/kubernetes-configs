@@ -26,6 +26,8 @@ spec:
           preUpgradeChecker:
             jobEnabled: false
             upgradeVersionCheck: false
+          defaultSettings:
+            orphanResourceAutoDeletion: replica-data
           image:
             longhorn:
               manager:
