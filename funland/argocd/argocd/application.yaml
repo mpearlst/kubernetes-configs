@@ -40,6 +40,23 @@ spec:
       valuesObject:
         global:
           domain: argocd.batlab.io
+          # All ArgoCD components ended up scheduled on a single node
+          # (talos-worker2); when that node hit a System OOM and flapped
+          # NotReady, the entire GitOps control plane went unreachable at
+          # once (repo-server, controller, redis, server all co-located).
+          # Every component is single-replica here, so the chart's own
+          # podAntiAffinity presets (which only spread replicas of the same
+          # component) don't help — this spreads distinct components across
+          # nodes instead, using the shared `part-of: argocd` label. Soft
+          # (ScheduleAnyway) since this cluster only has 4 nodes for 7
+          # components and pods must never go Pending over this.
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
         configs:
           params:
             server.insecure: true
