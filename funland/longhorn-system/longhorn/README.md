@@ -12,6 +12,10 @@ This deployment uses the `longhorn` Helm chart from the [Longhorn chart reposito
 
 This deployment defines a `StorageClass` named `longhorn-single` with the number of replicas set to 1. This is suitable for workloads where high availability is not a requirement.
 
+## Monitoring
+
+`metrics.serviceMonitor.enabled` is set so Prometheus scrapes `longhorn-manager` metrics, and `prometheusrule.yaml` defines alert rules for volume Degraded/Faulted status, offline nodes, and disk/volume space pressure. These route through Alertmanager (see `funland/monitoring/prometheus`) to ntfy — added after a 2026-08-16 incident where a Longhorn-managed disk went offline and corrupted its filesystem on `talos-worker1`, hanging kubelet for ~26 hours with nobody notified.
+
 ## Troubleshooting
 
 ### Node disk shows DiskPressure / stops scheduling new replicas

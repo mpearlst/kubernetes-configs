@@ -28,6 +28,9 @@ spec:
             upgradeVersionCheck: false
           defaultSettings:
             orphanResourceAutoDeletion: replica-data
+          metrics:
+            serviceMonitor:
+              enabled: true
           image:
             longhorn:
               manager:

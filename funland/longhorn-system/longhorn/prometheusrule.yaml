@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: longhorn-rules
+  namespace: longhorn-system
+  labels:
+    prometheus: longhorn
+    role: alert-rules
+spec:
+  groups:
+    - name: longhorn.rules
+      rules:
+        - alert: LonghornVolumeStatusCritical
+          expr: longhorn_volume_robustness == 3
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Longhorn volume {{ $labels.volume }} is Faulted"
+            description: "Longhorn volume {{ $labels.volume }} on {{ $labels.node }} has been Faulted for more than 5 minutes."
+        - alert: LonghornVolumeStatusWarning
+          expr: longhorn_volume_robustness == 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Longhorn volume {{ $labels.volume }} is Degraded"
+            description: "Longhorn volume {{ $labels.volume }} on {{ $labels.node }} has been Degraded for more than 5 minutes."
+        - alert: LonghornNodeDown
+          expr: (avg(longhorn_node_count_total) or on() vector(0)) - (count(longhorn_node_status{condition="ready"} == 1) or on() vector(0)) > 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "A Longhorn node is offline"
+            description: "{{ $value }} Longhorn node(s) have been offline for more than 5 minutes."
+        - alert: LonghornDiskStorageWarning
+          expr: (longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100 > 70
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Longhorn disk {{ $labels.disk }} on {{ $labels.node }} is over 70% full"
+            description: "The used storage of disk {{ $labels.disk }} on node {{ $labels.node }} has been at {{ $value }}% capacity for more than 5 minutes."
+        - alert: LonghornVolumeActualSpaceUsedWarning
+          expr: (longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100 > 90
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Longhorn volume {{ $labels.volume }} is over 90% full"
+            description: "The actual space used by Longhorn volume {{ $labels.volume }} on {{ $labels.node }} has been at {{ $value }}% capacity for more than 5 minutes."
