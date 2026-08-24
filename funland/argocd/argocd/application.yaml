@@ -155,13 +155,18 @@ spec:
               memory: 64Mi
             limits:
               memory: 128Mi
+        # dex peaks around 110Mi at startup, not the ~38Mi steady-state reading
+        # the original sizing used. At a 128Mi limit it crashlooped with SIGSEGV
+        # (exit 139) rather than a clean OOMKill - Go segfaults when it cannot
+        # mmap under cgroup pressure, so this does not show up as OOMKilled and
+        # is easy to misread as an application bug.
         dex:
           resources:
             requests:
               cpu: 25m
-              memory: 64Mi
-            limits:
               memory: 128Mi
+            limits:
+              memory: 256Mi
         applicationSet:
           resources:
             requests:
