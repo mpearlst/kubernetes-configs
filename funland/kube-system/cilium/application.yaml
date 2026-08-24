@@ -69,9 +69,9 @@ spec:
           resources:
             requests:
               cpu: 25m
-              memory: 64Mi
+              memory: 96Mi
             limits:
-              memory: 128Mi
+              memory: 256Mi
         kubeProxyReplacement: true
         securityContext:
           capabilities:
