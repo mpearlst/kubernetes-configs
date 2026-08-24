@@ -46,6 +46,32 @@ spec:
         #     dashboards:
         #       enabled: true
         #       namespace: monitoring
+        # Requests added so the scheduler accounts for these pods (they
+        # previously declared none). The agent runs 301-414Mi across the four
+        # nodes; the request tracks typical usage and the limit is a cap.
+        #
+        # The agent limit is set generously on purpose: Cilium is the CNI, and
+        # an OOM-kill here takes networking down on the whole node.
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            memory: 768Mi
+        envoy:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 192Mi
+        operator:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
         kubeProxyReplacement: true
         securityContext:
           capabilities:

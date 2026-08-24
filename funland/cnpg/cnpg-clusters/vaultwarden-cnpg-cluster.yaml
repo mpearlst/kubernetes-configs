@@ -5,6 +5,16 @@ metadata:
   namespace: postgres
 spec:
   instances: 3
+  # These 9 Postgres pods previously declared no resources at all, so the
+  # scheduler counted them as free and packed them onto nodes that were already
+  # full. Request tracks typical observed usage (~72-89Mi here) so scheduling
+  # decisions are accurate; the higher limit is the blast-radius cap.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
   imageName: ghcr.io/cloudnative-pg/postgresql:18.6
   monitoring:
     enablePodMonitor: true

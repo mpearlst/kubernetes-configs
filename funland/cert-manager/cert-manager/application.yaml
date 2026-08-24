@@ -16,6 +16,29 @@ spec:
       valuesObject:
         crds:
           enabled: true
+        # Requests added so the scheduler accounts for these pods. Prior to this
+        # every chart-deployed workload here declared none, so nodes advertised
+        # far more free memory than they had. Sized from measured working set.
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        webhook:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        cainjector:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 192Mi
+            limits:
+              memory: 320Mi
   syncPolicy:
     automated:
       allowEmpty: true

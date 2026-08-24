@@ -301,7 +301,36 @@ talosctl upgrade-k8s --nodes 192.168.10.20 --to <new-kubernetes-version>
 ## Troubleshooting
 
 ### Node stuck in NotReady
-Cilium is not running. Check Cilium pods: `kubectl get pods -n kube-system -l app.kubernetes.io/name=cilium`
+
+First check Cilium — if the CNI isn't running the node never goes Ready:
+`kubectl get pods -n kube-system -l app.kubernetes.io/name=cilium`
+
+If Cilium is healthy and nodes are *flapping* rather than staying down, suspect
+memory accounting. Compare what the scheduler thinks is allocated against what
+the node is really using:
+
+```sh
+kubectl describe node <node> | grep -A6 "Allocated resources"
+kubectl top nodes
+```
+
+If "Requests" for memory is far below actual usage, the scheduler is packing
+pods onto a node it believes is empty, and the kernel OOM killer will eventually
+reboot it. That was the cause of the 2026-08-23 incident (worker2 reported 7%
+memory requested while running at 71%, and took 153 kernel OOM kills in a week).
+Any workload with no `resources.requests` counts as zero to the scheduler.
+
+Confirm OOM kills and reboots directly:
+
+```sh
+# kernel OOM kills per node over the last 24h - should be 0
+kubectl get --raw "/api/v1/namespaces/monitoring/services/prometheus-application-kub-prometheus:9090/proxy/api/v1/query?query=increase(node_vmstat_oom_kill%5B24h%5D)"
+
+# node uptime - a reset here means a real reboot, not a network blip
+kubectl get --raw "/api/v1/namespaces/monitoring/services/prometheus-application-kub-prometheus:9090/proxy/api/v1/query?query=time()-node_boot_time_seconds"
+```
+
+See `funland/monitoring/prometheus/README.md` for the full write-up.
 
 ### ArgoCD apps not syncing
 1. Check ApplicationSet: `kubectl get applicationset -n argocd`

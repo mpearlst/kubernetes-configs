@@ -42,6 +42,43 @@ patches:
           name: none
       proxy:
         disabled: true
+  # Node-level resource reservations.
+  #
+  # Context: on 2026-08-23 the cluster was flapping nodes NotReady. Root cause
+  # was that most chart-deployed workloads declared no memory requests, so the
+  # scheduler saw talos-worker2 as 7% full while it was actually 71% full,
+  # packed 53 pods onto it, and the kernel OOM killer fired 153 times in 7 days.
+  #
+  # Requests have since been set across the repo, but that fix is not complete
+  # on its own: Longhorn creates its instance-manager, csi-* and engine-image
+  # pods itself rather than through Helm, and the chart exposes no memory
+  # requests for them (see funland/longhorn-system/longhorn/application.yaml).
+  # Roughly 25 pods will therefore always be invisible to the scheduler.
+  #
+  # These reservations are what protect the node in that case. They hold back
+  # memory for the kubelet and system daemons, and evictionHard makes the
+  # kubelet evict pods BEFORE the kernel OOM killer runs - an eviction is
+  # graceful and shows up as a Kubernetes event, an OOM kill is neither.
+  #
+  # NOTE: this must be a `patches` entry (raw Talos machine config), NOT a
+  # top-level `machine:` key - talhelper has no such key and silently ignores
+  # unrecognized ones, the same trap noted for `schematic` below.
+  #
+  # Applying this needs the manual runbook in README.md ("Upgrading Talos &
+  # Kubernetes"): talhelper genconfig, then talosctl apply-config node by node.
+  - |-
+    machine:
+      kubelet:
+        extraConfig:
+          systemReserved:
+            cpu: 200m
+            memory: 512Mi
+          kubeReserved:
+            cpu: 200m
+            memory: 512Mi
+          evictionHard:
+            memory.available: "500Mi"
+            nodefs.available: "10%"
 
 # Longhorn requires these Talos system extensions on every node (control plane
 # included, so Longhorn's manager/CSI components run cluster-wide even though
