@@ -145,7 +145,10 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
+        # For a non-HA setup, ensure redis.enabled is true (default) or
+        # explicitly set it. See the HA notes further down.
         redis:
+          enabled: true
           resources:
             requests:
               cpu: 25m
@@ -185,9 +188,6 @@ spec:
           #   host: argocd-redis-ha.argocd-redis-ha.svc
           #   port: 6379
           #   # passwordSecretName: argocd-redis-secret
-        # For a non-HA setup, ensure redis.enabled is true (default) or explicitly set it.
-        redis:
-          enabled: true
   syncPolicy:
     automated:
       allowEmpty: true
