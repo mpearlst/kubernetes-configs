@@ -145,7 +145,6 @@ spec:
                   group_interval: 15m
                   repeat_interval: 4h
             receivers:
-              - name: 'null'
               - name: 'ntfy'
                 webhook_configs:
                   - url: http://alertmanager-ntfy-bridge.monitoring.svc.cluster.local:8000/hook
@@ -154,8 +153,6 @@ spec:
                 webhook_configs:
                   - url_file: /etc/alertmanager/secrets/alertmanager-watchdog/url
                     send_resolved: false
-            templates:
-              - '/etc/alertmanager/config/*.tmpl'
 
         prometheus:
           prometheusSpec:
