@@ -12,8 +12,8 @@ This deployment uses the `cilium` Helm chart from the [Cilium Helm repository](h
 
 This deployment has the following features enabled:
 
-- **Prometheus:** Metrics are exposed for Prometheus to scrape.
-- **Hubble:** Hubble is enabled for network observability.
+- **Prometheus:** Agent and Hubble metrics are currently DISABLED (commented out in `application.yaml`). They were turned off in `dac0dd9` to free memory during a worker2 OOM incident; the real cause of that OOM turned out to be missing resource requests cluster-wide, so these can be re-enabled if the memory headroom is there.
+- **Hubble:** Disabled along with the metrics above - `hubble-relay` and `hubble-ui` are not running.
 - **kube-proxy replacement:** Cilium replaces `kube-proxy` for service routing.
 - **Gateway API:** Cilium is configured to work with the Kubernetes Gateway API.
 - **L2 Announcements:** Advertises LoadBalancer IPs via ARP on the local L2 segment.

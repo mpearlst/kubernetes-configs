@@ -120,6 +120,59 @@ spec:
           livenessProbe:
             timeoutSeconds: 5
             periodSeconds: 15
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+        # Requests added so the scheduler accounts for these pods. Every ArgoCD
+        # component previously declared none, which is how they all ended up on
+        # talos-worker2 in the first place - the topologySpreadConstraints above
+        # treated the symptom, but a pod with no request still looks free to the
+        # scheduler. Sized from measured working set.
+        controller:
+          resources:
+            requests:
+              cpu: 250m
+              memory: 640Mi
+            limits:
+              memory: 896Mi
+        server:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+        redis:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        dex:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        applicationSet:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        notifications:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
         deploymentAnnotations:
           reloader.stakater.com/auto: "true"
         # To enable High Availability (HA) for the Argo CD server:

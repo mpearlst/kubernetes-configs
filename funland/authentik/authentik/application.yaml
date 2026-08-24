@@ -64,6 +64,14 @@ spec:
           configMaps:
             - authentik-media-proxy-blueprint
         server:
+          # Requests added so the scheduler accounts for these pods (they
+          # previously declared none). Observed working set ~690Mi.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 768Mi
+            limits:
+              memory: 1Gi
           ingress:
             enabled: false
           volumes:
@@ -75,6 +83,13 @@ spec:
               mountPath: /certs
               readOnly: true
         worker:
+          # Observed working set ~277Mi.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 320Mi
+            limits:
+              memory: 512Mi
           volumes:
             - name: wildcard-cert
               secret:

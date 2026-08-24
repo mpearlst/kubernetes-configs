@@ -30,6 +30,22 @@ spec:
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
     spec:
+      # Keep the bridge off whichever node Alertmanager and Prometheus land on.
+      # The whole notification path (Prometheus -> Alertmanager -> this bridge
+      # -> ntfy) is single-replica and in-cluster, so co-locating any two of
+      # them means one node failure silences alerting exactly when it is needed.
+      # Soft (preferred) only - 3 schedulable workers, must never go Pending.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values: ["alertmanager", "prometheus"]
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -47,6 +63,9 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         resources:
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
           limits:
             memory: "64Mi"
             cpu: "200m"

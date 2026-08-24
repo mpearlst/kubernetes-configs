@@ -4,6 +4,11 @@ metadata:
   name: longhorn-rules
   namespace: longhorn-system
   labels:
+    # kube-prometheus-stack leaves ruleSelectorNilUsesHelmValues at its default,
+    # so the Prometheus CR selects PrometheusRules by `release: <helm release>`.
+    # Without this label these rules were never loaded by Prometheus at all -
+    # they existed in the cluster but evaluated nowhere.
+    release: prometheus-application
     prometheus: longhorn
     role: alert-rules
 spec:
@@ -27,13 +32,16 @@ spec:
             summary: "Longhorn volume {{ $labels.volume }} is Degraded"
             description: "Longhorn volume {{ $labels.volume }} on {{ $labels.node }} has been Degraded for more than 5 minutes."
         - alert: LonghornNodeDown
-          expr: (avg(longhorn_node_count_total) or on() vector(0)) - (count(longhorn_node_status{condition="ready"} == 1) or on() vector(0)) > 0
+          # Per-node rather than an aggregate count diff, so the notification can
+          # name the node. The previous form subtracted two cluster-wide counts,
+          # which left {{ $labels.node }} empty and reported only a bare number.
+          expr: longhorn_node_status{condition="ready"} == 0
           for: 5m
           labels:
             severity: critical
           annotations:
-            summary: "A Longhorn node is offline"
-            description: "{{ $value }} Longhorn node(s) have been offline for more than 5 minutes."
+            summary: "Longhorn node {{ $labels.node }} is offline"
+            description: "Longhorn node {{ $labels.node }} has been not-ready for more than 5 minutes."
         - alert: LonghornDiskStorageWarning
           expr: (longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100 > 70
           for: 5m

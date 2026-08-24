@@ -13,6 +13,32 @@ spec:
       valuesObject:
         grafana:
           enabled: false
+
+        # --- Components that do not exist on this cluster -------------------
+        # Leaving these enabled produced permanently-firing alerts that drowned
+        # out real signal:
+        #
+        #   KubeProxyDown - kube-proxy is deliberately disabled
+        #     (funland/talos/talconfig.yaml sets cluster.proxy.disabled and
+        #     Cilium runs with kubeProxyReplacement: true), so the job has no
+        #     targets and absent() fires forever.
+        #
+        #   KubeControllerManagerInstanceUnreachable
+        #   KubeSchedulerInstanceUnreachable
+        #   TargetDown{job=kube-controller-manager|kube-scheduler}
+        #     - Talos binds both components to localhost, so they are not
+        #       scrapeable from a pod. Confirmed up == 0 on 192.168.10.20:10257
+        #       and :10259.
+        #
+        # These are switched off because the components are absent or
+        # unreachable by design - not because the coverage is unwanted.
+        kubeProxy:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+
         alertmanager:
           enabled: true
           alertmanagerSpec:
@@ -24,6 +50,36 @@ spec:
                   resources:
                     requests:
                       storage: 2Gi
+            # Requests track typical measured usage - that is the number the
+            # scheduler reads, and getting it wrong is what caused the node
+            # flapping. Limits sit above the request as a blast-radius cap.
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+            # Keep Alertmanager off whichever node Prometheus lands on, so one
+            # node failure cannot take out both halves of the alert path.
+            # Soft (preferred) only - this cluster has 3 schedulable workers and
+            # pods must never go Pending over placement.
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      topologyKey: kubernetes.io/hostname
+                      labelSelector:
+                        matchExpressions:
+                          - key: app.kubernetes.io/name
+                            operator: In
+                            values: ["prometheus", "kube-state-metrics"]
+            # Mounted at /etc/alertmanager/secrets/alertmanager-watchdog/url.
+            # PREREQUISITE: the 1Password item backing this secret must exist
+            # before this app syncs, otherwise the pod stays in
+            # ContainerCreating. See this app README for the bootstrap steps.
+            secrets:
+              - alertmanager-watchdog
           config:
             global:
               resolve_timeout: 5m
@@ -50,24 +106,57 @@ spec:
                   - 'namespace'
               - target_matchers:
                   - 'alertname = InfoInhibitor'
+              # A node going down takes ~50 pods with it and lights up every
+              # workload alert in every namespace. Suppress that downstream
+              # noise so the node alert itself is what reaches ntfy.
+              - source_matchers:
+                  - 'alertname =~ "KubeNodeNotReady|KubeNodeUnreachable"'
+                target_matchers:
+                  - 'alertname =~ "KubePodNotReady|KubePodCrashLooping|KubeDeploymentReplicasMismatch|KubeStatefulSetReplicasMismatch|KubeDaemonSetRolloutStuck|KubeDeploymentRolloutStuck|TargetDown|KubeletDown"'
             route:
-              group_by: ['namespace']
+              # Grouping by alertname as well as namespace means one incident
+              # produces one notification per alert type, instead of fanning out
+              # into a separate ntfy push for every affected namespace.
+              group_by: ['alertname', 'namespace']
               group_wait: 30s
               group_interval: 5m
               repeat_interval: 12h
               receiver: 'ntfy'
               routes:
-                - receiver: 'null'
+                # Dead-man's-switch. The whole alert path (Prometheus ->
+                # Alertmanager -> bridge -> ntfy) is in-cluster and
+                # single-replica, so its own failure is otherwise silent.
+                # Watchdog fires continuously by design; an external heartbeat
+                # service alarms when these stop arriving.
+                - receiver: 'deadmansswitch'
                   matchers:
                     - alertname = "Watchdog"
+                  group_wait: 0s
+                  group_interval: 5m
+                  repeat_interval: 5m
+                # Node-level failures: notify fast, then stay quiet. Without a
+                # dedicated route these inherited the 5m group_interval and
+                # re-notified for the whole duration of an outage.
+                - receiver: 'ntfy'
+                  matchers:
+                    - alertname =~ "KubeNodeNotReady|KubeNodeUnreachable|KubeNodeReadinessFlapping|KubeletDown"
+                  group_by: ['alertname']
+                  group_wait: 30s
+                  group_interval: 15m
+                  repeat_interval: 4h
             receivers:
               - name: 'null'
               - name: 'ntfy'
                 webhook_configs:
                   - url: http://alertmanager-ntfy-bridge.monitoring.svc.cluster.local:8000/hook
                     send_resolved: true
+              - name: 'deadmansswitch'
+                webhook_configs:
+                  - url_file: /etc/alertmanager/secrets/alertmanager-watchdog/url
+                    send_resolved: false
             templates:
               - '/etc/alertmanager/config/*.tmpl'
+
         prometheus:
           prometheusSpec:
             serviceMonitorSelectorNilUsesHelmValues: false
@@ -76,6 +165,72 @@ spec:
             podMonitorSelectorNilUsesHelmValues: false
             podMonitorSelector: {}
             podMonitorNamespaceSelector: {}
+            # Was an emptyDir: every Prometheus restart (and this pod lived on
+            # the node that kept rebooting) wiped the TSDB, so post-incident
+            # investigation had no history and every series went stale at once,
+            # re-firing the whole alert set on recovery.
+            retention: 30d
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: longhorn
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 20Gi
+            # Observed working set ~750Mi; headroom for 30d retention.
+            resources:
+              requests:
+                cpu: 200m
+                memory: 1024Mi
+              limits:
+                memory: 1536Mi
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      topologyKey: kubernetes.io/hostname
+                      labelSelector:
+                        matchExpressions:
+                          - key: app.kubernetes.io/name
+                            operator: In
+                            values: ["alertmanager", "kube-state-metrics"]
+
+        prometheusOperator:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+
+        kube-state-metrics:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values: ["prometheus", "alertmanager"]
+
+        prometheus-node-exporter:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

@@ -55,9 +55,24 @@ spec:
             #tunnelName: ""
             #apiToken: ""
         cloudflared:
+          # The controller itself has chart-default requests; the managed
+          # connector pods did not, so the scheduler counted them as free.
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
           image:
-            # renovate: datasource=docker depName=cloudflare/cloudflared
-            tag: 2026.8.2
+            # Chart 0.1.0 (2026-08-12) switched the connector image default from
+            # cloudflare/cloudflared to strrl's fork, which publishes host-metrics
+            # builds under its own tag scheme. Renovate was still tracking
+            # cloudflare/cloudflared and wrote upstream tags (2026.8.1, 2026.8.2)
+            # into this registry, where they do not exist - leaving the connector
+            # in ImagePullBackOff since 2026-08-12. ghcr.io/strrl/cloudflared
+            # currently publishes only 2026.7.3-host-metrics.1.
+            # renovate: datasource=docker depName=ghcr.io/strrl/cloudflared
+            tag: 2026.7.3-host-metrics.1
   syncPolicy:
     automated:
       allowEmpty: true

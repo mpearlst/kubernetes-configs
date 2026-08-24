@@ -1,0 +1,51 @@
+# Restored from archive/ (was removed in dac0dd9 "chore: reduce cluster memory
+# footprint" while chasing a talos-worker2 OOM - it was explicitly noted at the
+# time as "not the source of the OOM").
+#
+# The real cause of that OOM, and of the repeated node NotReady flaps, was that
+# most chart-deployed workloads declared no memory requests, so the scheduler
+# saw worker2 as 7% full while it was actually 71% full and kept packing pods
+# onto it until the kernel OOM killer fired. metrics-server is what makes that
+# class of problem visible - `kubectl top nodes` / `kubectl top pods` is the
+# fastest way to compare real usage against requests. Without it the only route
+# was raw container_memory_working_set_bytes queries against Prometheus.
+#
+# It is cheap (~50Mi) and now declares its own requests/limits, so it cannot
+# repeat the accounting problem it was archived for.
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-server-application
+  namespace: argocd
+spec:
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: metrics-server
+    repoURL: https://kubernetes-sigs.github.io/metrics-server/
+    targetRevision: 3.13.1
+    helm:
+      valuesObject:
+        args:
+          - --kubelet-insecure-tls
+          - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+          - --kubelet-use-node-status-port
+          - --metric-resolution=15s
+        metrics:
+          enabled: true
+        serviceMonitor:
+          enabled: false
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true

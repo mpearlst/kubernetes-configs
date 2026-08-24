@@ -1,0 +1,32 @@
+# Longhorn chart 1.12.x ships NetworkPolicies (created 2026-08-14) that restrict
+# ingress to longhorn-manager to Longhorn's own components only. That silently
+# broke Prometheus' scrape of longhorn-backend:9500 - all three targets went to
+# `up == 0` with an i/o timeout, no longhorn_* metrics were collected at all, and
+# a permanent TargetDown{namespace="longhorn-system"} alert began firing.
+#
+# Kubernetes NetworkPolicies are additive (rules are OR'd across policies that
+# select the same pods), so this supplementary policy re-opens just the metrics
+# port to Prometheus without disabling the chart's isolation via
+# `networkPolicies.enabled: false`.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: longhorn-manager-allow-monitoring
+  namespace: longhorn-system
+spec:
+  podSelector:
+    matchLabels:
+      app: longhorn-manager
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9500

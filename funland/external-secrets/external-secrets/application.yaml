@@ -13,7 +13,29 @@ spec:
     repoURL: https://charts.external-secrets.io
     targetRevision: 2.9.0
     helm:
-      valuesObject: {}
+      valuesObject:
+        # Requests added so the scheduler accounts for these pods (they
+        # previously declared none). Sized from measured working set.
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        webhook:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        certController:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
   syncPolicy:
     automated:
       allowEmpty: true
