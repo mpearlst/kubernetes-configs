@@ -52,26 +52,26 @@ spec:
         #
         # The agent limit is set generously on purpose: Cilium is the CNI, and
         # an OOM-kill here takes networking down on the whole node.
-        # resources:
-        #   requests:
-        #     cpu: 100m
-        #     memory: 384Mi
-        #   limits:
-        #     memory: 768Mi
-        # envoy:
-        #   resources:
-        #     requests:
-        #       cpu: 25m
-        #       memory: 64Mi
-        #     limits:
-        #       memory: 192Mi
-        # operator:
-        #   resources:
-        #     requests:
-        #       cpu: 25m
-        #       memory: 96Mi
-        #     limits:
-        #       memory: 256Mi
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            memory: 768Mi
+        envoy:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 192Mi
+        operator:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
         kubeProxyReplacement: true
         securityContext:
           capabilities:

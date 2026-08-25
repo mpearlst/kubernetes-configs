@@ -31,36 +31,13 @@ spec:
           metrics:
             serviceMonitor:
               enabled: true
-          # NOTE / known gap: longhorn 1.12.1 exposes `resources` for the
-          # longhorn-manager DaemonSet ONLY. The instance-manager, csi-* and
-          # engine-image pods (~25 of Longhorn's 28 pods here) are created
-          # dynamically by Longhorn, not by the chart, and have no
-          # chart-settable resources.
-          #
-          # CPU is already covered for the instance-managers: the Longhorn
-          # setting guaranteedInstanceManagerCPU (12%, the default) gives each
-          # one a 954m CPU request on these 8-core workers. MEMORY is not - and
-          # instance-manager is the largest single consumer on the cluster at
-          # ~744Mi observed, entirely invisible to the scheduler.
-          #
-          # So the scheduler will always under-count Longhorn's real memory
-          # footprint on a node. The kubelet systemReserved/kubeReserved and
-          # evictionHard settings in funland/talos/talconfig.yaml are what
-          # actually protect the node against this, and are load-bearing for
-          # that reason - do not remove them.
-          # longhornManager:
-          #   resources:
-          #     requests:
-          #       cpu: 50m
-          #       memory: 192Mi
-          #     limits:
-          #       memory: 320Mi
-          # image:
-          #   longhorn:
-          #     manager:
-          #       tag: v1.11.0-hotfix-1
-          #     instanceManager:
-          #       tag: v1.11.0-hotfix-1
+          longhornManager:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 192Mi
+              limits:
+                memory: 320Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
