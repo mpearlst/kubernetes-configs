@@ -48,19 +48,19 @@ spec:
           # evictionHard settings in funland/talos/talconfig.yaml are what
           # actually protect the node against this, and are load-bearing for
           # that reason - do not remove them.
-          longhornManager:
-            resources:
-              requests:
-                cpu: 50m
-                memory: 192Mi
-              limits:
-                memory: 320Mi
-          image:
-            longhorn:
-              manager:
-                tag: v1.11.0-hotfix-1
-              instanceManager:
-                tag: v1.11.0-hotfix-1
+          # longhornManager:
+          #   resources:
+          #     requests:
+          #       cpu: 50m
+          #       memory: 192Mi
+          #     limits:
+          #       memory: 320Mi
+          # image:
+          #   longhorn:
+          #     manager:
+          #       tag: v1.11.0-hotfix-1
+          #     instanceManager:
+          #       tag: v1.11.0-hotfix-1
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
