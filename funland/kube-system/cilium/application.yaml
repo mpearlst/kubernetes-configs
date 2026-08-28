@@ -91,6 +91,8 @@ spec:
               - NET_ADMIN
               - SYS_ADMIN
               - SYS_RESOURCE
+        k8sServiceHost: localhost # Talos KubePrism local API-server load-balancer
+        k8sServicePort: 7445      # required for Cilium's own bootstrap in kube-proxy-replacement mode
         cgroup:
           autoMount:
             enabled: false
