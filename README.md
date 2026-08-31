@@ -216,6 +216,7 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | ntfy | ntfy | Push notifications |
 | OpenSpeedTest | openspeedtest | Network speed testing |
 | Overseerr | media | Media request management UI (exposed as request.batlab.io) |
+| ownCloud Infinite Scale (oCIS) | owncloud | File sync-and-share / personal cloud (exposed as cloud.batlab.io) |
 | 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
 | Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
