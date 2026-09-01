@@ -35,7 +35,7 @@ spec:
   source:
     chart: argo-cd
     repoURL: https://argoproj.github.io/argo-helm
-    targetRevision: 10.5.0
+    targetRevision: 10.6.0
     helm:
       valuesObject:
         global:
