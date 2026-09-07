@@ -1,0 +1,162 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: owncloud
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocis
+  namespace: owncloud
+  labels:
+    app.kubernetes.io/name: ocis
+    app.kubernetes.io/instance: ocis
+    # renovate: image=owncloud/ocis
+    app.kubernetes.io/version: "8.2.0"
+    app.kubernetes.io/component: file-sync-and-share
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ocis
+      app.kubernetes.io/instance: ocis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ocis
+        app.kubernetes.io/instance: ocis
+        # renovate: image=owncloud/ocis
+        app.kubernetes.io/version: "8.2.0"
+        app.kubernetes.io/component: file-sync-and-share
+        app.kubernetes.io/part-of: homelab
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: ocis
+        image: owncloud/ocis:8.2.0
+        args: ["server"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          readOnlyRootFilesystem: false
+          privileged: false
+          seccompProfile:
+            type: RuntimeDefault
+        ports:
+        - containerPort: 9200
+          name: http
+        env:
+        - name: OCIS_URL
+          value: "https://cloud.batlab.io"
+        # TLS is terminated at the gateway/tunnel, so ocis itself only needs to speak plain HTTP.
+        - name: PROXY_TLS
+          value: "false"
+        - name: OCIS_INSECURE
+          value: "true"
+        - name: OCIS_LOG_LEVEL
+          value: "info"
+        - name: IDM_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ocis-secret
+              key: idm_admin_password
+        volumeMounts:
+        - name: config
+          mountPath: /etc/ocis
+        - name: data
+          mountPath: /var/lib/ocis
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: ocis-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: ocis-data
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ocis-config
+  namespace: owncloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ocis-data
+  namespace: owncloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ocis
+  namespace: owncloud
+  labels:
+    app.kubernetes.io/name: ocis
+    app.kubernetes.io/instance: ocis
+    # renovate: image=owncloud/ocis
+    app.kubernetes.io/version: "8.2.0"
+    app.kubernetes.io/component: file-sync-and-share
+    app.kubernetes.io/part-of: homelab
+    app.kubernetes.io/managed-by: argocd
+spec:
+  selector:
+    app.kubernetes.io/name: ocis
+    app.kubernetes.io/instance: ocis
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9200
+      targetPort: 9200
+  type: ClusterIP
