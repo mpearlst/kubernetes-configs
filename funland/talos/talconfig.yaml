@@ -1,13 +1,9 @@
 # talhelper config - source of truth for the Talos OS and Kubernetes versions.
 #
-# talosVersion/kubernetesVersion are watched by Renovate (see .github/renovate.json)
-# so version bumps show up as PRs instead of drifting silently. Merging a bump PR
-# does NOT upgrade anything by itself - see the "Upgrading Talos & Kubernetes"
-# section in the README for the manual runbook.
-#
-# IMPORTANT: before merging this file for the first time, set talosVersion and
-# kubernetesVersion below to whatever the cluster is ACTUALLY running today, so
-# the first Renovate diff reflects a real upgrade rather than a fabricated jump.
+# Renovate deliberately ignores this file (see .github/renovate.json) - it only
+# manages apps running in the cluster, never the cluster/OS layer itself. Bump
+# talosVersion/kubernetesVersion here manually when you're ready to upgrade -
+# see the "Upgrading Talos & Kubernetes" section in the README for the runbook.
 clusterName: funland
 talosVersion: v1.13.8
 kubernetesVersion: v1.36.3

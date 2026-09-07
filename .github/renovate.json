@@ -4,8 +4,9 @@
     "config:recommended"
   ],
   "ignorePaths": [
-    "funland/cnpg/cnpg-clusters/immich-cnpg-cluster.yaml",
-    "archive/**"
+    "archive/**",
+    "funland/talos/**",
+    "funland/cnpg/cnpg-clusters/immich-cnpg-cluster.yaml"
   ],
   "prHourlyLimit": 6,
   "prConcurrentLimit": 10,
@@ -23,13 +24,6 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^funland/.+/application\\.yaml$"],
-      "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
-      ]
-    },
-    {
-      "customType": "regex",
       "description": "Update app.kubernetes.io/version labels to match image versions",
       "fileMatch": ["^funland/.+/deployment\\.yaml$"],
       "matchStrings": [
@@ -39,32 +33,20 @@
     },
     {
       "customType": "regex",
+      "description": "Update image tags pinned inside ArgoCD Application helm values",
+      "fileMatch": ["^funland/.+/application\\.yaml$"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ]
+    },
+    {
+      "customType": "regex",
       "description": "Update CNPG cluster imageName references",
       "fileMatch": ["^funland/cnpg/cnpg-clusters/.+-cnpg-cluster\\.yaml$"],
       "matchStrings": [
         "imageName:\\s*(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
       ],
       "datasourceTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "description": "Track Talos OS version",
-      "fileMatch": ["^funland/talos/talconfig\\.yaml$"],
-      "matchStrings": [
-        "talosVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
-      ],
-      "depNameTemplate": "siderolabs/talos",
-      "datasourceTemplate": "github-releases"
-    },
-    {
-      "customType": "regex",
-      "description": "Track Kubernetes version",
-      "fileMatch": ["^funland/talos/talconfig\\.yaml$"],
-      "matchStrings": [
-        "kubernetesVersion:\\s*[\"']?(?<currentValue>v[^\"'\\s]+)[\"']?"
-      ],
-      "depNameTemplate": "kubernetes/kubernetes",
-      "datasourceTemplate": "github-releases"
     }
   ],
   "packageRules": [
@@ -77,7 +59,6 @@
     {
       "description": "Auto-merge minor and patch updates",
       "matchUpdateTypes": ["minor", "patch"],
-      "excludeDepNames": ["siderolabs/talos", "kubernetes/kubernetes"],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
@@ -85,11 +66,6 @@
     {
       "description": "Require PR review for major updates",
       "matchUpdateTypes": ["major"],
-      "automerge": false
-    },
-    {
-      "description": "Never auto-merge Talos/Kubernetes version bumps - manual upgrade runbook required",
-      "matchDepNames": ["siderolabs/talos", "kubernetes/kubernetes"],
       "automerge": false
     }
   ]

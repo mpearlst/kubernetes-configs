@@ -271,9 +271,9 @@ kubectl get backups -n postgres
 
 `funland/talos/talconfig.yaml` ([talhelper](https://github.com/budimanjojo/talhelper) config) is the source of truth for the Talos OS version (`talosVersion`) and the Kubernetes version (`kubernetesVersion`). It also declares the Longhorn-required Talos system extensions (`siderolabs/iscsi-tools`, `siderolabs/util-linux-tools`) applied to every node.
 
-Renovate watches this file (see `.github/renovate.json`) and opens a PR whenever a new Talos or Kubernetes release is published. These PRs are **never auto-merged** — a node OS / control-plane bump needs human review and a controlled rollout, unlike the chart/image bumps elsewhere in this repo.
+Renovate does **not** watch this file (see `.github/renovate.json`, which explicitly ignores `funland/talos/**`) — it only manages the apps running in the cluster (Helm charts, Deployments, images), never the cluster/OS layer itself. Watch [Talos releases](https://github.com/siderolabs/talos/releases) and the [Kubernetes changelog](https://github.com/kubernetes/kubernetes/releases) yourself and bump `talconfig.yaml` manually when you're ready to upgrade.
 
-Argo CD is not involved in this process: it only syncs Kubernetes API resources, while Talos/Kubernetes core upgrades go through the separate Talos API (`talosctl`). Merging the Renovate PR just records the target version — applying it is a manual runbook:
+Argo CD is not involved in this process either: it only syncs Kubernetes API resources, while Talos/Kubernetes core upgrades go through the separate Talos API (`talosctl`). Bumping `talosVersion`/`kubernetesVersion` in `talconfig.yaml` just records the target version — applying it is a manual runbook:
 
 ```sh
 # Regenerate machine configs from the updated talconfig.yaml.
