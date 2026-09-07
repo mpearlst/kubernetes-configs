@@ -156,6 +156,20 @@ spec:
 
         prometheus:
           prometheusSpec:
+            # alertmanager-ntfy-bridge turns every alert label into an ntfy tag
+            # ("key = value"), and ntfy hard-rejects (400) any push whose tags
+            # exceed 512 bytes total. Scrape-plumbing labels like the PVC's
+            # auto-generated name (job/service/instance/container/endpoint/pvc)
+            # add nothing a human needs in a push notification, but on alerts
+            # tied to long-named objects they can push the tag payload over
+            # that limit - which fails the whole webhook batch, not just the
+            # oversized alert, so Alertmanager retries the entire group
+            # forever and floods every other alert in it. Dropping these
+            # before alerts leave Prometheus keeps tags small across the
+            # board instead of only patching today's offender.
+            additionalAlertRelabelConfigs:
+              - action: labeldrop
+                regex: ^(container|endpoint|instance|job|pvc|service)$
             serviceMonitorSelectorNilUsesHelmValues: false
             serviceMonitorSelector: {}
             serviceMonitorNamespaceSelector: {}
@@ -169,6 +183,22 @@ spec:
             retention: 30d
             storageSpec:
               volumeClaimTemplate:
+                metadata:
+                  labels:
+                    # Opts this volume out of Longhorn's daily "default"
+                    # snapshot group (funland/longhorn-system/longhorn/recurringjobs.yaml).
+                    # TSDB churn is high enough that 3 retained daily
+                    # snapshots plus live data regularly exceeded the 20Gi
+                    # PVC (128% actual usage observed), which triggered
+                    # LonghornVolumeActualSpaceUsedWarning permanently.
+                    # Unlike stateful app data, this volume doesn't need
+                    # point-in-time snapshot protection: it's reproducible
+                    # by re-scraping, and already has 30d retention above.
+                    # Longhorn only auto-adds a volume to "default" when it
+                    # has no recurring-job labels at all, so pointing it at
+                    # an otherwise-unused group name opts it out permanently.
+                    recurring-job.longhorn.io/source: enabled
+                    recurring-job-group.longhorn.io/tsdb-unmanaged: enabled
                 spec:
                   storageClassName: longhorn
                   accessModes: ["ReadWriteOnce"]
