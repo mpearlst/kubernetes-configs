@@ -204,7 +204,7 @@ spec:
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
-                      storage: 20Gi
+                      storage: 10Gi
             # Observed working set ~750Mi; headroom for 30d retention.
             resources:
               requests:
