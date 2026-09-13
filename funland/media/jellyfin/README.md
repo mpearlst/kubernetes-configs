@@ -15,4 +15,3 @@ This application has the following dependencies:
 - **Storage:**
   - It requires a PersistentVolume for storing configuration, provided by the `longhorn` storage class.
   - It connects to an NFS share for the media library.
-  - Downloaded artwork/metadata (`/config/metadata`) lives on a separate NFS share (`/mnt/tank/jellyfin/metadata`) rather than the Longhorn volume, since it's the bulk of the config volume's size and is safely re-fetchable if lost.

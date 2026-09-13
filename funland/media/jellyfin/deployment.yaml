@@ -46,8 +46,6 @@ spec:
           mountPath: /media
         - name: config
           mountPath: /config
-        - name: metadata
-          mountPath: /config/metadata
         - name: cache
           mountPath: /cache
         ports:
@@ -90,11 +88,6 @@ spec:
       - name: config
         persistentVolumeClaim:
           claimName: jellyfin-config
-          readOnly: false
-      - name: metadata
-        nfs:
-          server: "192.168.11.13"
-          path: /mnt/tank/jellyfin/metadata
           readOnly: false
       - name: media
         nfs:
