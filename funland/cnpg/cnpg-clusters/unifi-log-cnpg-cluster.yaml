@@ -5,7 +5,13 @@ metadata:
   namespace: postgres
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6
   monitoring:
     enablePodMonitor: true
   storage:
@@ -15,6 +21,27 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: preferred
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: "s3://batcave-kubernetes/funland/postgres-backups/unifi-log"
+      endpointURL: "https://s3.us-west-000.backblazeb2.com"
+      s3Credentials:
+        accessKeyId:
+          name: b2-backup-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2-backup-credentials
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: snappy
+        maxParallel: 2
+        encryption: AES256
+      data:
+        compression: snappy
+        immediateCheckpoint: true
+        jobs: 2
+        encryption: AES256
   bootstrap:
     initdb:
       database: unifi_logs
