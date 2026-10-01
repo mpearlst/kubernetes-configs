@@ -25,7 +25,9 @@
     {
       "customType": "regex",
       "description": "Update app.kubernetes.io/version labels to match image versions",
-      "fileMatch": ["^funland/.+/deployment\\.yaml$"],
+      "managerFilePatterns": [
+        "/^funland\\/.+\\/(deployment|service)\\.yaml$/"
+      ],
       "matchStrings": [
         "#\\s*renovate:\\s*image=(?<depName>\\S+)\\n\\s*app\\.kubernetes\\.io/version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
@@ -34,7 +36,9 @@
     {
       "customType": "regex",
       "description": "Update image tags pinned inside ArgoCD Application helm values",
-      "fileMatch": ["^funland/.+/application\\.yaml$"],
+      "managerFilePatterns": [
+        "/^funland\\/.+\\/application\\.yaml$/"
+      ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ]
@@ -42,7 +46,9 @@
     {
       "customType": "regex",
       "description": "Update CNPG cluster imageName references",
-      "fileMatch": ["^funland/cnpg/cnpg-clusters/.+-cnpg-cluster\\.yaml$"],
+      "managerFilePatterns": [
+        "/^funland\\/cnpg\\/cnpg-clusters\\/.+-cnpg-cluster\\.yaml$/"
+      ],
       "matchStrings": [
         "imageName:\\s*(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
       ],
@@ -51,9 +57,17 @@
   ],
   "packageRules": [
     {
+      "description": "Custom versioning for LinuxServer.io images",
+      "matchPackagePatterns": [
+        "^lscr\\.io/linuxserver/",
+        "^linuxserver/"
+      ],
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:[.\\-r]+(?<build>\\d+))?-ls(?<revision>\\d+)$"
+    },
+    {
       "description": "Group image updates with their version labels in same PR",
       "matchDatasources": ["docker"],
-      "matchFileNames": ["funland/**/deployment.yaml"],
+      "matchFileNames": ["funland/**"],
       "groupName": "{{depName}} version updates"
     },
     {

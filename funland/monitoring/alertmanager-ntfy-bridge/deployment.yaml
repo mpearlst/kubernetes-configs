@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: alertmanager-ntfy-bridge
     app.kubernetes.io/instance: alertmanager-ntfy-bridge
-    # renovate: image=alexbakker/alertmanager-ntfy
+    # renovate: image=ghcr.io/alexbakker/alertmanager-ntfy
     app.kubernetes.io/version: "1.2.1"
     app.kubernetes.io/component: notification-relay
     app.kubernetes.io/part-of: homelab
@@ -24,7 +24,7 @@ spec:
       labels:
         app.kubernetes.io/name: alertmanager-ntfy-bridge
         app.kubernetes.io/instance: alertmanager-ntfy-bridge
-        # renovate: image=alexbakker/alertmanager-ntfy
+        # renovate: image=ghcr.io/alexbakker/alertmanager-ntfy
         app.kubernetes.io/version: "1.2.1"
         app.kubernetes.io/component: notification-relay
         app.kubernetes.io/part-of: homelab
@@ -101,7 +101,7 @@ metadata:
   labels:
     app.kubernetes.io/name: alertmanager-ntfy-bridge
     app.kubernetes.io/instance: alertmanager-ntfy-bridge
-    # renovate: image=alexbakker/alertmanager-ntfy
+    # renovate: image=ghcr.io/alexbakker/alertmanager-ntfy
     app.kubernetes.io/version: "1.2.1"
     app.kubernetes.io/component: notification-relay
     app.kubernetes.io/part-of: homelab

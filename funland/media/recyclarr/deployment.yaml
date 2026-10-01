@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: recyclarr
     app.kubernetes.io/instance: recyclarr
-    # renovate: image=recyclarr/recyclarr
+    # renovate: image=ghcr.io/recyclarr/recyclarr
     app.kubernetes.io/version: "8"
     app.kubernetes.io/component: quality-profile-sync
     app.kubernetes.io/part-of: homelab
@@ -25,7 +25,7 @@ spec:
       labels:
         app.kubernetes.io/name: recyclarr
         app.kubernetes.io/instance: recyclarr
-        # renovate: image=recyclarr/recyclarr
+        # renovate: image=ghcr.io/recyclarr/recyclarr
         app.kubernetes.io/version: "8"
         app.kubernetes.io/component: quality-profile-sync
         app.kubernetes.io/part-of: homelab

@@ -6,8 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: authentik-proxy
     app.kubernetes.io/instance: authentik-proxy
-    # renovate: image=goauthentik/proxy
-    app.kubernetes.io/version: "2026.5.6"
+    # renovate: image=ghcr.io/goauthentik/proxy
+    app.kubernetes.io/version: "2026.8.3"
     app.kubernetes.io/component: sso-proxy
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -25,8 +25,8 @@ spec:
       labels:
         app.kubernetes.io/name: authentik-proxy
         app.kubernetes.io/instance: authentik-proxy
-        # renovate: image=goauthentik/proxy
-        app.kubernetes.io/version: "2026.5.6"
+        # renovate: image=ghcr.io/goauthentik/proxy
+        app.kubernetes.io/version: "2026.8.3"
         app.kubernetes.io/component: sso-proxy
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
@@ -96,8 +96,8 @@ metadata:
   labels:
     app.kubernetes.io/name: authentik-proxy
     app.kubernetes.io/instance: authentik-proxy
-    # renovate: image=goauthentik/proxy
-    app.kubernetes.io/version: "2026.5.6"
+    # renovate: image=ghcr.io/goauthentik/proxy
+    app.kubernetes.io/version: "2026.8.3"
     app.kubernetes.io/component: sso-proxy
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd

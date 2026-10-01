@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: radarr
     app.kubernetes.io/instance: radarr
-    # renovate: image=linuxserver/radarr
+    # renovate: image=lscr.io/linuxserver/radarr
     app.kubernetes.io/version: "6.3.0.10514-ls313"
     app.kubernetes.io/component: media-manager
     app.kubernetes.io/part-of: homelab

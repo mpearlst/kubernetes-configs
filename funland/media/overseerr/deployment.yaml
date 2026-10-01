@@ -6,8 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: overseerr
     app.kubernetes.io/instance: overseerr
-    # renovate: image=seerr-team/seerr
-    app.kubernetes.io/version: "v3.4.1"
+    # renovate: image=ghcr.io/seerr-team/seerr
+    app.kubernetes.io/version: "v3.5.0"
     app.kubernetes.io/component: request-manager
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -25,8 +25,8 @@ spec:
       labels:
         app.kubernetes.io/name: overseerr
         app.kubernetes.io/instance: overseerr
-        # renovate: image=seerr-team/seerr
-        app.kubernetes.io/version: "v3.4.1"
+        # renovate: image=ghcr.io/seerr-team/seerr
+        app.kubernetes.io/version: "v3.5.0"
         app.kubernetes.io/component: request-manager
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd

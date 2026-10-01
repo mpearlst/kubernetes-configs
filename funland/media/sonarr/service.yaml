@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: sonarr
     app.kubernetes.io/instance: sonarr
-    # renovate: image=linuxserver/sonarr
+    # renovate: image=lscr.io/linuxserver/sonarr
     app.kubernetes.io/version: "4.0.19.2979-ls321"
     app.kubernetes.io/component: tv-manager
     app.kubernetes.io/part-of: homelab
