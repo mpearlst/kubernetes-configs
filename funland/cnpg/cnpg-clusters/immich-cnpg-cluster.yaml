@@ -7,14 +7,17 @@ spec:
   instances: 3
   # These 9 Postgres pods previously declared no resources at all, so the
   # scheduler counted them as free and packed them onto nodes that were already
-  # full. Request tracks typical observed usage (~78-111Mi here) so scheduling
-  # decisions are accurate; the higher limit is the blast-radius cap.
+  # full. Request tracks typical observed usage so scheduling decisions are
+  # accurate; the higher limit is the blast-radius cap. The original 384Mi limit
+  # sat right on top of shared_buffers (160MB) plus backends, and every instance
+  # was OOMKilled 60+ times/day (peak working set pinned at the limit), leaving
+  # the cluster stuck failing over.
   resources:
     requests:
       cpu: 100m
-      memory: 192Mi
-    limits:
       memory: 384Mi
+    limits:
+      memory: 1Gi
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16.13-1.1.1
   monitoring:
     enablePodMonitor: true
