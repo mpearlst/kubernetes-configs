@@ -104,14 +104,16 @@ spec:
             main:
               containers:
                 main:
-                  # Observed working set ~874Mi - the largest workload pod on
-                  # the cluster after kube-apiserver.
+                  # Idle working set is ~874Mi, but thumbnail/transcode jobs push
+                  # it well past that: the 1536Mi limit OOMKilled the server
+                  # within a minute of every start while a job backlog existed,
+                  # and the retried jobs then killed it again.
                   resources:
                     requests:
                       cpu: 200m
                       memory: 1024Mi
                     limits:
-                      memory: 1536Mi
+                      memory: 3Gi
           ingress:
             main:
               enabled: false
@@ -121,13 +123,15 @@ spec:
             main:
               containers:
                 main:
-                  # Observed working set ~249Mi.
+                  # Idle working set is ~249Mi with no models loaded. CLIP, face
+                  # and OCR models loaded together need far more; 512Mi was
+                  # OOMKilled as soon as jobs arrived.
                   resources:
                     requests:
                       cpu: 100m
-                      memory: 320Mi
-                    limits:
                       memory: 512Mi
+                    limits:
+                      memory: 2Gi
         immich:
           persistence:
             library:
