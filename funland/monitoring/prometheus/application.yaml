@@ -181,6 +181,11 @@ spec:
             # investigation had no history and every series went stale at once,
             # re-firing the whole alert set on recovery.
             retention: 30d
+            # 30d of data doesn't fit the 10Gi PVC below (~450Mi/day, so the
+            # volume fills at ~20d and Prometheus crashes on a full disk).
+            # Cap by size so the oldest blocks are dropped first; leaves room
+            # for the WAL, head chunks and compaction scratch space.
+            retentionSize: 8GiB
             storageSpec:
               volumeClaimTemplate:
                 metadata:
