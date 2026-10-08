@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: prowlarr
     app.kubernetes.io/instance: prowlarr
     # renovate: image=lscr.io/linuxserver/prowlarr
-    app.kubernetes.io/version: "2.6.5.5623-ls162"
+    app.kubernetes.io/version: "2.6.5.5623-ls163"
     app.kubernetes.io/component: indexer-manager
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
