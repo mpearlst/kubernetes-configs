@@ -21,5 +21,11 @@ spec:
   task: "filesystem-trim"
   groups:
     - default
+    # The Prometheus TSDB volume opts out of "default" to avoid daily
+    # snapshots (see funland/monitoring/prometheus/application.yaml), which
+    # also opted it out of trim: blocks freed by retentionSize were never
+    # released and a removed-but-unpurged system snapshot lingered, leaving
+    # the 10Gi volume at 182% actual size. It still needs trimming.
+    - tsdb-unmanaged
   retain: 0
   concurrency: 2

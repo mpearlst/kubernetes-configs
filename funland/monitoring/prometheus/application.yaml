@@ -193,7 +193,7 @@ spec:
                     # Opts this volume out of Longhorn's daily "default"
                     # snapshot group (funland/longhorn-system/longhorn/recurringjobs.yaml).
                     # TSDB churn is high enough that 3 retained daily
-                    # snapshots plus live data regularly exceeded the 20Gi
+                    # snapshots plus live data regularly exceeded the 10Gi
                     # PVC (128% actual usage observed), which triggered
                     # LonghornVolumeActualSpaceUsedWarning permanently.
                     # Unlike stateful app data, this volume doesn't need
@@ -201,7 +201,9 @@ spec:
                     # by re-scraping, and already has 30d retention above.
                     # Longhorn only auto-adds a volume to "default" when it
                     # has no recurring-job labels at all, so pointing it at
-                    # an otherwise-unused group name opts it out permanently.
+                    # a group no snapshot job targets opts it out permanently.
+                    # filesystem-trim-weekly does target this group, so freed
+                    # TSDB blocks are still released back to Longhorn.
                     recurring-job.longhorn.io/source: enabled
                     recurring-job-group.longhorn.io/tsdb-unmanaged: enabled
                 spec:
