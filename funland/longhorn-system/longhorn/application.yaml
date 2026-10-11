@@ -28,7 +28,14 @@ spec:
             upgradeVersionCheck: false
           defaultSettings:
             orphanResourceAutoDeletion: replica-data
-            removeSnapshotsDuringFilesystemTrim: true
+            # Must stay false: with true, filesystem-trim-weekly marks every
+            # snapshot on a trimmed volume as removed and purges it, so each
+            # Sunday 04:00 wiped all of snapshot-daily's restore points
+            # (23 of 24 volumes had none on 2026-10-11). Space held by a
+            # snapshot is reclaimed when it ages out of retain: 3 instead.
+            # The Prometheus TSDB volume opts back in per volume - see
+            # funland/monitoring/prometheus/application.yaml.
+            removeSnapshotsDuringFilesystemTrim: false
           metrics:
             serviceMonitor:
               enabled: true

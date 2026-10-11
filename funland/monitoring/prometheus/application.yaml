@@ -204,6 +204,14 @@ spec:
                     # a group no snapshot job targets opts it out permanently.
                     # filesystem-trim-weekly does target this group, so freed
                     # TSDB blocks are still released back to Longhorn.
+                    # Trim only reaches blocks held by Longhorn's system
+                    # snapshots if the volume removes snapshots during trim.
+                    # That is off globally (it would wipe other volumes'
+                    # restore points), so it is enabled on this volume alone.
+                    # It lives on the Longhorn Volume CR, not in Git - if the
+                    # PVC is ever recreated, re-apply it:
+                    #   kubectl -n longhorn-system patch volumes.longhorn.io <pv-name> \
+                    #     --type merge -p '{"spec":{"unmapMarkSnapChainRemoved":"enabled"}}'
                     recurring-job.longhorn.io/source: enabled
                     recurring-job-group.longhorn.io/tsdb-unmanaged: enabled
                 spec:
