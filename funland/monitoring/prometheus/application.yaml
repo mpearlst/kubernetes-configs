@@ -181,10 +181,10 @@ spec:
             # investigation had no history and every series went stale at once,
             # re-firing the whole alert set on recovery.
             retention: 30d
-            # 30d of data doesn't fit the 10Gi PVC below (~450Mi/day, so the
-            # volume fills at ~20d and Prometheus crashes on a full disk).
-            # Cap by size so the oldest blocks are dropped first; leaves room
-            # for the WAL, head chunks and compaction scratch space.
+            # Cap by size (~450Mi/day, so ~18d of history) so the oldest
+            # blocks are dropped first. Kept well under the 20Gi PVC below
+            # because Longhorn's actual usage is roughly double the
+            # filesystem usage - see the storage request comment.
             retentionSize: 8GiB
             storageSpec:
               volumeClaimTemplate:
@@ -193,8 +193,8 @@ spec:
                     # Opts this volume out of Longhorn's daily "default"
                     # snapshot group (funland/longhorn-system/longhorn/recurringjobs.yaml).
                     # TSDB churn is high enough that 3 retained daily
-                    # snapshots plus live data regularly exceeded the 10Gi
-                    # PVC (128% actual usage observed), which triggered
+                    # snapshots plus live data regularly exceeded the PVC
+                    # (128% actual usage observed), which triggered
                     # LonghornVolumeActualSpaceUsedWarning permanently.
                     # Unlike stateful app data, this volume doesn't need
                     # point-in-time snapshot protection: it's reproducible
@@ -211,7 +211,14 @@ spec:
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
-                      storage: 10Gi
+                      # Sized at ~2x retentionSize, not 1x: Longhorn keeps a
+                      # system snapshot (created on replica rebuild) under the
+                      # live data and can't purge it while it is the volume
+                      # head's parent, so actual usage is snapshot + live. At
+                      # 10Gi that sat at 138-182% even after a trim.
+                      # The operator doesn't resize existing PVCs - patch the
+                      # PVC's spec.resources.requests.storage by hand as well.
+                      storage: 20Gi
             # Observed working set ~750Mi; headroom for 30d retention.
             resources:
               requests:
