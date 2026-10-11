@@ -75,6 +75,14 @@ patches:
           evictionHard:
             memory.available: "500Mi"
             nodefs.available: "10%"
+          # /var is shared between containerd and Longhorn's disk
+          # (/var/lib/longhorn). With the kubelet defaults (85/80) image GC
+          # never ran before LonghornDiskStorageWarning's 70% threshold:
+          # on 2026-10-11 each worker held 160-180GB of images on a 320GB
+          # disk versus ~45GB of Longhorn replicas. Start GC at 60% and
+          # prune down to 50% so stale images are reclaimed first.
+          imageGCHighThresholdPercent: 60
+          imageGCLowThresholdPercent: 50
 
 # Longhorn requires these Talos system extensions on every node (control plane
 # included, so Longhorn's manager/CSI components run cluster-wide even though
