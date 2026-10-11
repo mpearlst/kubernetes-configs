@@ -57,13 +57,15 @@ spec:
           httpGet:
             path: /
             port: 8080
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /
             port: 8080
+          timeoutSeconds: 5
         resources:
           limits:
-            cpu: "15m"
+            cpu: "500m"
             memory: "128Mi"
             ephemeral-storage: "64Mi"
           requests:
