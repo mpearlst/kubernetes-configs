@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: authentik-proxy
     app.kubernetes.io/instance: authentik-proxy
     # renovate: image=ghcr.io/goauthentik/proxy
-    app.kubernetes.io/version: "2026.8.4"
+    app.kubernetes.io/version: "2026.8.5"
     app.kubernetes.io/component: sso-proxy
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -26,7 +26,7 @@ spec:
         app.kubernetes.io/name: authentik-proxy
         app.kubernetes.io/instance: authentik-proxy
         # renovate: image=ghcr.io/goauthentik/proxy
-        app.kubernetes.io/version: "2026.8.4"
+        app.kubernetes.io/version: "2026.8.5"
         app.kubernetes.io/component: sso-proxy
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
@@ -36,7 +36,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: proxy
-          image: ghcr.io/goauthentik/proxy:2026.8.4
+          image: ghcr.io/goauthentik/proxy:2026.8.5
           env:
             # Same Service name/port already used by
             # funland/authentik/authentik/http-route.yaml's backendRefs
@@ -97,7 +97,7 @@ metadata:
     app.kubernetes.io/name: authentik-proxy
     app.kubernetes.io/instance: authentik-proxy
     # renovate: image=ghcr.io/goauthentik/proxy
-    app.kubernetes.io/version: "2026.8.4"
+    app.kubernetes.io/version: "2026.8.5"
     app.kubernetes.io/component: sso-proxy
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
