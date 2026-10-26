@@ -12,7 +12,7 @@ This deployment uses the `cilium` Helm chart from the [Cilium Helm repository](h
 
 This deployment has the following features enabled:
 
-- **Prometheus:** Agent and Hubble metrics are currently DISABLED (commented out in `application.yaml`). They were turned off in `dac0dd9` to free memory during a worker2 OOM incident; the real cause of that OOM turned out to be missing resource requests cluster-wide, so these can be re-enabled if the memory headroom is there.
+- **Prometheus:** Agent, operator and Envoy metrics are enabled with ServiceMonitors. They had been turned off in `dac0dd9` during a worker2 OOM incident, but the real cause of that OOM turned out to be missing resource requests cluster-wide. Hubble metrics remain DISABLED (commented out in `application.yaml`); enabling them adds agent load, so watch agent memory against its 768Mi limit if you turn them on.
 - **Hubble:** Disabled along with the metrics above - `hubble-relay` and `hubble-ui` are not running.
 - **kube-proxy replacement:** Cilium replaces `kube-proxy` for service routing.
 - **Gateway API:** Cilium is configured to work with the Kubernetes Gateway API.
