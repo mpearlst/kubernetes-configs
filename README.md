@@ -214,10 +214,8 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Longhorn | longhorn-system | Distributed storage |
 | metrics-server | kube-system | Kubernetes resource metrics API |
 | ntfy | ntfy | Push notifications |
-| OpenSpeedTest | openspeedtest | Network speed testing |
 | Overseerr | media | Media request management UI (exposed as request.batlab.io) |
 | 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
-| Privatebin | privatebin | Encrypted pastebin |
 | Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
 | Prowlarr | media | Indexer manager (SSO via Authentik proxy outpost) |
 | Radarr | media | Movie collection manager (SSO via Authentik proxy outpost) |
