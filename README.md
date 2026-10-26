@@ -38,7 +38,7 @@ funland/                          # Cluster name
 ├── external-secrets/            # External Secrets Operator + 1Password
 ├── cnpg/                        # CloudNativePG operator + database clusters
 ├── longhorn-system/longhorn/    # Persistent storage
-├── monitoring/                  # Prometheus, Grafana, metrics-server
+├── monitoring/                  # Prometheus, Grafana
 ├── talos/                       # Talos/Kubernetes version tracking (talhelper)
 └── [app-namespace]/[app]/       # Application deployments
 ```
@@ -212,7 +212,6 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Immich | immich | Photo/video management |
 | Jellyfin | media | Media server |
 | Longhorn | longhorn-system | Distributed storage |
-| metrics-server | kube-system | Kubernetes resource metrics API |
 | ntfy | ntfy | Push notifications |
 | Overseerr | media | Media request management UI (exposed as request.batlab.io) |
 | 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
