@@ -41,7 +41,7 @@ Fix: requests (and, where safe, memory limits) were set across every chart-deplo
 
 **Resilience changes:** Prometheus, Alertmanager, kube-state-metrics and the ntfy bridge now carry soft anti-affinity so the alert path is not co-located on one node — previously Prometheus, kube-state-metrics and the bridge all ran on worker2, the node that kept dying. Prometheus also gained a Longhorn PVC and 30d retention; it was on an `emptyDir`, so every restart destroyed the evidence and re-fired every alert at once.
 
-`metrics-server` was also restored (`funland/kube-system/metrics-server/`) — `kubectl top` is the fastest way to spot a requests-vs-usage gap like this one.
+`metrics-server` was briefly restored for this, but is archived again (`archive/kube-system/metrics-server/`). `kubectl top` is the fastest way to spot a requests-vs-usage gap like this one, so restore it if you need that.
 
 ## Dead-man's-switch (Watchdog)
 
