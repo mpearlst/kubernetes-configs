@@ -16,15 +16,10 @@ spec:
       valuesObject:
         ipam:
           mode: kubernetes
-        # prometheus:
-        #   enabled: true
-        #   serviceMonitor:
-        #     enabled: true
-        # operator:
-        #   prometheus:
-        #     enabled: true
-        #     serviceMonitor:
-        #       enabled: true
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
         # hubble:
         #   enabled: true
         #   relay:
@@ -59,6 +54,10 @@ spec:
           limits:
             memory: 768Mi
         envoy:
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
           resources:
             requests:
               cpu: 25m
@@ -66,6 +65,10 @@ spec:
             limits:
               memory: 192Mi
         operator:
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
           resources:
             requests:
               cpu: 25m
