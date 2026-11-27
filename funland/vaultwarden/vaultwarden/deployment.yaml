@@ -204,10 +204,6 @@ spec:
       remoteRef:
         key: vaultwarden-db-credentials
         property: username
-    - secretKey: vaultwarden_db_connection_string
-      remoteRef:
-        key: vaultwarden
-        property: vaultwarden_db_connection_string
     - secretKey: smtp_address
       remoteRef:
         key: smtp

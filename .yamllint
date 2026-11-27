@@ -1,0 +1,18 @@
+# Lints formatting only; schema validity is checked by kubeconform in CI.
+extends: default
+
+rules:
+  # Long URLs, Lua health checks and comments make a hard limit impractical.
+  line-length: disable
+  # Most manifests omit the leading `---`; both styles are accepted.
+  document-start: disable
+  # Both `- item` styles (indented and flush with the parent key) are in use.
+  indentation:
+    spaces: 2
+    indent-sequences: whatever
+  comments:
+    min-spaces-from-content: 1
+  # Commented-out values blocks sit at the indentation of their parent keys.
+  comments-indentation: disable
+  truthy:
+    check-keys: false

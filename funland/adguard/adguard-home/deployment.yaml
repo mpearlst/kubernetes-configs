@@ -29,7 +29,7 @@ spec:
       - image: adguard/adguardhome:v1.0.0
         name: adguard-home
         volumeMounts:
-        - name: config 
+        - name: config
           mountPath: /opt/adguardhome/conf
         - name: work
           mountPath: /opt/adguardhome/work
@@ -114,6 +114,6 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi 
+      storage: 1Gi
   storageClassName: longhorn
   volumeMode: Filesystem

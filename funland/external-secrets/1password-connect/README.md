@@ -31,6 +31,8 @@ kubectl create secret generic op-connect-credentials \
 **2. Connect API token** — the token used by External Secrets Operator to authenticate to the Connect API:
 
 ```bash
+kubectl create namespace external-secrets
+
 kubectl create secret generic op-connect-token \
   --from-literal=token=<your-connect-api-token> \
   -n external-secrets
@@ -56,5 +58,5 @@ kubectl get externalsecrets -A
 ## Notes
 
 - Helm release name is `onepassword`, which makes the Connect service DNS name `onepassword-connect` — this must match the `connectHost` in `cluster-secret-store.yaml`
-- The `CreateNamespace=true` sync option creates the `1password-connect` namespace automatically; the bootstrap step above creates it first so the secret can be placed there before ArgoCD runs
+- The `CreateNamespace=true` sync option creates the `1password-connect` and `external-secrets` namespaces automatically; the bootstrap steps above create them first so the secrets can be placed there before ArgoCD runs
 - Renovate manages `targetRevision` bumps automatically

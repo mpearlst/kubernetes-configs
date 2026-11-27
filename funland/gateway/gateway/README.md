@@ -6,17 +6,17 @@ This directory contains Kubernetes Gateway API resources for managing ingress an
 
 - `external-gateway.yaml`: Defines a Gateway resource configured to handle external traffic coming into the cluster.
 - `internal-gateway.yaml`: Defines a Gateway resource configured to handle internal traffic within the cluster.
-- `http-route.yaml`: Defines HTTPRoute resources that specify how HTTP traffic is routed from the Gateways to various services within the cluster.
+- `http-route.yaml`: Redirects plain HTTP (port 80) on both Gateways to HTTPS with a 301. Per-app HTTPRoutes live alongside each app and attach to the `https` listener.
 
 ## Dependencies
 
-This configuration relies on a Kubernetes Gateway API implementation being deployed in the cluster, such as [Cilium](https://cilium.io/) or Istio.
+Both Gateways use the `cilium` GatewayClass provided by [Cilium](https://cilium.io/)'s Gateway API support, with fixed LoadBalancer IPs (`internal`: `192.168.10.30`, `external`: `192.168.10.31`).
 
 ### Gateway API CRDs
 
 The Gateway API CRDs are managed separately in `funland/gateway-api/gateway-api-crds/` and must be installed before these resources can be applied.
 
-**Current version**: v1.6.1
+The pinned release is the URL in `funland/gateway-api/gateway-api-crds/crds/kustomization.yaml` (Renovate opens PRs for new releases; they are never auto-merged).
 
 The CRD installation uses an App of Apps pattern with **Server-Side Apply** (`ServerSideApply=true`) enabled. This is required because the Gateway API CRD manifests are large and can exceed the 1MB annotation limit used by client-side apply.
 

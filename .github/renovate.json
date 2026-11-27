@@ -53,14 +53,26 @@
         "imageName:\\s*(?<depName>[^:]+):(?<currentValue>[^\\s]+)"
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Update the Gateway API CRD release pinned in the kustomization",
+      "managerFilePatterns": [
+        "/^funland\\/gateway-api\\/gateway-api-crds\\/crds\\/kustomization\\.yaml$/"
+      ],
+      "matchStrings": [
+        "https://github\\.com/kubernetes-sigs/gateway-api/releases/download/(?<currentValue>v[^/]+)/"
+      ],
+      "depNameTemplate": "kubernetes-sigs/gateway-api",
+      "datasourceTemplate": "github-releases"
     }
   ],
   "packageRules": [
     {
       "description": "Custom versioning for LinuxServer.io images",
-      "matchPackagePatterns": [
-        "^lscr\\.io/linuxserver/",
-        "^linuxserver/"
+      "matchPackageNames": [
+        "/^lscr\\.io/linuxserver//",
+        "/^linuxserver//"
       ],
       "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:[.\\-r]+(?<build>\\d+))?-ls(?<revision>\\d+)$"
     },
@@ -80,6 +92,11 @@
     {
       "description": "Require PR review for major updates",
       "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Gateway API CRD bumps change cluster-wide APIs (and may break the TLSRoute served-version patch); always review manually",
+      "matchDepNames": ["kubernetes-sigs/gateway-api"],
       "automerge": false
     }
   ]

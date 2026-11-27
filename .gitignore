@@ -4,8 +4,10 @@
 *.swo
 *~
 
-# IDE files
-.vscode/
+# IDE files (shared VS Code settings/extension recommendations are committed)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 
 # OS files
