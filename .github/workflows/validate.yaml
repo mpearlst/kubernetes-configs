@@ -40,6 +40,11 @@ jobs:
           print(f"Checked {len(files)} YAML file(s), no syntax errors.")
           EOF
 
+      - name: Lint YAML formatting
+        run: |
+          python3 -m pip install --quiet yamllint
+          yamllint --format github .
+
       - name: Install kubeconform
         run: |
           curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz kubeconform

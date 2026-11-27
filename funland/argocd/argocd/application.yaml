@@ -145,8 +145,7 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
-        # For a non-HA setup, ensure redis.enabled is true (default) or
-        # explicitly set it. See the HA notes further down.
+        # Single-instance Redis (the chart default) - see the HA note below.
         redis:
           enabled: true
           resources:
@@ -183,16 +182,11 @@ spec:
               memory: 128Mi
         deploymentAnnotations:
           reloader.stakater.com/auto: "true"
-        # To enable High Availability (HA) for the Argo CD server:
-        # 1. Uncomment and adjust the replicaCount.
-        # 2. Configure the connection to an external HA Redis cluster under the 'database' section.
-        # 3. Ensure 'redis.enabled' is set to 'false'.
-        # server:
-          # replicaCount: 3
-          # database:
-          #   host: argocd-redis-ha.argocd-redis-ha.svc
-          #   port: 6379
-          #   # passwordSecretName: argocd-redis-secret
+        # High Availability is not enabled (single replica per component).
+        # To enable it, follow the chart's "High Availability" README section:
+        # set `redis-ha.enabled: true` and `redis.enabled: false`, then raise
+        # `replicas` on controller/server/repoServer/applicationSet (merge into
+        # the existing blocks above rather than adding duplicate keys).
   syncPolicy:
     automated:
       allowEmpty: true

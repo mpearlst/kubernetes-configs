@@ -29,3 +29,9 @@ These secrets are fetched from a 1Password secret named `argocd-sso` with the fo
 
 - `argocd_client_id`
 - `argocd_client_secret`
+
+## ApplicationSet
+
+`appset.yaml` defines the `argocd-appset` ApplicationSet that turns every `funland/<namespace>/<app>/` directory into an ArgoCD Application named `<app>`, deployed to `<namespace>`, with automated sync, prune and self-heal. See "How apps are discovered" in the root `README.md`.
+
+It also carries the cluster-wide `ignoreDifferences` for CNPG `Cluster` fields that the operator defaults server-side, which would otherwise show as permanently OutOfSync.

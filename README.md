@@ -4,7 +4,7 @@ GitOps repository for a self-hosted Kubernetes cluster running on Talos Linux, u
 
 ## Overview
 
-This repository contains the configuration for a single-node (or multi-node) Kubernetes cluster that automatically deploys and manages applications through ArgoCD's ApplicationSet pattern. Once bootstrapped, ArgoCD watches this repository and automatically syncs any changes.
+This repository contains the configuration for the `funland` cluster (one control-plane node and three workers, defined in `funland/talos/talconfig.yaml`), which automatically deploys and manages applications through ArgoCD's ApplicationSet pattern. Once bootstrapped, ArgoCD watches this repository and automatically syncs any changes.
 
 **Key Components:**
 - **Talos Linux** - Immutable, secure Kubernetes OS
@@ -21,6 +21,7 @@ Install the following tools before proceeding:
 | Tool | Purpose | Installation |
 |------|---------|--------------|
 | `talosctl` | Talos cluster management | [talos.dev/docs](https://www.talos.dev/latest/introduction/getting-started/) |
+| `talhelper` | Generates Talos machine configs from `talconfig.yaml` | [budimanjojo.github.io/talhelper](https://budimanjojo.github.io/talhelper/latest/installation/) |
 | `kubectl` | Kubernetes CLI | [kubernetes.io/docs](https://kubernetes.io/docs/tasks/tools/) |
 | `helm` | Kubernetes package manager | [helm.sh/docs](https://helm.sh/docs/intro/install/) |
 | `yq` | YAML processor | [github.com/mikefarah/yq](https://github.com/mikefarah/yq#install) |
@@ -28,74 +29,81 @@ Install the following tools before proceeding:
 ## Repository Structure
 
 ```
-funland/                          # Cluster name
-├── argocd/argocd/               # ArgoCD + ApplicationSet
-├── kube-system/cilium/          # Cilium CNI configuration
-├── gateway/gateway/             # Gateway API resources (internal/external)
-├── gateway-api/gateway-api-crds/ # Gateway API CRD definitions
-├── cert-manager/cert-manager/   # TLS certificate management
-├── certificate/certificate/     # Wildcard certificates
-├── external-secrets/            # External Secrets Operator + 1Password
-├── cnpg/                        # CloudNativePG operator + database clusters
-├── longhorn-system/longhorn/    # Persistent storage
-├── monitoring/                  # Prometheus, Grafana
-├── talos/                       # Talos/Kubernetes version tracking (talhelper)
-└── [app-namespace]/[app]/       # Application deployments
+funland/                           # Cluster name
+├── argocd/argocd/                 # ArgoCD + ApplicationSet
+├── kube-system/cilium/            # Cilium CNI configuration
+├── gateway/gateway/               # Gateway API resources (internal/external)
+├── gateway-api/gateway-api-crds/  # Gateway API CRD definitions
+├── cert-manager/cert-manager/     # TLS certificate management
+├── certificate/certificate/       # Wildcard certificates
+├── external-secrets/              # External Secrets Operator + 1Password
+├── cnpg/                          # CloudNativePG operator + database clusters
+├── longhorn-system/longhorn/      # Persistent storage
+├── monitoring/                    # Prometheus, Alertmanager, Grafana
+├── talos/                         # Talos/Kubernetes versions + node config (talhelper, not ArgoCD)
+└── [namespace]/[app]/             # Application deployments
+archive/                           # Retired manifests - not deployed (see archive/README.md)
+.github/                           # CI validation, Renovate config, PR template
 ```
 
-Each application follows the pattern `namespace/app-name/` containing:
-- `application.yaml` - ArgoCD Application (for Helm charts)
-- `http-route.yaml` - Gateway API routing
-- `deployment.yaml` / `kustomization.yaml` - Raw manifests or Kustomize
+### How apps are discovered
+
+The ApplicationSet in `funland/argocd/argocd/appset.yaml` creates one ArgoCD Application for **every directory matching `funland/*/*`**:
+
+- The Application is named after the directory (`funland/media/sonarr` → `sonarr`), so directory names must be unique across the repo.
+- The middle path segment is the destination namespace (`media`), created automatically (`CreateNamespace=true`). Resources that need a different namespace must set `metadata.namespace` themselves and declare that Namespace if nothing else does.
+- Only files directly inside the directory are applied (no recursion). If the directory contains a `kustomization.yaml`, ArgoCD renders it with Kustomize instead.
+- Sync is automated with `prune` and `selfHeal`, so manual `kubectl` edits to managed resources are reverted.
+
+### Adding an application
+
+1. Create `funland/<namespace>/<app>/` with some of:
+   - `application.yaml` - a nested ArgoCD `Application` for a Helm chart (Renovate bumps `targetRevision`)
+   - `deployment.yaml` / `service.yaml` - raw manifests (Renovate bumps images; keep the `# renovate: image=...` comment above `app.kubernetes.io/version` in sync)
+   - `http-route.yaml` - Gateway API `HTTPRoute` attached to the `internal` and/or `external` gateway
+   - `external-secret.yaml` - `ExternalSecret`s pulling from the `1password` ClusterSecretStore
+   - `README.md` - what it is, dependencies, and the 1Password items it expects
+2. Set `resources.requests` on every container (see [Node stuck in NotReady](#node-stuck-in-notready) for why).
+3. Add the app to the [Deployed Applications](#deployed-applications) table.
+4. Open a PR; CI validates YAML syntax and formatting, Kubernetes schemas, and Kustomize builds.
 
 ## Cluster Bootstrap
 
 ### 1. Talos Setup
 
-Create a `patch.yaml` to disable the default CNI and kube-proxy (Cilium will replace both):
-
-```yaml
-cluster:
-  network:
-    cni:
-      name: none
-  proxy:
-    disabled: true
-```
-
-Set environment variables for your cluster:
+`funland/talos/talconfig.yaml` is the source of truth for the nodes, Talos/Kubernetes versions, system extensions and machine-config patches (including disabling the default CNI and kube-proxy, which Cilium replaces). Generate the machine configs with [talhelper](https://github.com/budimanjojo/talhelper):
 
 ```sh
-export TALOS_IP="192.168.10.30"      # Control plane IP
-export TALOS_API_PORT="6443"         # Kubernetes API port
-export CLUSTER_NAME="funland"        # Cluster name
+cd funland/talos
+
+# One-time: generate cluster secrets (gitignored - never commit in plaintext)
+talhelper gensecret > talsecret.yaml
+
+# Render per-node machine configs + talosconfig into clusterconfig/ (gitignored)
+talhelper genconfig
 ```
 
-Generate configs and bootstrap the cluster:
+Apply the configs and bootstrap the control plane (`192.168.10.20`). `talhelper gencommand` prints the exact per-node commands:
 
 ```sh
-# Generate Talos configuration
-talosctl gen config "${CLUSTER_NAME}" "https://${TALOS_IP}:${TALOS_API_PORT}" --config-patch @patch.yaml
+# Apply each node's config (nodes boot into maintenance mode, hence --insecure)
+talhelper gencommand apply --extra-flags="--insecure" | sh
 
-# Apply configuration to the node (this starts the bootstrap)
-talosctl apply-config --insecure -n "${TALOS_IP}" --file controlplane.yaml
+# Bootstrap etcd on the control plane (wait for it to be reachable first)
+talhelper gencommand bootstrap | sh
 
-# Bootstrap the cluster (wait for node to be reachable first)
-talosctl bootstrap --nodes "${TALOS_IP}" --endpoints "${TALOS_IP}" --talosconfig=./talosconfig
-
-# Get kubeconfig for kubectl access
-talosctl kubeconfig --nodes "${TALOS_IP}" --endpoints "${TALOS_IP}" --talosconfig=./talosconfig
+# Fetch a kubeconfig
+talhelper gencommand kubeconfig | sh
 ```
 
-> **Note:** The node will show as `NotReady` until Cilium is installed. This is expected since no CNI is configured.
+> **Note:** Nodes will show as `NotReady` until Cilium is installed. This is expected since no CNI is configured.
 
 ### 2. Install Gateway API CRDs
 
-Install the Gateway API CRDs before Cilium (Cilium's Gateway API integration requires these):
+Install the Gateway API CRDs before Cilium (Cilium's Gateway API integration requires these). This applies the same Kustomization ArgoCD later takes over, so the pinned version and the TLSRoute `v1alpha2` patch match exactly:
 
 ```sh
-kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/standard-install.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.6.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+kubectl apply --server-side -k funland/gateway-api/gateway-api-crds/crds
 ```
 
 ### 3. Install Cilium
@@ -131,7 +139,16 @@ kubectl get pods -n kube-system -l app.kubernetes.io/name=cilium
 kubectl get nodes  # Should now show Ready
 ```
 
-### 4. Install ArgoCD
+### 4. Create the 1Password Connect bootstrap secrets
+
+Every `ExternalSecret` depends on 1Password Connect, which itself needs two secrets that cannot come from GitOps. Create them before ArgoCD starts syncing, following [funland/external-secrets/1password-connect/README.md](funland/external-secrets/1password-connect/README.md):
+
+- `op-connect-credentials` in namespace `1password-connect` (the `1password-credentials.json` file)
+- `op-connect-token` in namespace `external-secrets` (the Connect API token)
+
+The 1Password items each app reads are listed in that app's `README.md`.
+
+### 5. Install ArgoCD
 
 Install ArgoCD and the ApplicationSet that will manage all other applications:
 
@@ -199,11 +216,12 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | AdGuard Home | adguard | DNS ad-blocking |
 | ArgoCD | argocd | GitOps continuous deployment |
 | Authentik | authentik | Identity provider / SSO |
+| Alertmanager ntfy bridge | monitoring | Relays Alertmanager webhooks to ntfy push notifications |
 | Authentik Proxy Outpost | authentik | Shared forward-auth SSO proxy for apps with no native OIDC support |
 | Cert-Manager | cert-manager | TLS certificate automation |
 | Certificate | certificate | Wildcard TLS certificate |
-| Cilium | kube-system | CNI with Gateway API, L2 announcements, Hubble observability |
-| CloudNativePG | postgres / cnpg-system | PostgreSQL operator + database clusters |
+| Cilium | kube-system | CNI with Gateway API, L2 announcements, kube-proxy replacement |
+| CloudNativePG | cnpg-system / postgres | PostgreSQL operator (`cnpg-system`) + database clusters (`postgres`) |
 | Cloudflare Tunnel | cloudflare | Cloudflare tunnel ingress controller |
 | External Secrets Operator | external-secrets | Syncs secrets from 1Password |
 | Gateway | gateway | Gateway API Gateway resources (internal/external) |
@@ -213,9 +231,9 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 | Jellyfin | media | Media server |
 | Longhorn | longhorn-system | Distributed storage |
 | ntfy | ntfy | Push notifications |
-| Overseerr | media | Media request management UI (exposed as request.batlab.io) |
 | 1Password Connect | 1password-connect | 1Password Connect server (ESO backend) |
-| Prometheus | monitoring | Metrics collection (kube-prometheus-stack) |
+| Overseerr | media | Media request management UI (Seerr image, exposed as request.batlab.io) |
+| Prometheus | monitoring | Metrics collection + Alertmanager (kube-prometheus-stack) |
 | Prowlarr | media | Indexer manager (SSO via Authentik proxy outpost) |
 | Radarr | media | Movie collection manager (SSO via Authentik proxy outpost) |
 | Recyclarr | media | Syncs TRaSH Guides quality profiles into Radarr/Sonarr |
@@ -224,22 +242,30 @@ kubectl get applications -n argocd -o jsonpath='{range .items[*]}{.metadata.name
 
 ## Network Architecture
 
-- **IP Pool:** `192.168.10.30` - `192.168.10.49` (Cilium L2 announcements, ARP on the local L2 segment)
-- **Internal Gateway:** `192.168.10.30` - Routes internal services via HTTPRoute resources
-- **External Gateway:** `192.168.10.31` - Routes public-facing services
+| Address | What |
+|---------|------|
+| `192.168.10.20` | Control plane (`talos-g4c-g4l`), Kubernetes API on `:6443` |
+| `192.168.10.21` - `.23` | Workers (`talos-worker1`-`3`) |
+| `192.168.10.30` - `.49` | Cilium LoadBalancer IP pool (L2 announcements / ARP) |
+| `192.168.10.30` | Internal Gateway - routes internal services via HTTPRoute |
+| `192.168.10.31` | External Gateway - routes public-facing services |
+| `192.168.10.35` | AdGuard Home DNS (53/tcp+udp, 853/tcp) |
+| `192.168.11.13` | NFS server for media and the Immich library (outside the cluster) |
+
 - **CNI:** Cilium with kube-proxy replacement, L2 announcements, and Gateway API enabled
+- **TLS:** a single `*.batlab.io` wildcard certificate (cert-manager, Let's Encrypt DNS-01 via Cloudflare) in the `certificate` namespace, shared by both gateways
+- **Cloudflare Tunnel:** `auth`, `immich` and `ntfy` are also published through the Cloudflare Tunnel ingress controller (`ingress.yaml` in those apps)
 
 ## Observability Stack
 
 ### Metrics (Prometheus + Grafana)
-- Prometheus scrapes metrics from all services with ServiceMonitors
-- Cilium exports network metrics (DNS, TCP, HTTP, drops, flows)
+- Prometheus scrapes every ServiceMonitor/PodMonitor in the cluster (selectors are unrestricted)
+- Cilium agent, operator and Envoy metrics are enabled; Hubble (flow/DNS/HTTP metrics and UI) is currently **disabled** - see `funland/kube-system/cilium/README.md`
 - Grafana dashboards available at `grafana.batlab.io`
 
-### Network Observability (Hubble)
-- Hubble UI available at `hubble.batlab.io`
-- Real-time network flow visualization
-- DNS query tracking and HTTP request inspection
+### Alerting
+- Prometheus → Alertmanager → `alertmanager-ntfy-bridge` → ntfy topic `alerts`
+- The `Watchdog` alert is sent to an external dead-man's-switch so a failure of the in-cluster alert path is itself noticed (see `funland/monitoring/prometheus/external-secret-watchdog.yaml`)
 
 ## Database Backups (CloudNativePG)
 
@@ -255,7 +281,7 @@ All PostgreSQL clusters are configured with automated backups to Backblaze B2:
 - **Retention:** 30 days
 - **Compression:** Snappy
 - **Encryption:** AES256 (WAL and data)
-- **Schedule:** Daily at midnight (via ScheduledBackup resources)
+- **Schedule:** Daily at midnight UTC (via ScheduledBackup resources)
 - **Continuous:** WAL archiving enabled for point-in-time recovery
 
 **Verify backups:**
@@ -279,7 +305,7 @@ Argo CD is not involved in this process either: it only syncs Kubernetes API res
 talhelper genconfig
 
 # Look up the resolved installer image for a node, e.g.:
-yq '.machine.install.image' clusterconfig/funland-funland-worker-1.yaml
+yq '.machine.install.image' clusterconfig/funland-talos-worker1.yaml
 # -> factory.talos.dev/installer/<schematic-id>:<new-talos-version>
 
 # Roll the Talos OS upgrade node-by-node - workers first, control plane last.

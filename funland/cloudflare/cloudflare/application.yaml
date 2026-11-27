@@ -51,9 +51,6 @@ spec:
             accountIDKey: cloudflare-operator-account-id-secret
             tunnelNameKey: cloudflare-operator-tunnel-name-secret
             apiTokenKey: cloudflare-operator-api-token-secret
-            #accountId: ""
-            #tunnelName: ""
-            #apiToken: ""
         cloudflared:
           # The controller itself has chart-default requests; the managed
           # connector pods did not, so the scheduler counted them as free.

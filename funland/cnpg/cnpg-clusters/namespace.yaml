@@ -1,0 +1,12 @@
+# The ApplicationSet derives each app's destination namespace from the path
+# (funland/<namespace>/<app>), which makes this app's namespace "cnpg" - but
+# every resource here (and cnpg-components' b2-backup-credentials) lives in
+# "postgres". CreateNamespace=true only creates the destination namespace, so
+# "postgres" is declared explicitly to keep a fresh bootstrap reproducible.
+# Prune=false: never let ArgoCD delete the namespace holding every database.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false

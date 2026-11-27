@@ -22,7 +22,7 @@ spec:
       repoURL: https://charts.longhorn.io/
       targetRevision: 1.13.0
       helm:
-        values: |
+        valuesObject:
           preUpgradeChecker:
             jobEnabled: false
             upgradeVersionCheck: false

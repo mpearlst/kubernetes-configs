@@ -19,7 +19,8 @@ funland/cnpg/
 │   ├── b2-backup-credentials.yaml  # ExternalSecret for B2 credentials
 │   └── README.md
 ├── cnpg-clusters/            # PostgreSQL cluster definitions
-│   ├── kustomization.yaml    # Applies clusters + scheduled backups
+│   ├── kustomization.yaml    # Applies namespace, clusters + scheduled backups
+│   ├── namespace.yaml        # The `postgres` namespace
 │   ├── authentik-cnpg-cluster.yaml
 │   ├── immich-cnpg-cluster.yaml
 │   ├── vaultwarden-cnpg-cluster.yaml
@@ -28,7 +29,6 @@ funland/cnpg/
 ├── cnpg-operator/            # Operator configuration
 │   ├── application.yaml
 │   └── README.md
-├── kustomization.yaml
 ├── QUICKSTART.md
 └── README.md
 ```
@@ -54,16 +54,12 @@ The ExternalSecret in `funland/cnpg/cnpg-components/b2-backup-credentials.yaml` 
 
 ### 3. Deploy the Configuration
 
-The backup configuration is automatically applied to all CNPG clusters via Kustomize:
+ArgoCD deploys `cnpg-clusters/` (and `cnpg-components/`) automatically via the
+ApplicationSet; merging to `main` is all that is needed. To preview the rendered
+output locally:
 
 ```bash
-# Build and preview the configuration
 kubectl kustomize funland/cnpg/cnpg-clusters/
-
-# Apply via kubectl
-kubectl apply -k funland/cnpg/cnpg-clusters/
-
-# Or let ArgoCD sync it automatically
 ```
 
 ### 4. Verify Backup Configuration
@@ -307,13 +303,8 @@ https://s3.us-west-000.backblazeb2.com
 
 ## Adding Backups to a New Cluster
 
-When creating a new CNPG cluster, simply add it to `cnpg-clusters/kustomization.yaml`:
-
-1. Create your cluster YAML file (e.g., `newapp-cnpg-cluster.yaml`)
-2. Add it to the `resources` list in `kustomization.yaml`
-3. Add a patch with the specific backup path
-
-The backup component will automatically be applied!
+There is no shared backup component; each cluster carries its own `spec.backup` block.
+See "Adding Backups to New Clusters" in [QUICKSTART.md](QUICKSTART.md) for the steps.
 
 ## References
 

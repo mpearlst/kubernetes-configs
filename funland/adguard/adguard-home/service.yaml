@@ -13,7 +13,7 @@ spec:
   - protocol: TCP
     name: "53tcp"
     port: 53
-    targetPort: 53 
+    targetPort: 53
   - protocol: UDP
     name: "53udp"
     port: 53
