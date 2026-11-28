@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: recyclarr
     app.kubernetes.io/instance: recyclarr
     # renovate: image=ghcr.io/recyclarr/recyclarr
-    app.kubernetes.io/version: "8"
+    app.kubernetes.io/version: "9"
     app.kubernetes.io/component: quality-profile-sync
     app.kubernetes.io/part-of: homelab
     app.kubernetes.io/managed-by: argocd
@@ -26,7 +26,7 @@ spec:
         app.kubernetes.io/name: recyclarr
         app.kubernetes.io/instance: recyclarr
         # renovate: image=ghcr.io/recyclarr/recyclarr
-        app.kubernetes.io/version: "8"
+        app.kubernetes.io/version: "9"
         app.kubernetes.io/component: quality-profile-sync
         app.kubernetes.io/part-of: homelab
         app.kubernetes.io/managed-by: argocd
@@ -40,7 +40,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: recyclarr
-          image: ghcr.io/recyclarr/recyclarr:8
+          image: ghcr.io/recyclarr/recyclarr:9
           # No command/args: the image's default entrypoint runs "Cron Mode",
           # staying alive and syncing on CRON_SCHEDULE (no separate k8s CronJob needed).
           env:
